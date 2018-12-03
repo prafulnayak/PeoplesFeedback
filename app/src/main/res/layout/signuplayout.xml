@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <FrameLayout
+        android:id="@+id/llpic"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/profile"/>
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="38dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_add__black24dp"
+            android:background="@color/colorPrimaryDark"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/llgender"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_below="@id/llpic"
+        android:paddingTop="40dp">
+
+        <RelativeLayout
+            android:id="@+id/rlgender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="visible">
+
+
+        <ImageView
+            android:id="@+id/imgmale"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/man"
+            android:layout_marginRight="25dp" />
+
+
+            <ImageView
+                android:id="@+id/imgfemale"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/user"
+                android:layout_toRightOf="@+id/imgmale"
+                android:layout_marginLeft="25dp" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imgmale"
+                android:orientation="horizontal"
+                android:checkedButton="1">
+
+            <CheckBox
+                android:id="@+id/checkmale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:layout_below="@id/imgmale"
+                android:layout_marginLeft="10dp"
+                android:onClick="checkedButton"/>
+            <CheckBox
+                android:id="@+id/checkfemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:layout_toRightOf="@id/imgmale"
+                android:layout_below="@id/imgfemale"
+                android:layout_marginLeft="70dp"
+                android:onClick="checkedButton"/>
+
+            </RadioGroup>
+
+
+        </RelativeLayout>
+
+
+        //select district
+
+        <RelativeLayout
+            android:id="@+id/rllocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone">
+
+
+            <Spinner
+                android:id="@+id/spinnerstate"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="5dp"
+                android:foreground="@drawable/stroke_background" />
+
+            <Spinner
+                android:id="@+id/spinnerdistrict"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="5dp"
+                android:layout_below="@id/spinnerstate"
+                android:foreground="@drawable/stroke_background"/>
+            <Spinner
+                android:id="@+id/spinnerConstituency"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="5dp"
+                android:layout_below="@id/spinnerdistrict"
+                android:foreground="@drawable/stroke_background"/>
+
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rlphone"
+            android:visibility="gone"
+            android:gravity="center">
+
+            <EditText
+                android:id="@+id/e_phone_no_verification"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="5dp"
+                android:hint="ex: +919100055566"
+                android:paddingLeft="5dp"
+                android:ems="10"
+                android:inputType="phone"
+                android:background="@drawable/stroke_background"/>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnnext"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:background="@drawable/round_background"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginLeft="100dp"
+            android:text="NEXT"
+            android:textColor="@color/white"
+            android:visibility="visible"/>
+
+        <Button
+            android:id="@+id/btncontinue"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:background="@drawable/round_background"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginLeft="100dp"
+            android:text="Continue"
+            android:textColor="@color/white"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/b_verify_phone_no"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:background="@drawable/round_background"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginLeft="100dp"
+            android:text="verify"
+            android:textColor="@color/white"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

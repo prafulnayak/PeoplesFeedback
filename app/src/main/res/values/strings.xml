@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">PeoplesFeedback</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_prferance">shamgar.org.peoplesfeedback.Utils.login_preference</string>
+    <string name="emil_preference">shamgar.org.peoplesfeedback.Utils.email_preference</string>
+    <string name="state_preference">shamgar.org.peoplesfeedback.Utils.state_preerence</string>
+    <string name="district_preference">shamgar.org.peoplesfeedback.Utils.district_reference</string>
+    <string name="con_preference">shamgar.org.peoplesfeedback.Utils.con_preference</string>
+    <string name="phone_no_preference">shamgar.org.peoplesfeedback.Utils.phone_no_preference</string>
+    <string name="name_preference">shamgar.org.peoplesfeedback.Utils.name_preference</string>
+    <string name="gensder_preference">shamgar.org.peoplesfeedback.Utils.name_preference</string>
+    <string name="user_name">user name</string>
+    <string name="mla_name">mla_name</string>
+    <string name="constituency_name">contituency: gajuwaka</string>
+    <string name="timestamp">13 minutes ago</string>
+    <string name="tag_name">Tag name</string>
+    <string name="tag_description">hello every one gud morning</string>
+
+    <string name="location">location</string>
+    <string name="views">50</string>
+</resources>
