@@ -641,3 +641,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
 
 }
+//firebase key
+//tag to all option
+//
