@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import shamgar.org.peoplesfeedback.Fragments.Home;
+import shamgar.org.peoplesfeedback.Fragments.MainHome;
 import shamgar.org.peoplesfeedback.Fragments.Notifications;
 import shamgar.org.peoplesfeedback.Fragments.Politicians;
 
@@ -23,7 +24,7 @@ public class TabsAccessorAdaptor extends FragmentPagerAdapter
         switch (position)
         {
                 case 0:
-                Home home=new Home();
+                MainHome home=new MainHome();
 
                 return home;
 

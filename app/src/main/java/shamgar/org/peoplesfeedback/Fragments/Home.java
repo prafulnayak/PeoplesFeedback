@@ -44,12 +44,13 @@ import java.util.Locale;
 import shamgar.org.peoplesfeedback.Model.HomeModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.CameraActivity;
+import shamgar.org.peoplesfeedback.Utils.Contants;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Home extends Fragment {
+public class Home extends Fragment  {
 
 
     private TextView seekbarprogress;
@@ -60,9 +61,14 @@ public class Home extends Fragment {
     DatabaseReference databaseReference;
     private SharedPreferenceConfig sharedPreference;
     private ArrayList<String> result;
-    private Query query,query1,query2;
+    private Query query,query2;
     private float distance;
     private ArrayList<String> ids;
+
+    private ArrayList<String> latitudes;
+    private ArrayList<String> longitudes;
+    private ArrayList<String> keys,nearbyconst;
+
 
     public Home() {
         // Required empty public constructor
@@ -76,11 +82,16 @@ public class Home extends Fragment {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_home, container, false);
 
+
+
+
         sharedPreference = new SharedPreferenceConfig(getActivity());
 
         ids = new ArrayList<>();
-
-
+        latitudes=new ArrayList<>();
+        longitudes=new ArrayList<>();
+        keys=new ArrayList<>();
+        nearbyconst=new ArrayList<String>();
         Log.e("home","Home Fragment");
 
         floatingActionButton = view.findViewById(R.id.floating_action);
@@ -139,9 +150,6 @@ public class Home extends Fragment {
 
         intialposts();
 
-//        postsfromOtherConstituencies();
-
-//        populateUi();
 
         return view;
     }
@@ -153,19 +161,6 @@ public class Home extends Fragment {
                     .orderByChild(ids.get(i));
 
             Toast.makeText(getActivity(), "dataSnapshot"+ids.get(i), Toast.LENGTH_LONG).show();
-//            query.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    Log.d("data", dataSnapshot.toString());
-//
-////                    firebseUIhome();
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//
-//                }
-//            });
 
         }
         firebseUIhome();
@@ -175,9 +170,9 @@ public class Home extends Fragment {
         /*
             Query for getting all the posts from registered constituency
         */
-        query2=FirebaseDatabase.getInstance().getReference("Posts")
-                .orderByChild("constituency")
-                .equalTo("Visakhapatnam East");
+        ids.clear();
+        query2=FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy()+"/PostID");
+
         Log.e("east",": "+query2);
 
         query2.addValueEventListener(new ValueEventListener() {
@@ -187,10 +182,19 @@ public class Home extends Fragment {
                 Toast.makeText(getActivity(),"count: "+dataSnapshot.getChildrenCount(),Toast.LENGTH_SHORT).show();
 //                ids = dataSnapshot.getChildren();
                 for (final DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                    ids.add(dataSnapshot1.getKey().toString());
-//                    Toast.makeText(getActivity(),"key : "+dataSnapshot1.getKey().toString(),Toast.LENGTH_SHORT).show();
+                    ids.add(dataSnapshot1.getKey());
+
                 }
-                postsfromOtherConstituencies();
+
+                Toast.makeText(getActivity(),"initial : "+ids,Toast.LENGTH_SHORT).show();
+
+                Log.e("intial",": "+ids);
+
+               populateUi();
+
+
+
+
             }
 
             @Override
@@ -202,69 +206,33 @@ public class Home extends Fragment {
     }
 
 
-    private void postsfromOtherConstituencies()
+    private void gettingLatAndLon()
     {
 //         ids=new ArrayList<>();
 
-         final float temp=15.0000f;
 
 
-       query1=FirebaseDatabase.getInstance().getReference("Posts")
-               .orderByChild("lat");
-
-       query1.addValueEventListener(new ValueEventListener() {
+       Query latquery=FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con");
+        latquery.orderByChild("lat");
+        latquery.addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
                if (dataSnapshot.exists()) {
-                   for(DataSnapshot latLon : dataSnapshot.getChildren()) {
-
-                       latLon.child("lat").getValue();
-
-                       Location startPoint=new Location("locationA");
-
-                       startPoint.setLatitude(16.99587);
-                       startPoint.setLongitude(81.80142);
-
-                       Location endPoint=new Location("locationA");
-
-                       endPoint.setLatitude(Double.parseDouble(String.valueOf(latLon.child("lat").getValue())));
-                       endPoint.setLongitude(Double.parseDouble(String.valueOf(latLon.child("lon").getValue())));
-
-                       double dist=startPoint.distanceTo(endPoint);
-
-                       distance = (float) (dist/1000);
-
-                       Log.d("distance", String.valueOf(distance));
-
-                       if(distance<temp) {
-                           ids.add(latLon.getKey());
-                       }
-
+                   for(DataSnapshot lat : dataSnapshot.getChildren())
+                   {
+                       latitudes.add(lat.child("lat").getValue().toString());
+                       longitudes.add(lat.child("lon").getValue().toString());
+                       nearbyconst.add(lat.getKey().toString());
                    }
 
-                    Toast.makeText(getActivity(),"id"+ids.size(),Toast.LENGTH_SHORT).show();
+                   Log.d("keys",latitudes.toString());
+                   Log.d("keys",longitudes.toString());
+                   Log.d("keys",nearbyconst.toString());
 
-//                   for (int i=0;i<ids.size();i++) {
-//                       query = FirebaseDatabase.getInstance().getReference("Posts")
-//                               .orderByChild(ids.get(i));
-//
-//                       Toast.makeText(getActivity(), "dataSnapshot", Toast.LENGTH_LONG).show();
-//                       query.addValueEventListener(new ValueEventListener() {
-//                           @Override
-//                           public void onDataChange(DataSnapshot dataSnapshot) {
-//                               Log.d("data", dataSnapshot.toString());
-//
-//                               firebseUIhome();
-//                           }
-//
-//                           @Override
-//                           public void onCancelled(DatabaseError databaseError) {
-//
-//                           }
-//                       });
-//
-//                   }
-                   populateUi();
+                   postsNEarby();
+
+
+
 
                }
 
@@ -276,6 +244,32 @@ public class Home extends Fragment {
 
            }
        });
+
+
+    }
+
+    private void postsNEarby()
+    {
+        final float temp=15.0000f;
+        Location startPoint=new Location("locationA");
+
+        startPoint.setLatitude(17.737467);
+        startPoint.setLongitude(83.321486);
+        Location endPoint=new Location("locationA");
+
+        for (int i=0;i<latitudes.size();i++)
+        {
+            endPoint.setLatitude(Double.parseDouble(String.valueOf(latitudes.get(i))));
+            endPoint.setLongitude(Double.parseDouble(String.valueOf(longitudes.get(i))));
+
+            double dist=startPoint.distanceTo(endPoint);
+
+            distance = (float) (dist/1000);
+
+            Log.d("distance", String.valueOf(distance));
+
+
+        }
 
 
 
@@ -307,8 +301,8 @@ public class Home extends Fragment {
         };
 
         home_rv.setAdapter(firebaseRecyclerAdapter);
-        firebaseRecyclerAdapter.notifyDataSetChanged();
-        home_rv.invalidate();
+//        firebaseRecyclerAdapter.notifyDataSetChanged();
+//        home_rv.invalidate();
 
     }
 
@@ -387,3 +381,52 @@ public class Home extends Fragment {
 
 
 }
+
+//                       latLon.child("lat").getValue();
+//
+//                       Location startPoint=new Location("locationA");
+//
+//                       startPoint.setLatitude(17.737467);
+//                       startPoint.setLongitude(83.321486);
+//
+//                       Location endPoint=new Location("locationA");
+
+// endPoint.setLatitude(Double.parseDouble(String.valueOf(latLon.child("lat").getValue())));
+// endPoint.setLongitude(Double.parseDouble(String.valueOf(latLon.child("lon").getValue())));
+
+//  double dist=startPoint.distanceTo(endPoint);
+
+// distance = (float) (dist/1000);
+
+//   Log.d("distance", String.valueOf(distance));
+
+//                       if(distance<temp) {
+//                           ids.add(latLon.getKey());
+//                       }
+
+
+//                    Toast.makeText(getActivity(),"id"+ids.size(),Toast.LENGTH_SHORT).show();
+//
+//                   Log.e("ids",": "+ids.size()+"\n"+ids);
+
+//                   for (int i=0;i<ids.size();i++) {
+//                       query = FirebaseDatabase.getInstance().getReference("Posts")
+//                               .orderByChild(ids.get(i));
+//
+//                       Toast.makeText(getActivity(), "dataSnapshot", Toast.LENGTH_LONG).show();
+//                       query.addValueEventListener(new ValueEventListener() {
+//                           @Override
+//                           public void onDataChange(DataSnapshot dataSnapshot) {
+//                               Log.d("data", dataSnapshot.toString());
+//
+//                               firebseUIhome();
+//                           }
+//
+//                           @Override
+//                           public void onCancelled(DatabaseError databaseError) {
+//
+//                           }
+//                       });
+//
+//                   }
+// populateUi();
