@@ -130,7 +130,6 @@
         android:layout_height="300dp"
         android:layout_below="@id/postTagname"
         android:layout_marginTop="@dimen/five_dp"
-        android:src="@drawable/zoozoo"
         android:background="@color/black"/>
 
     <LinearLayout

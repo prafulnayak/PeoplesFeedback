@@ -1,20 +1,16 @@
 package shamgar.org.peoplesfeedback.UI;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,7 +33,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -47,21 +41,24 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.Model.UserAddress;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
+import shamgar.org.peoplesfeedback.ConstantName.*;
 
-public class CameraActivity extends AppCompatActivity implements View.OnClickListener {
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.PEOPLE;
 
+public class CameraActivity extends AppCompatActivity implements View.OnClickListener   {
+
+    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 123;
     private ImageView cameraImage;
     private EditText imageDesc;
     private Spinner editMLatag;
@@ -94,6 +91,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private UserAddress address;
     ArrayList<String> mlalist=new ArrayList<String>();
 
+    private String imageId;
+
 
 
     @Override
@@ -122,16 +121,15 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         editMLatag.setVisibility(View.GONE);
 
          address=new UserAddress();
+
         mlatagName.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
 
-
                 Query query=FirebaseDatabase.getInstance().getReference("Politicians")
                         .orderByChild("constituancy").equalTo(address.getCity());
-
 
                 query.addValueEventListener(valueEventListener);
 
@@ -159,19 +157,30 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.submit:
                 //check weather image is blank or not
                 //check Edit text is blank or not
-                pushImageToFirebase();
+                Location location = getcurrentLocation();
+                if(location!=null){
+                    latitude = location.getLatitude();
+                    logntude = location.getLongitude();
+                    pushImageToFirebase();
+                }else {
+                    Toast.makeText(this, "Location ON Issue",Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
     }
 
     private void pushImageToFirebase() {
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReference();
 
+        imageId = FirebaseDatabase.getInstance().getReference().push().getKey();
+        imageId = "images/"+imageId+".jpg";
         // Create a reference to 'images/mountains.jpg'
-        StorageReference mountainImagesRef = storageRef.child("images/mountains.jpg");
+        StorageReference mountainImagesRef = storageRef.child(imageId);
 
         // Get the data from an ImageView as bytes
         cameraImage.setDrawingCacheEnabled(true);
@@ -190,8 +199,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(CameraActivity.this, "success", Toast.LENGTH_SHORT).show();
-                Log.e("gggg", "sssssssd");
+                Toast.makeText(CameraActivity.this, "success image posted", Toast.LENGTH_SHORT).show();
+//                Log.e("gggg", "sssssssd");
 
                 //get the url for the image
                 getUrlForDownload();
@@ -207,7 +216,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReferenceFromUrl("gs://peoplesfeedback-124ba.appspot.com/");
-        final StorageReference pathReference = storageRef.child("images/mountains.jpg");
+        final StorageReference pathReference = storageRef.child(imageId);
 
         pathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -215,111 +224,110 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
                // Toast.makeText(CameraActivity.this, "" + pathReference.getDownloadUrl(), Toast.LENGTH_SHORT).show();
                 Log.e("url", "" + uri.toString());
-                Log.e("url", "" + pathReference.getDownloadUrl());
 
                 String des = imageDesc.getText().toString();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss").format(Calendar.getInstance().getTime());
-                posts.setUrl(uri.toString());
-                posts.setDescription(des);
-                posts.setTag(tag);
-                posts.setMla(MLAname);
-                posts.setConstituency(constituency);
-                posts.setLat(latitude);
-                posts.setLon(logntude);
-                posts.setPublishedon(timeStamp);
-                posts.setMlaid(mlaID);
-                posts.setPostedby(sharedPreference.readName());
-                posts.setStatus("");
+                Posts posts = new Posts(
+                        sharedPreference.readPhoneNo(),
+                        String.valueOf(latitude),
+                        String.valueOf(logntude),
+                        address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                        uri.toString(),
+                        des,
+                        des,
+                        timeStamp,
+                        tag);
 
+                postIntoFirebase(posts);
 
                 key = randomString(10);
 
 
-                DatabaseReference mlaReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy());
-                mlaReference.child("MLAID").child("id").setValue(mlaID).addOnCompleteListener(new OnCompleteListener<Void>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
-                        if (task.isSuccessful()) {
-                         Toast.makeText(CameraActivity.this, "mla id added: ", Toast.LENGTH_LONG).show();
-
-
-                        } else
-                            Toast.makeText(CameraActivity.this, "mla id added failed: ", Toast.LENGTH_LONG).show();
-
-                    }
-                });
-
-
-
-                DatabaseReference TagReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict());
-                TagReference.child(tag).child(key).setValue("postid").addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
-                        if (task.isSuccessful()) {
-                           Toast.makeText(CameraActivity.this, "Tag success: ", Toast.LENGTH_LONG).show();
-
-
-                        } else
-                            Toast.makeText(CameraActivity.this, "Tag Fail: ", Toast.LENGTH_LONG).show();
-                    }
-                });
+//                DatabaseReference mlaReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy());
+////                mlaReference.child("MLAID").child("id").setValue(mlaID).addOnCompleteListener(new OnCompleteListener<Void>()
+////                {
+////                    @Override
+////                    public void onComplete(@NonNull Task<Void> task)
+////                    {
+////                        if (task.isSuccessful()) {
+//////                         Toast.makeText(CameraActivity.this, "mla id added: ", Toast.LENGTH_LONG).show();
+////
+////
+////                        } else
+////                            Toast.makeText(CameraActivity.this, "mla id added failed: ", Toast.LENGTH_LONG).show();
+////
+////                    }
+////                });
 
 
 
-
-
-                DatabaseReference PostReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy());
-                PostReference.child("PostID").child(key).setValue("postid");
-
-
-                PostReference.addListenerForSingleValueEvent(new ValueEventListener()
-                {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
-//                        Map<String, Object> updates = new HashMap<String,Object>();
-//                        updates.put("description", "hello");
-//                        updates.put("mla", "hello");
-//                        updates.put("tag", "hello");
-//                        updates.put("url", "hello");
-//                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
+//                DatabaseReference TagReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict());
+//                TagReference.child(tag).child(key).setValue("postid").addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task)
+//                    {
+//                        if (task.isSuccessful()) {
+////                           Toast.makeText(CameraActivity.this, "Tag success: ", Toast.LENGTH_LONG).show();
 //
-//                            }
-//                        });
-
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                        databaseReference.child("Posts").child(key).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
-
-
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
+//
+//                        } else
+//                            Toast.makeText(CameraActivity.this, "Tag Fail: ", Toast.LENGTH_LONG).show();
+//                    }
+//                });
 
 
-                                if (task.isSuccessful())
-                                {
-                                  Toast.makeText(CameraActivity.this, "post success: ", Toast.LENGTH_LONG).show();
 
 
-                                } else
-                                {
-                                     Toast.makeText(CameraActivity.this, "post Fail: ", Toast.LENGTH_LONG).show();
-                                }
 
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+//                DatabaseReference PostReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy());
+//                PostReference.child("PostID").child(key).setValue("postid");
+//
+//
+//                PostReference.addListenerForSingleValueEvent(new ValueEventListener()
+//                {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+////                        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
+////                        Map<String, Object> updates = new HashMap<String,Object>();
+////                        updates.put("description", "hello");
+////                        updates.put("mla", "hello");
+////                        updates.put("tag", "hello");
+////                        updates.put("url", "hello");
+////                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+////                            @Override
+////                            public void onSuccess(Void aVoid) {
+////
+////                            }
+////                        });
+//
+//                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+////                        databaseReference.child("Posts").child(key).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
+////
+////
+////                            @Override
+////                            public void onComplete(@NonNull Task<Void> task) {
+////
+////
+////                                if (task.isSuccessful())
+////                                {
+//////                                  Toast.makeText(CameraActivity.this, "post success: ", Toast.LENGTH_LONG).show();
+////                                    finish();
+////
+////                                } else
+////                                {
+////                                     Toast.makeText(CameraActivity.this, "post Fail: ", Toast.LENGTH_LONG).show();
+////                                }
+////
+////                            }
+////                        });
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -334,7 +342,70 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-   ValueEventListener valueEventListener=new ValueEventListener()
+    private void postIntoFirebase(Posts posts) {
+        final String postKey = FirebaseDatabase.getInstance().getReference().push().getKey();
+        FirebaseDatabase.getInstance().getReference().child("Posts").child(postKey).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(CameraActivity.this,"Success Post",Toast.LENGTH_SHORT).show();
+
+                    postIntoUserAccount(postKey);
+                    postIntoConstituancyAndTaggedArea(postKey);
+                }
+            }
+        });
+
+    }
+
+    private void postIntoConstituancyAndTaggedArea(final String postKey) {
+        FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child(sharedPreference.readDistrict())
+                .child(CONSTITUANCY)
+                .child(sharedPreference.readConstituancy())
+                .child("PostID")
+                .child(postKey)
+                .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(CameraActivity.this,"posted in state con",Toast.LENGTH_SHORT).show();
+                postInTagArea(postKey);
+            }
+        });
+    }
+
+    private void postInTagArea(String postKey) {
+        FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child(sharedPreference.readDistrict())
+                .child(tag)
+                .child("postID")
+                .child(postKey)
+                .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(CameraActivity.this,"posted in tag area",Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+    }
+
+    private void postIntoUserAccount(String postKey) {
+        FirebaseDatabase.getInstance().getReference().child("people")
+                .child(sharedPreference.readPhoneNo().substring(3))
+                .child(NamesC.POSTEDPOST)
+                .child(postKey)
+                .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                    Toast.makeText(CameraActivity.this,"success on people post",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    ValueEventListener valueEventListener=new ValueEventListener()
    {
 
        @Override
@@ -467,83 +538,95 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
-
-            getcurrentLocation();
-
-
-
         }
     }
 
-    private void getcurrentLocation()
+    private Location getcurrentLocation()
     {
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location)
-            {
 
-                 latitude=location.getLatitude();
-                 logntude=location.getLongitude();
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(CameraActivity.this, "not Per", Toast.LENGTH_LONG).show();
 
-                Toast.makeText(getApplicationContext(),"location   ",Toast.LENGTH_LONG).show();
-
-                Geocoder geocoder;
-                List<Address> addresses = null;
-                geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-
-                try {
-                    addresses = geocoder.getFromLocation(latitude, logntude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-               address.setFulladdress(addresses.get(0).getAddressLine(0));
-               address.setCity(addresses.get(0).getLocality());
-               address.setState(addresses.get(0).getAdminArea());
-               address.setCountry(addresses.get(0).getCountryName());
-               address.setPostalCode(addresses.get(0).getPostalCode());
-               address.setKnownName(addresses.get(0).getFeatureName());
-               address.setDistrict(addresses.get(0).getSubAdminArea());
-
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider)
-            {
-                Intent settings=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(settings);
-            }
-        };
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
-                },10);
-
-
-
-                return;
-            }
-            else
-            {
-                configureButton();
-            }
+            ActivityCompat.requestPermissions(CameraActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_FINE_LOCATION);
+            return null;
         }
+
+        @SuppressLint("MissingPermission") Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+        return location;
+//        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//        locationListener = new LocationListener() {
+//            @Override
+//            public void onLocationChanged(Location location)
+//            {
+//
+//                 latitude=location.getLatitude();
+//                 logntude=location.getLongitude();
+//
+//                Toast.makeText(getApplicationContext(),"location   ",Toast.LENGTH_LONG).show();
+//
+//                Geocoder geocoder;
+//                List<Address> addresses = null;
+//                geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+//
+//                try {
+//                    addresses = geocoder.getFromLocation(latitude, logntude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//               address.setFulladdress(addresses.get(0).getAddressLine(0));
+//               address.setCity(addresses.get(0).getLocality());
+//               address.setState(addresses.get(0).getAdminArea());
+//               address.setCountry(addresses.get(0).getCountryName());
+//               address.setPostalCode(addresses.get(0).getPostalCode());
+//               address.setKnownName(addresses.get(0).getFeatureName());
+//               address.setDistrict(addresses.get(0).getSubAdminArea());
+//
+//
+//            }
+//
+//            @Override
+//            public void onStatusChanged(String provider, int status, Bundle extras) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderEnabled(String provider) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderDisabled(String provider)
+//            {
+//                Intent settings=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                startActivity(settings);
+//            }
+//        };
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+//        {
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//                requestPermissions(new String[]{
+//                        Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET
+//                },10);
+//
+//
+//
+//                return;
+//            }
+//            else
+//            {
+//                configureButton();
+//            }
+//        }
     }
 
     @SuppressLint("MissingPermission")

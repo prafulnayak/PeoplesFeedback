@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
@@ -36,6 +37,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import shamgar.org.peoplesfeedback.Model.Followings;
@@ -84,6 +87,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     private String district;
     private TextView constituencyTextview;
     private SharedPreferenceConfig sharedPreference;
+    private DatabaseReference databaseReference;
 
     //    @Override
         //    protected void onStart() {
@@ -110,6 +114,8 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signuplayout);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         state.add("select state");
         districts.add("select district");
@@ -420,6 +426,28 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 //        Follwers follwers;
 //        Tagging tag;
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("people").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(sharedPreference.readPhoneNo().substring(3))){
+                    Toast.makeText(PhoneActivity.this, "Exist ", Toast.LENGTH_LONG).show();
+                    updateExistingUserDetails();
+                }else {
+
+                    Toast.makeText(PhoneActivity.this, "Does not Exist ", Toast.LENGTH_LONG).show();
+                    insertNewUserDetails(people);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void insertNewUserDetails(final People people) {
         databaseReference.child("people").child(sharedPreference.readPhoneNo().substring(3)).setValue(people).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -429,6 +457,29 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(PhoneActivity.this, "login success: "+people.getName(), Toast.LENGTH_LONG).show();
                 }else
                     Toast.makeText(PhoneActivity.this, "login Fail: "+people.getName(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void updateExistingUserDetails() {
+        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
+                        Map<String, Object> updates = new HashMap<String,Object>();
+                        updates.put("constituancy",sharedPreference.readConstituancy());
+                        updates.put("dist", sharedPreference.readDistrict());
+                        updates.put("email", sharedPreference.readEmail());
+                        updates.put("name", sharedPreference.readName());
+                        updates.put("state", sharedPreference.readState());
+////                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+////                            @Override
+////                            public void onSuccess(Void aVoid) {
+////
+////                            }
+////                        });
+        databaseReference.child("people").child(sharedPreference.readPhoneNo().substring(3))
+                .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(PhoneActivity.this, "Information Updated ", Toast.LENGTH_LONG).show();
             }
         });
 

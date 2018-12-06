@@ -62,10 +62,10 @@ public class HomeScreenActivity extends AppCompatActivity
         String constit=pref.getString("constit",null);
 
 //        Toast.makeText(getApplicationContext(),"Gender="+gender+mAuth.getCurrentUser().getEmail()+"\n"+"state="+state+"\n"+"district="+district+"\n"+"number="+phone+"\n"+"constituency="+constit,Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(),"state: "+sharedPreference.readState()+"\n"+
-                " district "+sharedPreference.readDistrict()+"\n"+
-                "constituency: "+sharedPreference.readConstituancy(),Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(),""+sharedPreference.readPhoneNo()+sharedPreference.readName()+sharedPreference.readEmail(),Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(),"state: "+sharedPreference.readState()+"\n"+
+//                " district "+sharedPreference.readDistrict()+"\n"+
+//                "constituency: "+sharedPreference.readConstituancy(),Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(),""+sharedPreference.readPhoneNo()+sharedPreference.readName()+sharedPreference.readEmail(),Toast.LENGTH_LONG).show();
         viewPager=(ViewPager)findViewById(R.id.mainviewpager);
         tabsAccessorAdaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
 

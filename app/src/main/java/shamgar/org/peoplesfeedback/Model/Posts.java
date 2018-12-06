@@ -1,128 +1,101 @@
 package shamgar.org.peoplesfeedback.Model;
 
-public class Posts
-    {
+public class Posts {
 
-    String url;
+    String user;
+    String latitude;
+    String longitude;
+    String address;
+    String imageUrl;
+    String heading;
     String description;
-    String tag;
-    String mla;
-    double lat;
-    double lon;
-    String postedby;
-    String status;
-    String publishedon;
-    String constituency;
-    String mlaid;
+    String postedOn;
+    String tagId;
 
-    public Posts()
-    {
-
+    public Posts() {
     }
 
+    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId) {
+        this.user = user;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+        this.imageUrl = imageUrl;
+        this.heading = heading;
+        this.description = description;
+        this.postedOn = postedOn;
+        this.tagId = tagId;
+    }
 
-        public Posts(String url, String description, String tag, String mla, double lat, double lon, String postedby, String status, String publishedon, String constituency, String mlaid) {
-            this.url = url;
-            this.description = description;
-            this.tag = tag;
-            this.mla = mla;
-            this.lat = lat;
-            this.lon = lon;
-            this.postedby = postedby;
-            this.status = status;
-            this.publishedon = publishedon;
-            this.constituency = constituency;
-            this.mlaid = mlaid;
-        }
+    public String getUser() {
+        return user;
+    }
 
-        public String getUrl() {
-            return url;
-        }
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-        public void setUrl(String url) {
-            this.url = url;
-        }
+    public String getLatitude() {
+        return latitude;
+    }
 
-        public String getDescription() {
-            return description;
-        }
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
 
-        public void setDescription(String description) {
-            this.description = description;
-        }
+    public String getLongitude() {
+        return longitude;
+    }
 
-        public String getTag() {
-            return tag;
-        }
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
 
-        public void setTag(String tag) {
-            this.tag = tag;
-        }
+    public String getAddress() {
+        return address;
+    }
 
-        public String getMla() {
-            return mla;
-        }
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-        public void setMla(String mla) {
-            this.mla = mla;
-        }
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-        public double getLat() {
-            return lat;
-        }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
-        public void setLat(double lat) {
-            this.lat = lat;
-        }
+    public String getHeading() {
+        return heading;
+    }
 
-        public double getLon() {
-            return lon;
-        }
+    public void setHeading(String heading) {
+        this.heading = heading;
+    }
 
-        public void setLon(double lon) {
-            this.lon = lon;
-        }
+    public String getDescription() {
+        return description;
+    }
 
-        public String getPostedby() {
-            return postedby;
-        }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-        public void setPostedby(String postedby) {
-            this.postedby = postedby;
-        }
+    public String getPostedOn() {
+        return postedOn;
+    }
 
-        public String getStatus() {
-            return status;
-        }
+    public void setPostedOn(String postedOn) {
+        this.postedOn = postedOn;
+    }
 
-        public void setStatus(String status) {
-            this.status = status;
-        }
+    public String getTagId() {
+        return tagId;
+    }
 
-        public String getPublishedon() {
-            return publishedon;
-        }
-
-        public void setPublishedon(String publishedon) {
-            this.publishedon = publishedon;
-        }
-
-        public String getConstituency() {
-            return constituency;
-        }
-
-        public void setConstituency(String constituency) {
-            this.constituency = constituency;
-        }
-
-        public String getMlaid() {
-            return mlaid;
-        }
-
-        public void setMlaid(String mlaid) {
-            this.mlaid = mlaid;
-        }
-
-
-
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
+    }
 }
