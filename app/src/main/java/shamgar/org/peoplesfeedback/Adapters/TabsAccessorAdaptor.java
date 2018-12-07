@@ -23,9 +23,10 @@ public class TabsAccessorAdaptor extends FragmentPagerAdapter
         switch (position)
         {
                 case 0:
-//                Home home=new Home();
 
-                return new Home();
+               Home home=new Home();
+
+                return home;
 
                 case 1:
                     Politicians politicians=new Politicians();

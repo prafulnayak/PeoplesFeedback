@@ -45,6 +45,8 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.Model.UserAddress;
@@ -358,7 +360,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void postIntoConstituancyAndTaggedArea(final String postKey) {
+    private void postIntoConstituancyAndTaggedArea(final String postKey)
+    {
+        Date now = new Date();
+        HashMap<String,String> messageinfo=new HashMap<>();
+        messageinfo.put("id",postKey);
+        messageinfo.put("date",now.toString());
+
         FirebaseDatabase.getInstance().getReference().child(INDIA)
                 .child(sharedPreference.readState())
                 .child(sharedPreference.readDistrict())
@@ -421,7 +429,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                      mlaID=mlaname.child("id").getValue().toString();
 
                 }
-
                 mlatagName.setText(constituency+" is your current location constituency");
             }
             else

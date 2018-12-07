@@ -9,7 +9,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -18,10 +20,14 @@ import android.widget.Toast;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import shamgar.org.peoplesfeedback.Adapters.HomeAdapter;
@@ -29,6 +35,7 @@ import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.CameraActivity;
+import shamgar.org.peoplesfeedback.Utils.OnSwipeTouchListener;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
@@ -48,6 +55,7 @@ public class Home extends Fragment {
     static List<String> list = new ArrayList<>();
     static ArrayList<News> newsList = new ArrayList<>();
     LinearLayoutManager layoutManager;
+
     public Home() {
         // Required empty public constructor
     }
@@ -57,8 +65,8 @@ public class Home extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         sharedPreference = new SharedPreferenceConfig(getActivity());
+
 
 
         floatingActionButton = view.findViewById(R.id.floating_action);
@@ -80,14 +88,17 @@ public class Home extends Fragment {
 
             }
         });
-        new AsyncTaskForNews().execute();
 
         adapter = new HomeAdapter(newsList, getActivity());
 //        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
+
+
+
+
+
         return view;
     }
 
@@ -108,6 +119,9 @@ public class Home extends Fragment {
 
                 }
 
+                Collections.reverse(list);
+                adapter.notifyDataSetChanged();
+
 
                 Log.e("log: ","Lkey: "+previousChildName);
                 Log.e("log: ","L: "+list.size());
@@ -115,7 +129,8 @@ public class Home extends Fragment {
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
+            {
 
             }
 
@@ -139,6 +154,9 @@ public class Home extends Fragment {
 
     }
 
+
+
+
     private class AsyncTaskForNews extends AsyncTask<Void,Void,Void> {
 
 
@@ -160,17 +178,27 @@ public class Home extends Fragment {
     private void getNewsDetailsFromPost() {
         for (int i=0; i<list.size();i++){
             final int p =i;
-            FirebaseDatabase.getInstance().getReference().child(POSTS)
+           FirebaseDatabase.getInstance().getReference().child(POSTS)
                     .child(list.get(i)).addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    if (dataSnapshot.exists())
+                    {
                         Posts posts = dataSnapshot.getValue(Posts.class);
                         addOrUpdateNewsList(posts,dataSnapshot.getKey());
+
+                        Log.e("Post",""+posts.getImageUrl());
+                        Log.e("Post data snap key",""+dataSnapshot.getKey());
+                        Log.e("Post list ",""+list.get(p));
+                    }
+
+
+
+//                    for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
+
 //                    }
-                    Log.e("Post",""+posts.getImageUrl());
-                    Log.e("Post data snap key",""+dataSnapshot.getKey());
-                    Log.e("Post list ",""+list.get(p));
+
                 }
 
                 @Override
@@ -214,7 +242,8 @@ public class Home extends Fragment {
 
     }
 
-    private void updateNewsListItem(int i, News news) {
+    private void updateNewsListItem(int i, News news)
+    {
         newsList.get(i).setAll(news);
     }
 
@@ -223,4 +252,24 @@ public class Home extends Fragment {
         super.onResume();
         adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        new AsyncTaskForNews().execute();
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 }
