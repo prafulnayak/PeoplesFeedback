@@ -2,6 +2,7 @@ package shamgar.org.peoplesfeedback.Fragments;
 
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,11 +10,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -27,7 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import shamgar.org.peoplesfeedback.Adapters.HomeAdapter;
@@ -35,7 +37,6 @@ import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.CameraActivity;
-import shamgar.org.peoplesfeedback.Utils.OnSwipeTouchListener;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
@@ -54,7 +55,14 @@ public class Home extends Fragment {
     HomeAdapter adapter;
     static List<String> list = new ArrayList<>();
     static ArrayList<News> newsList = new ArrayList<>();
+    static ArrayList<String> nearbyConstuencies = new ArrayList<String>();
     LinearLayoutManager layoutManager;
+    private SeekBar seekBar;
+    private Switch switch1;
+    private String switchStatus;
+    private int seekbarPosition;
+    int distance = 0;
+
 
     public Home() {
         // Required empty public constructor
@@ -68,18 +76,15 @@ public class Home extends Fragment {
         sharedPreference = new SharedPreferenceConfig(getActivity());
 
 
-
         floatingActionButton = view.findViewById(R.id.floating_action);
+        seekBar = view.findViewById(R.id.seekBar);
+        switch1 = view.findViewById(R.id.switch1);
 
         Log.i("Home", " Home Fragment");
-        Toast.makeText(getActivity(),"home",Toast.LENGTH_LONG).show();
-
+        Toast.makeText(getActivity(), "home", Toast.LENGTH_LONG).show();
         recyclerView = view.findViewById(R.id.home_rv);
 //        recyclerView.setHasFixedSize(true);
-
-
 //        recyclerView.setLayoutManager(linearLayoutManager);
-
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,25 +94,29 @@ public class Home extends Fragment {
             }
         });
 
+        //checking switch is on or off
+        checkinSwtichStatus();
+
+
+
+
+
         adapter = new HomeAdapter(newsList, getActivity());
 //        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-
-
-
-
         return view;
     }
+
 
     private void getNewsKeyFromConstituancy() {
         FirebaseDatabase.getInstance().getReference().child(INDIA)
                 .child(sharedPreference.readState())
-                .child(sharedPreference.readDistrict())
+                .child("East Godavari")
                 .child(CONSTITUANCY)
-                .child(sharedPreference.readConstituancy())
+                .child("Rajahmundry Urban")
                 .child("PostID").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -121,7 +130,6 @@ public class Home extends Fragment {
 
                 Collections.reverse(list);
                 adapter.notifyDataSetChanged();
-
 
                 Log.e("log: ","Lkey: "+previousChildName);
                 Log.e("log: ","L: "+list.size());
@@ -175,7 +183,9 @@ public class Home extends Fragment {
         }
     }
 
-    private void getNewsDetailsFromPost() {
+    private void getNewsDetailsFromPost()
+    {
+
         for (int i=0; i<list.size();i++){
             final int p =i;
            FirebaseDatabase.getInstance().getReference().child(POSTS)
@@ -193,11 +203,6 @@ public class Home extends Fragment {
                         Log.e("Post list ",""+list.get(p));
                     }
 
-
-
-//                    for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
-
-//                    }
 
                 }
 
@@ -262,14 +267,256 @@ public class Home extends Fragment {
 
     }
 
+    private void checkinSwtichStatus()
+    {
+
+        seekBar.setEnabled(false);
+        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                // do something, the isChecked will be
+                // true if the switch is in the On position
+                if (isChecked==true)
+                {
+                    switch1.setText("Off");
+                    seekBar.setEnabled(true);
+                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+                        {
+                            seekbarPosition =seekBar.getProgress();
+                            gettingNearbyPosts(seekbarPosition);
+
+                        }
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar)
+                        {
+
+                        }
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar)
+                        {
+
+                        }
+                    });
+                }
+                else
+                {
+                    switchStatus = switch1.getTextOff().toString();
+                    seekBar.setEnabled(false);
+                    switch1.setText("On");
+                }
+            }
+        });
+
+    }
+
+    private void gettingNearbyPosts(int seekbarPosition)
+    {
+
+       int temp=0;
+
+        if (seekbarPosition<5)
+            temp=5;
+        else if (seekbarPosition>5 && seekbarPosition<10)
+            temp=10;
+        else if(seekbarPosition>10 && seekbarPosition<15)
+            temp=15;
+        else
+            temp=20;
+
+
+        final int finalTemp = temp;
+        FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child("East Godavari")
+                .child(CONSTITUANCY)
+                .child("Rajahmundry Urban")
+                .addListenerForSingleValueEvent(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        if (dataSnapshot.exists())
+                        {
+                            final String lat =  dataSnapshot.child("latitude").getValue().toString();
+                            final String  lon =  dataSnapshot.child("longitude").getValue().toString();
+
+                            FirebaseDatabase.getInstance().getReference().child(INDIA)
+                                    .child(sharedPreference.readState())
+                                    .child("East Godavari")
+                                    .child(CONSTITUANCY)
+                                    .addValueEventListener(new ValueEventListener()
+                                    {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot)
+                                        {
+                                            if (dataSnapshot.exists())
+                                            {
+                                                for (DataSnapshot constituences:dataSnapshot.getChildren())
+                                                {
+                                                    String nearLat=constituences.child("latitude").getValue().toString();
+                                                    String nearLon=constituences.child("longitude").getValue().toString();
+
+                                                    Location startPoint=new Location("locationA");
+                                                    startPoint.setLatitude(Double.parseDouble(lat));
+                                                    startPoint.setLongitude(Double.parseDouble(lon));
+
+                                                    Location endPoint=new Location("locationA");
+                                                    endPoint.setLatitude(Double.parseDouble(nearLat));
+                                                    endPoint.setLongitude(Double.parseDouble(nearLon));
+
+                                                    double dist=startPoint.distanceTo(endPoint);
+                                                    distance = (int)(dist/1000);
+
+                                                    Log.d("distance", String.valueOf(distance));
+
+                                                    if(finalTemp > distance)
+                                                    {
+                                                        if (!nearbyConstuencies.contains(constituences.getKey()))
+                                                        {
+                                                            nearbyConstuencies.add(constituences.getKey());
+                                                        }
+                                                        Log.e("log: ","constituences in: "+nearbyConstuencies);
+
+                                                            for (int i=0;i<nearbyConstuencies.size();i++)
+                                                            {
+                                                               FirebaseDatabase.getInstance().getReference().child(INDIA)
+                                                                        .child(sharedPreference.readState())
+                                                                        .child("East Godavari")
+                                                                        .child(CONSTITUANCY)
+                                                                        .child(nearbyConstuencies.get(i)).child("PostID")
+                                                                        .addValueEventListener(new ValueEventListener() {
+                                                                            @Override
+                                                                            public void onDataChange(DataSnapshot dataSnapshot)
+                                                                            {
+                                                                                for (DataSnapshot newlist:dataSnapshot.getChildren())
+                                                                                {
+                                                                                    if(!list.contains(newlist.getKey())){
+                                                                                        list.add(newlist.getKey());
+                                                                                        Log.e("log: ","key in: "+newlist.getKey());
+                                                                                    }
+
+                                                                                }
+
+                                                                            }
+
+                                                                            @Override
+                                                                            public void onCancelled(DatabaseError databaseError)
+                                                                            {
+
+                                                                            }
+                                                                        });
+                                                        }
+
+                                                    }
+
+
+                                                }
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError)
+                    {
+
+                    }
+                });
+
+
+
+//       Query query1=FirebaseDatabase.getInstance().getReference("Posts")
+//                .orderByChild("lat");
+//
+//
+//        final int finalTemp = temp;
+//        query1.addValueEventListener(new ValueEventListener()
+//        {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot)
+//            {
+//                if (dataSnapshot.exists())
+//                {
+//                    for(DataSnapshot latLon : dataSnapshot.getChildren())
+//                    {
+//
+//                        latLon.child("lat").getValue();
+//
+//                        Location startPoint=new Location("locationA");
+//                        startPoint.setLatitude(Double.parseDouble(String.valueOf(lat)));
+//                        startPoint.setLongitude(Double.parseDouble(String.valueOf(lon)));
+//
+//                        Location endPoint=new Location("locationA");
+//                        endPoint.setLatitude(Double.parseDouble(String.valueOf(latLon.child("lat").getValue())));
+//                        endPoint.setLongitude(Double.parseDouble(String.valueOf(latLon.child("lon").getValue())));
+//
+//                        double dist=startPoint.distanceTo(endPoint);
+//
+//
+//
+//                        distance[0] = (float) (dist/1000);
+//
+//                        Log.d("distance", String.valueOf(distance[0]));
+//
+//                        if(distance[0] < finalTemp)
+//                        {
+//                           // ids.add(latLon.getKey());
+//
+//                        }
+//
+//
+//                    }
+//
+//
+//
+////                    for (int i=0;i<ids.size();i++) {
+////                        query = FirebaseDatabase.getInstance().getReference("Posts")
+////                                .orderByChild(ids.get(i));
+////
+////                        Toast.makeText(getActivity(), "dataSnapshot", Toast.LENGTH_LONG).show();
+////                        query.addValueEventListener(new ValueEventListener() {
+////                            @Override
+////                            public void onDataChange(DataSnapshot dataSnapshot) {
+////                                Log.d("data", dataSnapshot.toString());
+////
+////                                firebseUIhome();
+////                            }
+////
+////                            @Override
+////                            public void onCancelled(DatabaseError databaseError) {
+////
+////                            }
+////                        });
+////
+////                    }
+//
+//
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError)
+//            {
+//
+//            }
+//        });
 
 
 
 
 
-
-
-
+    }
 
 
 }

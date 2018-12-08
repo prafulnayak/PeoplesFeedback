@@ -419,15 +419,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
        @Override
        public void onDataChange(@NonNull DataSnapshot dataSnapshot)
        {
-
-            if (dataSnapshot.exists())
+           if (dataSnapshot.exists())
             {
                 for(DataSnapshot mlaname : dataSnapshot.getChildren())
                 {
-
-                     constituency=mlaname.child("constituancy").getValue().toString();
-                     mlaID=mlaname.child("id").getValue().toString();
-
+                    constituency=mlaname.child("constituancy").getValue().toString();
+                    mlaID=mlaname.child("id").getValue().toString();
                 }
                 mlatagName.setText(constituency+" is your current location constituency");
             }
@@ -435,11 +432,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             {
                 mlatagName.setVisibility(View.GONE);
                 editMLatag.setVisibility(View.VISIBLE);
-
                 get_listof_constituency_mla();
-
-
-
             }
        }
 
@@ -452,34 +445,23 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private void get_listof_constituency_mla()
     {
-
-
         Query query=FirebaseDatabase.getInstance().getReference("Politicians")
                 .orderByChild("district")
                 .equalTo(address.getCity());
-
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
-
-
-
                 if (dataSnapshot.exists())
                 {
                   // Toast.makeText(getApplicationContext(),"res"+dataSnapshot,Toast.LENGTH_LONG).show();
-                    for(DataSnapshot mlaname : dataSnapshot.getChildren())
+                     for(DataSnapshot mlaname : dataSnapshot.getChildren())
                     {
-
                         mlalist.add(mlaname.child("constituancy").getValue().toString());
                     }
-
-
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,mlalist);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
                     editMLatag.setAdapter(adapter);
-
                     editMLatag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
                     {
                         @Override
@@ -487,7 +469,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         {
                             TextView mlaname = (TextView)adapterView.getSelectedView();
                             constituency = mlaname.getText().toString();
-
                             Query query2=FirebaseDatabase.getInstance().getReference("Politicians")
                                     .orderByChild("constituancy")
                                     .equalTo(constituency);
@@ -498,22 +479,18 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                                 {
                                     for(DataSnapshot mlaid : dataSnapshot.getChildren())
                                     {
-
                                         mlaID=mlaid.child("id").getValue().toString();
                                         MLAname=mlaid.child("name").getValue().toString();
                                         //Toast.makeText(getApplicationContext(), "mla name"+dataSnapshot, Toast.LENGTH_SHORT).show();
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError)
                                 {
 
                                 }
                             });
-
                         }
-
                         @Override
                         public void onNothingSelected(AdapterView<?> parent)
                         {
@@ -527,7 +504,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(getApplicationContext(),"no results",Toast.LENGTH_LONG).show();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError)
             {
@@ -544,13 +520,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         if (takePictureIntent.resolveActivity(getPackageManager()) != null)
         {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
         }
     }
-
     private Location getcurrentLocation()
     {
-
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -563,7 +536,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         @SuppressLint("MissingPermission") Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         return location;
