@@ -1,12 +1,16 @@
 package shamgar.org.peoplesfeedback.Fragments;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -41,6 +45,7 @@ import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.POSTIDCON;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.POSTS;
 
 /**
@@ -62,17 +67,38 @@ public class Home extends Fragment {
     private String switchStatus;
     private int seekbarPosition;
     int distance = 0;
+    View view;
 
 
     public Home() {
         // Required empty public constructor
     }
 
+
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        return view;
+
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        sharedPreference = new SharedPreferenceConfig(getActivity());
+//        getNewsKeyFromConstituancy();
+//        getNewsDetailsFromPost();
+//        new AsyncTaskForNews().execute();
+//        new AsyncTaskForNews().execute();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         sharedPreference = new SharedPreferenceConfig(getActivity());
 
 
@@ -96,60 +122,31 @@ public class Home extends Fragment {
 
         //checking switch is on or off
         checkinSwtichStatus();
+        getNewsKeyFromConstituancy();
+        Toast.makeText(getActivity(), "home"+newsList.size(), Toast.LENGTH_LONG).show();
 
-
-
-
-
-        adapter = new HomeAdapter(newsList, getActivity());
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-
-        return view;
     }
-
 
     private void getNewsKeyFromConstituancy() {
         FirebaseDatabase.getInstance().getReference().child(INDIA)
                 .child(sharedPreference.readState())
-                .child("East Godavari")
+                .child(sharedPreference.readDistrict())
                 .child(CONSTITUANCY)
-                .child("Rajahmundry Urban")
-                .child("PostID").addChildEventListener(new ChildEventListener() {
+                .child(sharedPreference.readConstituancy())
+                .child(POSTIDCON).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    //if key exist no need to add or else add to the list
+                    if(!list.contains(snapshot.getKey())){
+                        list.add(snapshot.getKey());
 
-                //if key exist no need to add or else add to the list
-                if(!list.contains(dataSnapshot.getKey())){
-                    list.add(dataSnapshot.getKey());
-                    Log.e("log: ","key in: "+dataSnapshot.getKey());
+                        Log.e("log: ","key in: "+dataSnapshot.getKey());
 
+                    }
                 }
-
                 Collections.reverse(list);
-                adapter.notifyDataSetChanged();
-
-                Log.e("log: ","Lkey: "+previousChildName);
-                Log.e("log: ","L: "+list.size());
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName)
-            {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+                getNewsDetailsFromPost();
             }
 
             @Override
@@ -160,27 +157,6 @@ public class Home extends Fragment {
 
 
 
-    }
-
-
-
-
-    private class AsyncTaskForNews extends AsyncTask<Void,Void,Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            getNewsKeyFromConstituancy();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if(list.size()>0){
-                getNewsDetailsFromPost();
-            }
-        }
     }
 
     private void getNewsDetailsFromPost()
@@ -241,9 +217,17 @@ public class Home extends Fragment {
 
 //        }else
 //            newsList.add(news);
+//        adapter = new HomeAdapter(newsList, getActivity());
+//        recyclerView.setAdapter(adapter);
+        recyclerView = view.findViewById(R.id.home_rv);
         adapter = new HomeAdapter(newsList, getActivity());
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+
 
     }
 
@@ -255,14 +239,14 @@ public class Home extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+//        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        new AsyncTaskForNews().execute();
+//        new AsyncTaskForNews().execute();
 
 
     }
@@ -517,6 +501,7 @@ public class Home extends Fragment {
 
 
     }
+
 
 
 }

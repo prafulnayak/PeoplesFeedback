@@ -13,7 +13,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="15dp"
         android:layout_marginBottom="@dimen/five_dp"
-        android:src="@drawable/profile"/>
+        />
 
     <TextView
         android:id="@+id/postusername"
@@ -40,7 +40,7 @@
         android:id="@+id/postmlaImage"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/sai"
+
         android:layout_below="@+id/postuserImage"
         android:layout_marginStart="15dp"
         android:layout_marginBottom="@dimen/five_dp"/>

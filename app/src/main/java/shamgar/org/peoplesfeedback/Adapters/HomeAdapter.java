@@ -43,15 +43,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
         holder.mlaconstituency.setText(news.getConstituancy());
         holder.postTagname.setText(news.getTag());
-        CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(ctx);
-        circularProgressDrawable.setStrokeWidth(5f);
-        circularProgressDrawable.setCenterRadius(30f);
-        circularProgressDrawable.start();
+
         Glide.with(ctx)
                 .load(news.getImageUrl())
-                .asBitmap()
-                .override(1080,600)
-                .placeholder(circularProgressDrawable)
                 .error(R.drawable.sai)
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)

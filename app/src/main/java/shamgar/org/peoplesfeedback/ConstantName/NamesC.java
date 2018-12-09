@@ -12,4 +12,5 @@ public interface NamesC {
 
     String INDIA ="india";
     String POSTS ="Posts";
+    String POSTIDCON = "PostID";
 }
