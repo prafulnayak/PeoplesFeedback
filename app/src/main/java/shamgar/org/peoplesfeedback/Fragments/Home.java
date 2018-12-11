@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -67,6 +68,7 @@ public class Home extends Fragment {
     private Switch switch1;
     private String switchStatus;
     private int seekbarPosition;
+    private Parcelable recyclerViewState;
     int distance = 0;
     View view;
     private String bookskey;
@@ -110,7 +112,13 @@ public class Home extends Fragment {
 
         Log.i("Home", " Home Fragment");
         Toast.makeText(getActivity(), "home", Toast.LENGTH_LONG).show();
+
         recyclerView = view.findViewById(R.id.home_rv);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAnimation(null);
+        adapter = new HomeAdapter(newsList, getActivity());
 //        recyclerView.setHasFixedSize(true);
 //        recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -175,11 +183,11 @@ public class Home extends Fragment {
                     if (dataSnapshot.exists())
                     {
                         Posts posts = dataSnapshot.getValue(Posts.class);
-                        posts.setLike(Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount())));
-                        posts.setShare(Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount())));
-                        addOrUpdateNewsList(posts,dataSnapshot.getKey());
+                        int likes =Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount()));
+                        int share = Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount()));
+                        addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share);
                       //  Log.e("Post",""+posts.getImageUrl());
-                        Log.e("Post data snap key",""+dataSnapshot.getKey());
+                        Log.e("Post data snap key",""+likes+share);
                         Log.e("Post list ",""+list.get(p));
                     }
 
@@ -195,7 +203,7 @@ public class Home extends Fragment {
 
     }
 
-    private void addOrUpdateNewsList(Posts posts, String key) {
+    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share) {
 
         News news = new News(
                 key,
@@ -204,7 +212,7 @@ public class Home extends Fragment {
                 posts.getImageUrl(),Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
-                posts.getTagId(),posts.getView(),posts.getLike(),posts.getShare(),posts.getPostedOn(),1);
+                posts.getTagId(),posts.getView(),likes,share,posts.getPostedOn(),1);
         Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
             Boolean isNewNews = true;
@@ -216,20 +224,25 @@ public class Home extends Fragment {
                 }
             }
             if(isNewNews){
+
                 newsList.add(news);
+                recyclerView = view.findViewById(R.id.home_rv);
+                recyclerView.setHasFixedSize(true);
+                layoutManager = new LinearLayoutManager(getActivity());
+                recyclerView.setLayoutManager(layoutManager);
+                adapter = new HomeAdapter(newsList, getActivity());
+
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
             }
+
 
 //        }else
 //            newsList.add(news);
 //        adapter = new HomeAdapter(newsList, getActivity());
 //        recyclerView.setAdapter(adapter);
-        recyclerView = view.findViewById(R.id.home_rv);
-        adapter = new HomeAdapter(newsList, getActivity());
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
 
 
 
@@ -238,12 +251,23 @@ public class Home extends Fragment {
     private void updateNewsListItem(int i, News news)
     {
         newsList.get(i).setAll(news);
+
+        adapter.notifyItemChanged(i);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
 //        adapter.notifyDataSetChanged();
+        recyclerView = view.findViewById(R.id.home_rv);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAnimation(null);
+        adapter = new HomeAdapter(newsList, getActivity());
+        recyclerView.setAdapter(adapter);
+
     }
 
     @Override
@@ -386,6 +410,7 @@ public class Home extends Fragment {
                                                                                     }
 
                                                                                 }
+                                                                                getNewsDetailsFromPost();
 
                                                                             }
 
