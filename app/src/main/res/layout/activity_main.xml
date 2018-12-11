@@ -7,6 +7,8 @@
     android:background="@color/white"
     tools:context=".UI.MainActivity">
 
+
+
     <com.google.android.gms.common.SignInButton
         android:id="@+id/google_sign_in"
         android:layout_width="111dp"

@@ -1,5 +1,6 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseAuth mAuth;
     GoogleSignInClient mGoogleSignInClient;
     SharedPreferenceConfig sharedPreferences;
+    private ProgressDialog loadingbar;
 
 
 //    @Override
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Intent intent = new Intent(this,PhoneActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        loadingbar=new ProgressDialog(this);
 
         sharedPreferences = new SharedPreferenceConfig(this);
         // Initialize Firebase Auth
@@ -112,6 +115,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void signIn() {
+        loadingbar.setTitle("Gmail sign");
+        loadingbar.setMessage("please wait,while we are connecting...");
+        loadingbar.setCanceledOnTouchOutside(false);
+        loadingbar.show();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -170,11 +177,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            loadingbar.dismiss();
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
+                            loadingbar.dismiss();
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
 //                            Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();

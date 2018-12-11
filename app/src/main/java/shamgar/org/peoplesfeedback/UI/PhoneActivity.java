@@ -1,5 +1,6 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -61,22 +62,13 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
     private CheckBox checkmale,checkfemale;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-
-
-
+    private ProgressDialog loadingbar;
     ArrayList<String> state = new ArrayList<String>();
     ArrayList<String> districts = new ArrayList<String>();
     ArrayList<String> constituency = new ArrayList<String>();
-
-
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
-
-
     String mVerificationId;
-
     PhoneAuthProvider.ForceResendingToken mResendToken;
-
 
     FirebaseAuth mAuth;
     private Spinner spinstate,spindist,spinnerConstituency;
@@ -106,6 +98,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
             Intent intent = new Intent(PhoneActivity.this,HomeScreenActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -114,7 +107,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signuplayout);
-
+        loadingbar=new ProgressDialog(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         state.add("select state");
@@ -166,10 +159,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
         adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-
-
         DatabaseReference states = database.getReference("states");
         states.addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -191,9 +180,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
                     }
                 });
-
-
-
         spinstate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
@@ -207,23 +193,13 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                //Get map of users in datasnapshot
-
-                                // Iterable<DataSnapshot> children=dataSnapshot.getChildren();
-
-
                                 districts.clear();
-
-                                //Toast.makeText(getApplicationContext(), (CharSequence) children,Toast.LENGTH_LONG).show();
-
                                 for(DataSnapshot district : dataSnapshot.getChildren())
                                 {
                                     districts.add((String) district.getKey());
                                 }
                                 spindist.setAdapter(adapter1);
-
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError)
                             {
@@ -244,31 +220,19 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
                 districtTextview = (TextView)adapterView.getSelectedView();
-
                 district = districtTextview.getText().toString();
-
                 DatabaseReference ref = database.getReference("states/"+result+"/"+district+"/con");
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                //Get map of users in datasnapshot
-
-                                // Iterable<DataSnapshot> children=dataSnapshot.getChildren();
-
-
                                 constituency.clear();
-
-                                //Toast.makeText(getApplicationContext(), (CharSequence) children,Toast.LENGTH_LONG).show();
-
                                 for(DataSnapshot constituencies : dataSnapshot.getChildren())
                                 {
                                     constituency.add((String) constituencies.getKey());
                                 }
                                 spinnerConstituency.setAdapter(adapter2);
-
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError)
                             {
@@ -293,37 +257,23 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 constituencyTextview = (TextView)adapterView.getSelectedView();
 
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
-
-
-
-
-
-
-
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
-            public void onVerificationCompleted(PhoneAuthCredential credential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
+            public void onVerificationCompleted(PhoneAuthCredential credential)
+            {
                 Log.d(TAG, "onVerificationCompleted:" + credential);
-
-               String phonenumber= phoneNo.getText().toString();
-
-              sharedPreference.writePhoneNo(phonenumber);
-
-
-
-                signInWithPhoneAuthCredential(credential);
+                String phonenumber= phoneNo.getText().toString();
+                sharedPreference.writePhoneNo(phonenumber);
+               signInWithPhoneAuthCredential(credential);
+                loadingbar.setTitle("Phone verification");
+                loadingbar.setMessage("please wait,while we are verifying with your code");
+                loadingbar.setCanceledOnTouchOutside(false);
+                loadingbar.show();
             }
 
             @Override
@@ -354,6 +304,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
                 mResendToken = token;
+                loadingbar.dismiss();
 
                 // ...
             }
@@ -376,6 +327,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     {
                         if (task.isSuccessful())
                         {
+                            loadingbar.dismiss();
                             // Sign in success, update UI with the signed-in user's information
                             Log.v(TAG, "signInWithCredential:success");
                             Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
@@ -390,6 +342,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                             // ...
                         }
                         else {
+                            loadingbar.dismiss();
                                 // Sign in failed, display a message and update the UI
                                 Log.v(TAG, "signInWithCredential:failure", task.getException());
                                 Toast.makeText(PhoneActivity.this, "Failed",Toast.LENGTH_SHORT).show();
@@ -574,7 +527,13 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 //        signInWithPhoneAuthCredential(credential);
 //    }
 
-    private void sendVerificationCode(String phoneNumber) {
+    private void sendVerificationCode(String phoneNumber)
+    {
+        loadingbar.setTitle("Sending verfication code");
+        loadingbar.setMessage("please wait,while we are authenticating with your phone");
+        loadingbar.setCanceledOnTouchOutside(false);
+        loadingbar.show();
+
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration

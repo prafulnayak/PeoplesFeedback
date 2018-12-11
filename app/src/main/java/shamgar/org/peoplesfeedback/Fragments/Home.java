@@ -271,7 +271,6 @@ public class Home extends Fragment {
                         {
                             seekbarPosition =seekBar.getProgress();
                             gettingNearbyPosts(seekbarPosition);
-
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar)
@@ -377,7 +376,7 @@ public class Home extends Fragment {
                                                                             {
                                                                                 for (DataSnapshot newlist:dataSnapshot.getChildren())
                                                                                 {
-                                                                                    if(!list.contains(newlist.getKey())){
+                                                                                    if(!list.contains(newlist.getKey())) {
                                                                                         list.add(newlist.getKey());
                                                                                         Log.e("log: ","key in: "+newlist.getKey());
                                                                                     }

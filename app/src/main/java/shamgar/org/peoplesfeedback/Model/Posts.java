@@ -12,6 +12,7 @@ public class Posts {
     String postedOn;
     String tagId;
 
+
     public Posts() {
     }
 
