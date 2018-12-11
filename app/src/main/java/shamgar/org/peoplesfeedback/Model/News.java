@@ -1,5 +1,7 @@
 package shamgar.org.peoplesfeedback.Model;
 
+import java.io.File;
+
 public class News {
     private String postId;
     private String postedBy;

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -68,6 +69,7 @@ public class Home extends Fragment {
     private int seekbarPosition;
     int distance = 0;
     View view;
+    private String bookskey;
 
 
     public Home() {
@@ -169,12 +171,14 @@ public class Home extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
+                    Log.e("Post",""+dataSnapshot);
                     if (dataSnapshot.exists())
                     {
                         Posts posts = dataSnapshot.getValue(Posts.class);
+                        posts.setLike(Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount())));
+                        posts.setShare(Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount())));
                         addOrUpdateNewsList(posts,dataSnapshot.getKey());
-
-                        Log.e("Post",""+posts.getImageUrl());
+                      //  Log.e("Post",""+posts.getImageUrl());
                         Log.e("Post data snap key",""+dataSnapshot.getKey());
                         Log.e("Post list ",""+list.get(p));
                     }
@@ -200,7 +204,7 @@ public class Home extends Fragment {
                 posts.getImageUrl(),Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
-                posts.getTagId(),50,100,200,posts.getPostedOn(),1);
+                posts.getTagId(),posts.getView(),posts.getLike(),posts.getShare(),posts.getPostedOn(),1);
         Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
             Boolean isNewNews = true;

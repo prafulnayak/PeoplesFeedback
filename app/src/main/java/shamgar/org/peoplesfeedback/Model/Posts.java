@@ -11,6 +11,10 @@ public class Posts {
     String description;
     String postedOn;
     String tagId;
+    int like;
+    int share;
+    int view;
+
 
 
     public Posts() {
@@ -26,6 +30,20 @@ public class Posts {
         this.description = description;
         this.postedOn = postedOn;
         this.tagId = tagId;
+    }
+    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId, int like, int share, int view) {
+        this.user = user;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
+        this.imageUrl = imageUrl;
+        this.heading = heading;
+        this.description = description;
+        this.postedOn = postedOn;
+        this.tagId = tagId;
+        this.like = like;
+        this.share = share;
+        this.view = view;
     }
 
     public String getUser() {
@@ -98,5 +116,29 @@ public class Posts {
 
     public void setTagId(String tagId) {
         this.tagId = tagId;
+    }
+
+    public int getLike() {
+        return like;
+    }
+
+    public void setLike(int like) {
+        this.like = like;
+    }
+
+    public int getShare() {
+        return share;
+    }
+
+    public void setShare(int share) {
+        this.share = share;
+    }
+
+    public int getView() {
+        return view;
+    }
+
+    public void setView(int view) {
+        this.view = view;
     }
 }

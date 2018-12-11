@@ -1,9 +1,15 @@
 package shamgar.org.peoplesfeedback.Adapters;
 
+import android.content.ContentProvider;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +26,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +36,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -39,8 +50,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
     private Context ctx;
     ArrayList<News> newsListR;
-    private boolean statusLike=false;
-    private DatabaseReference dbRefLike;
+    private boolean  statusLike=false;
+    private boolean statusShare=false;
+    private DatabaseReference dbRefLike,dbRefShare;
     private FirebaseAuth mAuth;
     public HomeAdapter(ArrayList<News> newsList, Context newsFragment)
     {
@@ -56,6 +68,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.newsfeed_layout,parent,false);
         mAuth=FirebaseAuth.getInstance();
         dbRefLike= FirebaseDatabase.getInstance().getReference().child("Posts");
+        dbRefShare= FirebaseDatabase.getInstance().getReference().child("Posts");
         dbRefLike.keepSynced(true);
         RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
         return recyclerViewHolder;
@@ -69,11 +82,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.mlaconstituency.setText(news.getConstituancy());
         holder.postTagname.setText(news.getTag());
         holder.postImageDescription.setText(news.getDescription());
-        //method for status of the post i.e current user liked or not
-        holder.setLikeButton(news.getPostId());
-        //method for num of likes got for the particular post
-        holder.setNumLikes(news.getPostId());
-
+        holder.num_likes.setText(String.valueOf(news.getLikes()));
+        holder.num_shares.setText(String.valueOf(news.getShares()));
+       // holder.setLikeButton(news.getPostId());
         Glide.with(ctx)
                 .load(news.getImageUrl())
                 .error(R.drawable.sai)
@@ -85,29 +96,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             @Override
             public void onClick(View v) {
                 statusLike=true;
-                    dbRefLike.child(news.getPostId()).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (statusLike) {
-                                if (dataSnapshot.child("Likes").hasChild(mAuth.getCurrentUser().getUid())) {
-                                    dbRefLike.child(news.getPostId()).child("Likes").child(mAuth.getCurrentUser().getUid()).removeValue();
-                                    statusLike = false;
-                                   // Toast.makeText(ctx,"disliked",Toast.LENGTH_LONG).show();
-                                } else {
-                                    dbRefLike.child(news.getPostId()).child("Likes").child(mAuth.getCurrentUser().getUid()).setValue("RandomValue");
-                                    statusLike = false;
-                                   // Toast.makeText(ctx,"liked",Toast.LENGTH_LONG).show();
-                                }
-                            }
-
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-
+                if (statusLike) {
+                    dbRefLike.child(news.getPostId()).child("Likes").child(mAuth.getCurrentUser().getUid()).setValue("RandomValue");
+                    statusLike = false;
+                }
             }
         });
 
@@ -128,6 +120,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             }
         });
 
+        //listener for sharing posts
+        holder.imgshare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                statusShare=true;
+                if (statusShare) {
+                    Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                    dbRefShare.child(news.getPostId()).child("Share").push().child(mAuth.getCurrentUser().getUid()).setValue(news.getConstituancy());
+                    statusShare=false;
+
+                }
+
+            }
+        });
+
     }
 
     @Override
@@ -141,8 +148,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         private ImageView userpostimage;
         private ImageButton imglike,imgview,imgshare,postsubmenuOptions;
         CircularImageView userimage, mlaimage;
-
-        private DatabaseReference databaseReferenceLike;
+        private DatabaseReference databaseReference;
         private FirebaseAuth firebaseAuth;
 
         public RecyclerViewHolder(View itemView) {
@@ -166,47 +172,82 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             imgshare=itemView.findViewById(R.id.imgshares);
             imgview=itemView.findViewById(R.id.imgViews);
             postsubmenuOptions=itemView.findViewById(R.id.postsubmenuOptions);
-            databaseReferenceLike=FirebaseDatabase.getInstance().getReference().child("Posts");
             firebaseAuth=FirebaseAuth.getInstance();
-            databaseReferenceLike.keepSynced(true);
-        }
-
-        public void setLikeButton(final String post_key)
-        {
-            databaseReferenceLike.child(post_key).child("Likes").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid()))
-                    {
-                        imglike.setImageResource(R.drawable.ic_favorite_black_24dp);
-                    }
-                    else
-                    {
-                      imglike.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-        public void setNumLikes(final String postId)
-        {
-            databaseReferenceLike.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot)
-                {
-                   int likes = (int) dataSnapshot.child(postId).child("Likes").getChildrenCount();
-                    num_likes.setText((Integer.toString(likes)));
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            databaseReference= FirebaseDatabase.getInstance().getReference().child("Posts");
 
         }
+
+//        public void setLikeButton(final String post_key)
+//        {
+//            databaseReference.child(post_key).child("Likes").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid()))
+//                    {
+//                        imglike.setImageResource(R.drawable.ic_favorite_black_24dp);
+//                    }
+//                    else
+//                    {
+//                      imglike.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//        }
+//
+//        public void setNumLikes(final String postId)
+//        {
+//            databaseReference.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot)
+//                {
+//                   int likes = (int) dataSnapshot.child(postId).child("Likes").getChildrenCount();
+//                    num_likes.setText((Integer.toString(likes)));
+//                }
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//
+//        }
+//
+//        public void setShareButton(String postId, String constituancy)
+//        {
+//            databaseReference.child(postId).child("Share").orderByChild(firebaseAuth.getCurrentUser().getUid()).equalTo(constituancy).addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.))
+//                        imgshare.setImageResource(R.drawable.ic_share_black1_24dp);
+//                    else
+//                        imgshare.setImageResource(R.drawable.ic_share_black_24dp);
+//
+//                }
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//        }
+//
+//        public void setNumOfshares(final String postId)
+//        {
+//            databaseReference.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot)
+//                {
+//                    int likes = (int) dataSnapshot.child(postId).child("Share").getChildrenCount();
+//                    num_shares.setText((Integer.toString(likes)));
+//                }
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//
+//        }
     }
 }
