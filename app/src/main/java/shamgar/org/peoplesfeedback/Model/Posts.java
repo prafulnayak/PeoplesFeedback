@@ -11,6 +11,7 @@ public class Posts {
     String description;
     String postedOn;
     String tagId;
+    String currentUserId;
     int like;
     int share;
     int view;
@@ -20,7 +21,9 @@ public class Posts {
     public Posts() {
     }
 
-    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId) {
+
+
+    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId, String currentUserId) {
         this.user = user;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -30,6 +33,8 @@ public class Posts {
         this.description = description;
         this.postedOn = postedOn;
         this.tagId = tagId;
+        this.currentUserId=currentUserId;
+
     }
     public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId, int like, int share, int view) {
         this.user = user;
@@ -140,5 +145,13 @@ public class Posts {
 
     public void setView(int view) {
         this.view = view;
+    }
+    public String getCurrentUserId() {
+        return currentUserId;
+    }
+
+    public void setCurrentUserId(String currentUserId)
+    {
+        this.currentUserId = currentUserId;
     }
 }

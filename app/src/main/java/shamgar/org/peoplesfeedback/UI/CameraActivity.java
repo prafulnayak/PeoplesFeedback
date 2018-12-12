@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -94,6 +95,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     ArrayList<String> mlalist=new ArrayList<String>();
 
     private String imageId;
+    private FirebaseAuth mAuth;
 
 
 
@@ -103,6 +105,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_camera);
 
         mlalist.add("select constituency");
+        mAuth=FirebaseAuth.getInstance();
 
 
         sharedPreference = new SharedPreferenceConfig(this);
@@ -238,7 +241,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         des,
                         des,
                         timeStamp,
-                        tag);
+                        tag,mAuth.getCurrentUser().getUid());
 
                 postIntoFirebase(posts);
 
@@ -338,10 +341,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         });
-
-
-
-
     }
 
     private void postIntoFirebase(Posts posts) {

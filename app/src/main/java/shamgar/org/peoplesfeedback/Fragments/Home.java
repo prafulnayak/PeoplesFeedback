@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
@@ -14,14 +15,19 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -72,6 +78,7 @@ public class Home extends Fragment {
     int distance = 0;
     View view;
     private String bookskey;
+    private static int displayedposition = 0;
 
 
     public Home() {
@@ -119,6 +126,7 @@ public class Home extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAnimation(null);
         adapter = new HomeAdapter(newsList, getActivity());
+
 //        recyclerView.setHasFixedSize(true);
 //        recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -133,10 +141,8 @@ public class Home extends Fragment {
         //checking switch is on or off
         checkinSwtichStatus();
         getNewsKeyFromConstituancy();
-        Toast.makeText(getActivity(), "home"+newsList.size(), Toast.LENGTH_LONG).show();
-
+        Toast.makeText(getActivity(), "home" + newsList.size(), Toast.LENGTH_LONG).show();
     }
-
     private void getNewsKeyFromConstituancy() {
         FirebaseDatabase.getInstance().getReference().child(INDIA)
                 .child(sharedPreference.readState())
@@ -155,7 +161,7 @@ public class Home extends Fragment {
 
                     }
                 }
-                Collections.reverse(list);
+
                 getNewsDetailsFromPost();
             }
 
@@ -171,9 +177,7 @@ public class Home extends Fragment {
 
     private void getNewsDetailsFromPost()
     {
-
-        for (int i=0; i<list.size();i++){
-            final int p =i;
+        for (int i=0;i<list.size();i++){
            FirebaseDatabase.getInstance().getReference().child(POSTS)
                     .child(list.get(i)).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -188,7 +192,7 @@ public class Home extends Fragment {
                         addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share);
                       //  Log.e("Post",""+posts.getImageUrl());
                         Log.e("Post data snap key",""+likes+share);
-                        Log.e("Post list ",""+list.get(p));
+                      //  Log.e("Post list ",""+list.get(p));
                     }
 
 
@@ -224,17 +228,15 @@ public class Home extends Fragment {
                 }
             }
             if(isNewNews){
-
-                newsList.add(news);
+                newsList.add(0,news);
                 recyclerView = view.findViewById(R.id.home_rv);
+                recyclerView.smoothScrollToPosition(0);
                 recyclerView.setHasFixedSize(true);
                 layoutManager = new LinearLayoutManager(getActivity());
                 recyclerView.setLayoutManager(layoutManager);
                 adapter = new HomeAdapter(newsList, getActivity());
-
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
-
             }
 
 
@@ -341,22 +343,22 @@ public class Home extends Fragment {
         final int finalTemp = temp;
         FirebaseDatabase.getInstance().getReference().child(INDIA)
                 .child(sharedPreference.readState())
-                .child("East Godavari")
+                .child(sharedPreference.readDistrict())
                 .child(CONSTITUANCY)
-                .child("Rajahmundry Urban")
+                .child(sharedPreference.readConstituancy())
                 .addListenerForSingleValueEvent(new ValueEventListener()
                 {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot)
                     {
-                        if (dataSnapshot.exists())
+                        if (dataSnapshot.exists() && dataSnapshot.hasChild("latitude"))
                         {
                             final String lat =  dataSnapshot.child("latitude").getValue().toString();
                             final String  lon =  dataSnapshot.child("longitude").getValue().toString();
 
                             FirebaseDatabase.getInstance().getReference().child(INDIA)
                                     .child(sharedPreference.readState())
-                                    .child("East Godavari")
+                                    .child(sharedPreference.readDistrict())
                                     .child(CONSTITUANCY)
                                     .addValueEventListener(new ValueEventListener()
                                     {
@@ -393,9 +395,11 @@ public class Home extends Fragment {
 
                                                             for (int i=0;i<nearbyConstuencies.size();i++)
                                                             {
-                                                               FirebaseDatabase.getInstance().getReference().child(INDIA)
+
+                                                                final int finalI = i;
+                                                                FirebaseDatabase.getInstance().getReference().child(INDIA)
                                                                         .child(sharedPreference.readState())
-                                                                        .child("East Godavari")
+                                                                        .child(sharedPreference.readDistrict())
                                                                         .child(CONSTITUANCY)
                                                                         .child(nearbyConstuencies.get(i)).child("PostID")
                                                                         .addValueEventListener(new ValueEventListener() {
@@ -405,12 +409,14 @@ public class Home extends Fragment {
                                                                                 for (DataSnapshot newlist:dataSnapshot.getChildren())
                                                                                 {
                                                                                     if(!list.contains(newlist.getKey())) {
-                                                                                        list.add(newlist.getKey());
+                                                                                        list.add(0,newlist.getKey());
                                                                                         Log.e("log: ","key in: "+newlist.getKey());
+                                                                                        getNewsDetailsFromPost();
                                                                                     }
 
+
                                                                                 }
-                                                                                getNewsDetailsFromPost();
+
 
                                                                             }
 

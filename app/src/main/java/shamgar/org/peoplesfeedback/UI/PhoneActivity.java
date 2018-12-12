@@ -109,13 +109,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.signuplayout);
         loadingbar=new ProgressDialog(this);
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        state.add("select state");
-        districts.add("select district");
-        constituency.add("select constituency");
-
         sharedPreference = new SharedPreferenceConfig(this);
-
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -124,26 +118,19 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         }
 
         phoneNo = findViewById(R.id.e_phone_no_verification);
-
-
         sendVerifyPhoneNo = findViewById(R.id.b_verify_phone_no);
         btncontinue = findViewById(R.id.btncontinue);
         btnnext = findViewById(R.id.btnnext);
-
         rlgender = findViewById(R.id.rlgender);
         rllocation = findViewById(R.id.rllocation);
         rlphone = findViewById(R.id.rlphone);
-
-
-
 
         sendVerifyPhoneNo.setOnClickListener(this);
         btncontinue.setOnClickListener(this);
         btnnext.setOnClickListener(this);
 
-
-         spinstate =  findViewById(R.id.spinnerstate);
-         spindist = findViewById(R.id.spinnerdistrict);
+        spinstate =  findViewById(R.id.spinnerstate);
+        spindist = findViewById(R.id.spinnerdistrict);
         spinnerConstituency =  findViewById(R.id.spinnerConstituency);
 
         checkmale =  findViewById(R.id.checkmale);
@@ -151,8 +138,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
         adapter= new ArrayAdapter(this,android.R.layout.simple_spinner_item,state);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
 
         adapter1= new ArrayAdapter(this,android.R.layout.simple_spinner_item,districts);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -239,8 +224,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                                 //handle databaseError
                             }
                         });
-
-
             }
 
             @Override
@@ -252,14 +235,11 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 constituencyTextview = (TextView)adapterView.getSelectedView();
-
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -331,9 +311,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             Log.v(TAG, "signInWithCredential:success");
                             Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
-
                             //                            signOut();
-
                             FirebaseUser user = task.getResult().getUser();
 //                            signInWithPhoneAuthCredential(credential);
 //                            Log.v(TAG, "signInWithCredential:success"+user.getPhoneNumber());
@@ -357,10 +335,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     private void insertNewUser() {
         Politics politics = new Politics();
         politics.setPoliticianId("1234");
-
-
           String timeStamp = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss").format(Calendar.getInstance().getTime());
-
 
         Followings followings = new Followings();
         final People people = new People("u",

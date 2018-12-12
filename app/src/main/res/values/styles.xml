@@ -16,6 +16,7 @@
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
         <item name="android:actionBarWidgetTheme">@style/PopupMenuTextView</item>
+        <item name="popupMenuStyle">@style/MyPopupMenu</item>
 
         <item name="android:listPreferredItemHeightSmall">45dp</item>
         <item name="android:listPreferredItemPaddingLeft">5dp</item>
@@ -28,11 +29,14 @@
         <item name="android:divider">@color/colorAccent</item>
         <item name="android:dividerHeight">2dp</item>
     </style>
-
-    <!-- Change Overflow Menu ListView Text Size and Text Size -->
     <style name="PopupMenuTextView" parent="@style/android:Theme.Holo.Light">
         <item name="android:textColor">#000</item>
         <item name="android:textSize">28dp</item>
+    </style>
+
+    <style name="MyPopupMenu" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:dropDownHorizontalOffset">-4dp</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
     </style>
 
 </resources>
