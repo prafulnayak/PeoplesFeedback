@@ -216,7 +216,7 @@ public class Home extends Fragment {
                 posts.getImageUrl(),Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
-                posts.getTagId(),posts.getView(),likes,share,posts.getPostedOn(),1);
+                posts.getTagId(),posts.getView(),likes,share,posts.getPostedOn(),1,posts.getUser());
         Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
             Boolean isNewNews = true;

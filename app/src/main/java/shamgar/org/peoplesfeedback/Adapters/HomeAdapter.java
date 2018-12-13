@@ -18,6 +18,7 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,9 +61,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     private boolean  statusLike=false;
     private boolean statusShare=false;
     private boolean statusView=false;
-    private DatabaseReference dbRefLike,dbRefShare;
+    private DatabaseReference dbRefLike,dbRefShare,contectsref,chatRequestRef;
     private FirebaseAuth mAuth;
     private SharedPreferenceConfig sharedPreference;
+
+    private String senderUserId,receiverUserId,current_state;
+    private String SEND_REQUEST = "Invite to Chat";
+    private String CANCEL_REQUEST = "Cancel Invitation";
+    private boolean requestStatus = false;
+    private Menu menu;
+
     public HomeAdapter(ArrayList<News> newsList, Context newsFragment)
     {
         this.newsListR = newsList;
@@ -75,8 +83,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         mAuth=FirebaseAuth.getInstance();
         dbRefLike= FirebaseDatabase.getInstance().getReference().child("Posts");
         dbRefShare= FirebaseDatabase.getInstance().getReference().child("Posts");
+        contectsref= FirebaseDatabase.getInstance().getReference().child("contacts");
+        chatRequestRef= FirebaseDatabase.getInstance().getReference().child("chat request");
         sharedPreference = new SharedPreferenceConfig(ctx);
-
+        current_state="new";
         RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
         return recyclerViewHolder;
     }
@@ -114,17 +124,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.postsubmenuOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu pm = new PopupMenu(ctx, v);
+                final PopupMenu pm = new PopupMenu(ctx, v);
                 pm.getMenuInflater().inflate(R.menu.post_popup_menu, pm.getMenu());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     pm.setGravity(Gravity.END);
                 }
-                pm.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        return false;
-                    }
-                });
+                manageChatRequests(news.getReceiverUserId(),pm);
                 pm.show();
 
             }
@@ -165,6 +170,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
 
     }
+
+
+
     @Override
     public int getItemCount() {
         return newsListR.size();
@@ -234,4 +242,123 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
        }
         
     }
+
+    //sending chat requests
+
+    private void manageChatRequests(final String receiverUserId, final PopupMenu pm)
+    {
+        this.senderUserId=mAuth.getCurrentUser().getPhoneNumber();
+        this.receiverUserId=receiverUserId;
+        //checking if the user allready sent request or not
+        chatRequestRef.child(senderUserId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild(receiverUserId)) {
+                            String request_type=dataSnapshot.child(receiverUserId).child("request_type").getValue().toString();
+                            if (request_type.equals("sent")) {
+                                current_state="request sent";
+                                pm.getMenu().findItem(R.id.invite).setTitle("Cancel Request");
+                            }
+                            else if (request_type.equals("received")) {
+                                current_state="request received";
+                            }
+                        }
+                        else {
+                            contectsref.child(senderUserId)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.hasChild(receiverUserId))
+                                                current_state="friends";
+                                            pm.getMenu().findItem(R.id.invite).setVisible(false);
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                        }
+                                    });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+        if (!senderUserId.equals(receiverUserId)) {
+            pm.getMenu().findItem(R.id.invite).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (current_state.equals("new")) {
+                        sendchatREquest(senderUserId,pm);
+                    }
+                    if (current_state.equals("request sent")) {
+                        cancelChatRequest(pm);
+                    }
+
+                    return true;
+                }
+            });
+        }
+        else {
+            pm.getMenu().findItem(R.id.invite).setVisible(false);
+        }
+
+
+
+    }
+
+
+    private void sendchatREquest(final String senderUserId, final PopupMenu pm) {
+        chatRequestRef.child(senderUserId).child(receiverUserId)
+                .child("request_type").setValue("sent")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            chatRequestRef.child(receiverUserId).child(senderUserId)
+                                    .child("request_type").setValue("received")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                pm.getMenu().findItem(R.id.invite).setTitle("Cancel request");
+                                               Toast.makeText(ctx,"request sent",Toast.LENGTH_LONG).show();
+                                                current_state="request sent";
+                                            }
+                                        }
+                                    });
+                        }
+                        else {
+                            String message=task.getException().toString();
+                            Toast.makeText(ctx,"Exception "+message,Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
+    private void cancelChatRequest(final PopupMenu pm) {
+        chatRequestRef.child(this.senderUserId).child(receiverUserId)
+                .removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            chatRequestRef.child(receiverUserId).child(HomeAdapter.this.senderUserId)
+                                    .removeValue()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                pm.getMenu().findItem(R.id.invite).setTitle("Invite");
+                                                Toast.makeText(ctx,"Request cancelled",Toast.LENGTH_LONG).show();
+                                                current_state="new";
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+
+
+
 }

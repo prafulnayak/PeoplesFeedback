@@ -22,12 +22,12 @@ public class News {
     private int shares;
     private String postedDate;
     private int status;
-
+    private String receiverUserId;
 
     public News() {
     }
 
-    public News(String postId, String postedBy, String userUrl, String heading, String description, String constituancy, String imageUrl, Double latitude, Double longitude, String address, String mla, String mlaImageUrl, String votePercentage, String tag, int views, int likes, int shares, String postedDate, int status) {
+    public News(String postId, String postedBy, String userUrl, String heading, String description, String constituancy, String imageUrl, Double latitude, Double longitude, String address, String mla, String mlaImageUrl, String votePercentage, String tag, int views, int likes, int shares, String postedDate, int status,String receiverUserId) {
         this.postId = postId;
         this.postedBy = postedBy;
         this.userUrl = userUrl;
@@ -47,8 +47,16 @@ public class News {
         this.shares = shares;
         this.postedDate = postedDate;
         this.status = status;
+        this.receiverUserId=receiverUserId;
+
+    }
+    public String getReceiverUserId() {
+        return receiverUserId;
     }
 
+    public void setReceiverUserId(String receiverUserId) {
+        this.receiverUserId = receiverUserId;
+    }
     public String getPostedDate() {
         return postedDate;
     }
