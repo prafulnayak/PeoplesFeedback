@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/feedbackHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Feedback on politicians"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_margin="@dimen/five_dp"/>
+
+    <Button
+        android:id="@+id/politicians_view_all"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_margin="@dimen/five_dp"
+        android:textSize="12dp"
+        android:textColor="@color/white"
+        android:text="View All"
+        android:background="@drawable/round_background"
+        android:textAllCaps="false"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/horizontal_recycler_view_politicians"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/feedbackHeading"
+        android:layout_marginTop="@dimen/five_dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

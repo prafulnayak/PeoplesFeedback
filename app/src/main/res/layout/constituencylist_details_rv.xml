@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
+    android:layout_marginStart="@dimen/five_dp"
+    android:layout_marginEnd="@dimen/five_dp"
+    android:layout_marginTop="10dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="80dp">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/constituency_mla_image"
+            android:layout_width="90dp"
+            android:layout_height="90dp" />
+
+        <LinearLayout
+            android:id="@+id/mlaBioData"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/constituency_mla_image"
+            android:orientation="vertical"
+            android:layout_margin="@dimen/five_dp">
+
+            <TextView
+                android:id="@+id/constituency_mla_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="G.S.N.Raju"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:layout_marginStart="@dimen/five_dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="@dimen/five_dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="constituency:"
+                    android:textSize="10sp"/>
+                <TextView
+                    android:id="@+id/txtMlaConstituency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="gajuwaka"
+                    android:textColor="@color/black"
+                    android:paddingStart="@dimen/five_dp"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+               android:layout_marginStart="@dimen/five_dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="rating:"
+                    android:textSize="10sp"/>
+                <TextView
+                    android:id="@+id/txt_MlaRating_In_ConstituencyList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="75%"
+                    android:textColor="@color/black"
+                    android:paddingStart="@dimen/five_dp"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="@dimen/five_dp"
+            android:orientation="vertical">
+
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/mla_party_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"/>
+            <TextView
+                android:id="@+id/txt_folloe_mla"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="Follow"
+                android:paddingStart="@dimen/dimen_15"
+                android:paddingEnd="@dimen/dimen_15"
+                android:background="@drawable/stroke_background"
+                android:textColor="@color/colorPrimaryDark"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
