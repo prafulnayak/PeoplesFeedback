@@ -46,6 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.PriorityQueue;
@@ -61,7 +62,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     private boolean  statusLike=false;
     private boolean statusShare=false;
     private boolean statusView=false;
-    private DatabaseReference dbRefLike,dbRefShare,contectsref,chatRequestRef;
+    private DatabaseReference dbRefLike,dbRefShare,contectsref,chatRequestRef,notificationRef;
     private FirebaseAuth mAuth;
     private SharedPreferenceConfig sharedPreference;
 
@@ -85,6 +86,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         dbRefShare= FirebaseDatabase.getInstance().getReference().child("Posts");
         contectsref= FirebaseDatabase.getInstance().getReference().child("contacts");
         chatRequestRef= FirebaseDatabase.getInstance().getReference().child("chat request");
+        notificationRef= FirebaseDatabase.getInstance().getReference().child("Notifications");
         sharedPreference = new SharedPreferenceConfig(ctx);
         current_state="new";
         RecyclerViewHolder recyclerViewHolder = new RecyclerViewHolder(view);
@@ -271,7 +273,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.hasChild(receiverUserId))
                                                 current_state="friends";
-                                            pm.getMenu().findItem(R.id.invite).setVisible(false);
+                                           // pm.getMenu().findItem(R.id.invite).setVisible(false);
                                         }
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
@@ -305,8 +307,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
 
     }
-
-
     private void sendchatREquest(final String senderUserId, final PopupMenu pm) {
         chatRequestRef.child(senderUserId).child(receiverUserId)
                 .child("request_type").setValue("sent")
@@ -320,9 +320,28 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                pm.getMenu().findItem(R.id.invite).setTitle("Cancel request");
-                                               Toast.makeText(ctx,"request sent",Toast.LENGTH_LONG).show();
-                                                current_state="request sent";
+
+                                                //push notifications using firebase
+                                                HashMap<String,String> chatNotificationsMap=new HashMap<>();
+                                                chatNotificationsMap.put("from",senderUserId);
+                                                chatNotificationsMap.put("type","request");
+
+                                                notificationRef.child(receiverUserId.substring(3)).push()
+                                                        .setValue(chatNotificationsMap)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful())
+                                                                {
+                                                                    pm.getMenu().findItem(R.id.invite).setTitle("Cancel request");
+                                                                    Toast.makeText(ctx,"request sent",Toast.LENGTH_LONG).show();
+                                                                    current_state="request sent";
+                                                                }
+
+                                                            }
+                                                        });
+
+
                                             }
                                         }
                                     });

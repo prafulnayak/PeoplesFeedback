@@ -34,6 +34,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     private String district;
     private TextView constituencyTextview;
     private SharedPreferenceConfig sharedPreference;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference,userRef;
 
     //    @Override
         //    protected void onStart() {
@@ -111,6 +112,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         databaseReference = FirebaseDatabase.getInstance().getReference();
         sharedPreference = new SharedPreferenceConfig(this);
         mAuth = FirebaseAuth.getInstance();
+        userRef= FirebaseDatabase.getInstance().getReference().child("people");
 
         FirebaseUser user = mAuth.getCurrentUser();
         if(user.getPhoneNumber()!=null){
@@ -303,28 +305,39 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
                 {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)
+                    public void onComplete(@NonNull final Task<AuthResult> task1)
                     {
-                        if (task.isSuccessful())
+                        if (task1.isSuccessful())
                         {
                             loadingbar.dismiss();
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.v(TAG, "signInWithCredential:success");
-                            Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
-                            //                            signOut();
-                            FirebaseUser user = task.getResult().getUser();
+
+                            String currentUserId=mAuth.getCurrentUser().getPhoneNumber();
+                            String deviceToken= FirebaseInstanceId.getInstance().getToken();
+                            userRef.child(currentUserId.substring(3)).child("deviceToken").setValue(deviceToken)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            // Sign in success, update UI with the signed-in user's information
+                                            Log.v(TAG, "signInWithCredential:success");
+                                            Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
+                                            //                            signOut();
+                                            FirebaseUser user = task1.getResult().getUser();
 //                            signInWithPhoneAuthCredential(credential);
 //                            Log.v(TAG, "signInWithCredential:success"+user.getPhoneNumber());
-                            updateUI(user);
-                            insertNewUser();
-                            // ...
+                                            updateUI(user);
+                                            insertNewUser();
+                                            // ...
+                                        }
+                                    });
+
+
                         }
                         else {
                             loadingbar.dismiss();
                                 // Sign in failed, display a message and update the UI
-                                Log.v(TAG, "signInWithCredential:failure", task.getException());
+                                Log.v(TAG, "signInWithCredential:failure", task1.getException());
                                 Toast.makeText(PhoneActivity.this, "Failed",Toast.LENGTH_SHORT).show();
-                                if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                if (task1.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                     // The verification code entered was invalid
                             }
                         }

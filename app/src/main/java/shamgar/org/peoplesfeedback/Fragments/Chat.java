@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -25,16 +26,19 @@ import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Model.Contacts;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.UI.ChatActivity;
+import shamgar.org.peoplesfeedback.UI.ContactsActivity;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class Chat extends Fragment {
-
-    private RecyclerView myContactRecyclerView;
+    private RecyclerView chatList;
     private DatabaseReference contactsRef,userRef;
     private FirebaseAuth mAuth;
     private String currentUserId;
+
+
     public Chat() {
         // Required empty public constructor
     }
@@ -45,78 +49,88 @@ public class Chat extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_chat, container, false);
-        Toast.makeText(getActivity(),"contacts",Toast.LENGTH_LONG).show();
-        myContactRecyclerView=view.findViewById(R.id.contactsRecyclerview);
-        myContactRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         mAuth= FirebaseAuth.getInstance();
         currentUserId=mAuth.getCurrentUser().getPhoneNumber();
         contactsRef= FirebaseDatabase.getInstance().getReference().child("contacts").child(currentUserId);
         userRef= FirebaseDatabase.getInstance().getReference().child("people");
 
+        chatList=view.findViewById(R.id.chatFragmentRecyclerView);
+        chatList.setLayoutManager(new LinearLayoutManager(getContext()));
+
         return view;
     }
+
     @Override
     public void onStart() {
         super.onStart();
         FirebaseRecyclerOptions options=new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(contactsRef,Contacts.class)
                 .build();
-        FirebaseRecyclerAdapter<Contacts,ContactsViewHolder> adapter=
-                new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
+        FirebaseRecyclerAdapter<Contacts,ChatViewHolder> adapter=
+                new FirebaseRecyclerAdapter<Contacts,ChatViewHolder>(options) {
+
+                    @NonNull
                     @Override
-                    protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, final int position, @NonNull Contacts model)
-                    {
-                        String userIds=getRef(position).getKey();
+                    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.contacts_list_layout,parent,false);
+                        ChatViewHolder viewHolder=new ChatViewHolder(view);
+                        return viewHolder;
+                    }
+
+                    @Override
+                    protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Contacts model) {
+                        final  String userIds=getRef(position).getKey();
+                        final String[] Image = {"default image"};
                         userRef.orderByChild("phoneno").equalTo(userIds).addValueEventListener(new ValueEventListener() {
                             @Override
-                            public void onDataChange(DataSnapshot dataSnapshot)
-                            {
-                                String email=null;
-                                String phoneno=null;
-                                String Image=null;
-                                for (DataSnapshot innersnap:dataSnapshot.getChildren()) {
-                                    if (dataSnapshot.hasChild("image")) {
-                                         Image=innersnap.child("image").getValue().toString();
-                                         email = innersnap.child("email").getValue(String.class);
-                                         phoneno=innersnap.child("phoneno").getValue(String.class);
-
-                                        holder.userName.setText(email);
-                                        holder.userStatus.setText(phoneno);
-                                        Picasso.get().load(Image).placeholder(R.drawable.profile).into(holder.profileImage);
-                                    }
-                                    else {
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    String email=null;
+                                    String phoneno=null;
+                                   
+                                    for (DataSnapshot innersnap:dataSnapshot.getChildren()) {
+                                        if (dataSnapshot.hasChild("image")) {
+                                            Image[0] =innersnap.child("image").getValue().toString();
+                                            Picasso.get().load(Image[0]).placeholder(R.drawable.profile).into(holder.profileImage);
+                                        }
                                         email = innersnap.child("email").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);
-                                        holder.userStatus.setText(phoneno);
+                                        holder.userStatus.setText("Last Seen: "+"\n"+"Date "+" Time");
+
+                                        final String finalEmail = email;
+                                        holder.itemView.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent chatActivity=new Intent(getContext(), ChatActivity.class);
+                                                chatActivity.putExtra("visit_user_id",userIds);
+                                                chatActivity.putExtra("visit_email_id", finalEmail);
+                                                chatActivity.putExtra("visit_image", Image[0]);
+                                                startActivity(chatActivity);
+                                            }
+                                        });
+
                                     }
                                 }
-
                             }
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
+
                             }
                         });
-                    }
-                    @NonNull
-                    @Override
-                    public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.contacts_list_layout,parent,false);
-                        ContactsViewHolder viewHolder=new ContactsViewHolder(view);
-                        return viewHolder;
+
                     }
                 };
-        myContactRecyclerView.setAdapter(adapter);
+        chatList.setAdapter(adapter);
         adapter.startListening();
     }
 
-    public static class ContactsViewHolder extends RecyclerView.ViewHolder
+    public static class ChatViewHolder extends RecyclerView.ViewHolder
     {
         TextView userName,userStatus;
         CircleImageView profileImage;
 
-        public ContactsViewHolder(View itemView) {
+        public ChatViewHolder(View itemView) {
             super(itemView);
 
             userName=itemView.findViewById(R.id.user_profile_name);
@@ -124,5 +138,4 @@ public class Chat extends Fragment {
             profileImage=itemView.findViewById(R.id.users_profile_image);
         }
     }
-
 }

@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -15,10 +16,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +38,7 @@ import shamgar.org.peoplesfeedback.Utils.MyFrameLayout;
 import shamgar.org.peoplesfeedback.Utils.OnSwipeTouchListener;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
-public class HomeScreenActivity extends FragmentActivity implements GestureDetector.OnGestureListener{
+public class HomeScreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -50,6 +50,7 @@ public class HomeScreenActivity extends FragmentActivity implements GestureDetec
     private ArrayList<Integer> imagesList;
     private HorizontalAdapter horizontalAdapter;
     private GestureDetector gestureDetector;
+    private Toolbar toolbar;
 
 
 
@@ -77,6 +78,11 @@ public class HomeScreenActivity extends FragmentActivity implements GestureDetec
         mAuth = FirebaseAuth.getInstance();
 
         horizontal_recycler_view= (RecyclerView) findViewById(R.id.horizontal_recycler_view);
+        toolbar= (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+
 
         horizontalList=new ArrayList<>();
         horizontalList.add("Home");
@@ -130,7 +136,6 @@ public class HomeScreenActivity extends FragmentActivity implements GestureDetec
 
     @Override
     public void onLongPress(MotionEvent e) {
-
     }
 
     @Override
@@ -138,8 +143,7 @@ public class HomeScreenActivity extends FragmentActivity implements GestureDetec
         boolean result=false;
         float diffy=moveEvent.getY()-downEvent.getY();
         float diffx=moveEvent.getX()-downEvent.getX();
-        if (Math.abs(diffx)>Math.abs(diffy))
-        {
+        if (Math.abs(diffx)>Math.abs(diffy)) {
             //swipe left right
 
             if (Math.abs(diffx)>100 && Math.abs(velocityX)>100)
@@ -162,8 +166,7 @@ public class HomeScreenActivity extends FragmentActivity implements GestureDetec
         return result;
     }
 
-    private void onSwipeRight()
-    {
+    private void onSwipeRight() {
         Toast.makeText(getApplicationContext(), "Swipe to the right",
                 Toast.LENGTH_SHORT).show();
 
@@ -197,35 +200,27 @@ public class HomeScreenActivity extends FragmentActivity implements GestureDetec
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
+    public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-//    Fragment getHomeFragment(Home home)
-//    {
-//        Fragment currentFragment = getSupportFragmentManager()
-//                .findFragmentByTag("Home");
-//        return currentFragment;
-//    }
-//    Fragment getPoliticiansFragment(Politicians politicians)
-//    {
-//        Fragment currentFragment = getSupportFragmentManager()
-//                .findFragmentByTag("Politicians");
-//        return currentFragment;
-//    }
-//    Fragment getChatFragment(Chat chat)
-//    {
-//        Fragment currentFragment = getSupportFragmentManager()
-//                .findFragmentByTag("Chat");
-//        return currentFragment;
-//    }
-//    Fragment getNotificationsFragment(Notifications notifications)
-//    {
-//        Fragment currentFragment = getSupportFragmentManager()
-//                .findFragmentByTag("Notifications");
-//        return currentFragment;
-//    }
+         super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.home_screen_menu_options,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+         super.onOptionsItemSelected(item);
+        if (item.getItemId()==R.id.contacts) {
+            Intent contacts=new Intent(HomeScreenActivity.this,ContactsActivity.class);
+            startActivity(contacts);
+            finish();
+        }
+        return true;
+    }
 }
