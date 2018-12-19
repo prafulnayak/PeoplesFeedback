@@ -2,6 +2,7 @@ package shamgar.org.peoplesfeedback.Fragments;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,7 @@ import shamgar.org.peoplesfeedback.Model.Contacts;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.ChatActivity;
 import shamgar.org.peoplesfeedback.UI.ContactsActivity;
+import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +39,7 @@ public class Chat extends Fragment {
     private DatabaseReference contactsRef,userRef;
     private FirebaseAuth mAuth;
     private String currentUserId;
+    private SharedPreferenceConfig sharedPreferences;
 
 
     public Chat() {
@@ -51,6 +54,7 @@ public class Chat extends Fragment {
         View view= inflater.inflate(R.layout.fragment_chat, container, false);
         mAuth= FirebaseAuth.getInstance();
         currentUserId=mAuth.getCurrentUser().getPhoneNumber();
+        sharedPreferences = new SharedPreferenceConfig(getActivity());
         contactsRef= FirebaseDatabase.getInstance().getReference().child("contacts").child(currentUserId);
         userRef= FirebaseDatabase.getInstance().getReference().child("people");
 
@@ -96,7 +100,23 @@ public class Chat extends Fragment {
                                         email = innersnap.child("email").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);
-                                        holder.userStatus.setText("Last Seen: "+"\n"+"Date "+" Time");
+
+                                        if (innersnap.child("userState").hasChild("state")){
+                                                String state=innersnap.child("userState").child("state").getValue().toString();
+                                                String time=innersnap.child("userState").child("date").getValue().toString();
+                                                String date=innersnap.child("userState").child("time").getValue().toString();
+                                                if (state.equals("online")) {
+                                                    holder.userStatus.setText("online");
+                                                }
+                                                else if (state.equals("offline")) {
+                                                    holder.userStatus.setText("Last Seen: " + date + " " + time);
+                                                }
+
+                                        }
+                                        else {
+                                            holder.userStatus.setText("offline");
+                                        }
+
 
                                         final String finalEmail = email;
                                         holder.itemView.setOnClickListener(new View.OnClickListener() {

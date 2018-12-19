@@ -22,8 +22,14 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 
 import javax.net.ssl.SSLServerSocket;
 
@@ -51,6 +57,8 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
     private HorizontalAdapter horizontalAdapter;
     private GestureDetector gestureDetector;
     private Toolbar toolbar;
+    private DatabaseReference usersRef;
+    private String currentUser;
 
 
 
@@ -76,6 +84,8 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
         sharedPreference = new SharedPreferenceConfig(this);
 
         mAuth = FirebaseAuth.getInstance();
+        currentUser=mAuth.getCurrentUser().getUid();
+        usersRef= FirebaseDatabase.getInstance().getReference();
 
         horizontal_recycler_view= (RecyclerView) findViewById(R.id.horizontal_recycler_view);
         toolbar= (Toolbar) findViewById(R.id.toolbar);
@@ -222,5 +232,51 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
             finish();
         }
         return true;
+    }
+
+    //updating user status that is user is online or offline
+    private void updateUserStatus(String state)
+    {
+        String saveCurrentTime,saveCurrentDate;
+        Calendar calendar=Calendar.getInstance();
+        SimpleDateFormat currentDate=new SimpleDateFormat("MMM dd,yyyy");
+        saveCurrentDate=currentDate.format(calendar.getTime());
+        SimpleDateFormat currentTime=new SimpleDateFormat("hh:mm a");
+        saveCurrentTime=currentTime.format(calendar.getTime());
+
+        HashMap<String,Object> onlineStateMap=new HashMap<>();
+        onlineStateMap.put("time",saveCurrentTime);
+        onlineStateMap.put("date",saveCurrentDate);
+        onlineStateMap.put("state",state);
+
+        usersRef.child("people").child(sharedPreference.readPhoneNo().substring(3))
+                .child("userState")
+                .updateChildren(onlineStateMap);
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (currentUser==null){
+            Intent mainActiity=new Intent(HomeScreenActivity.this,MainActivity.class);
+            startActivity(mainActiity);
+            finish();
+        }
+        else {
+            updateUserStatus("online");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentUser!=null){
+            updateUserStatus("offline");
+        }
+
     }
 }

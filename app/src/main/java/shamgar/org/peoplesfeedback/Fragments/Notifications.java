@@ -255,7 +255,7 @@ public class Notifications extends Fragment  {
                                                                                             @Override
                                                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                                                 if (task.isSuccessful()) {
-                                                                                                    Toast.makeText(getContext()," Canceled request",Toast.LENGTH_LONG).show();
+                                                                                                    Toast.makeText(getActivity()," Canceled request",Toast.LENGTH_LONG).show();
                                                                                                 }
 
                                                                                             }

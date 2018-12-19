@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -26,12 +28,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Fragments.Chat;
 import shamgar.org.peoplesfeedback.Model.Contacts;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 public class ContactsActivity extends AppCompatActivity {
     private RecyclerView myContactRecyclerView;
     private DatabaseReference contactsRef,userRef;
     private FirebaseAuth mAuth;
     private String currentUserId;
+    private SharedPreferenceConfig sharedPreferenceConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,7 @@ public class ContactsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Contacts");
+        sharedPreferenceConfig=new SharedPreferenceConfig(this);
 
         mAuth= FirebaseAuth.getInstance();
         currentUserId=mAuth.getCurrentUser().getPhoneNumber();
@@ -67,24 +72,36 @@ public class ContactsActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot)
                             {
-                                String email=null;
-                                String phoneno=null;
-                                String Image=null;
-                                for (DataSnapshot innersnap:dataSnapshot.getChildren()) {
-                                    if (dataSnapshot.hasChild("image")) {
-                                        Image=innersnap.child("image").getValue().toString();
-                                        email = innersnap.child("email").getValue(String.class);
-                                        phoneno=innersnap.child("phoneno").getValue(String.class);
+                                if (dataSnapshot.exists()){
 
-                                        holder.userName.setText(email);
-                                        holder.userStatus.setText(phoneno);
-                                        Picasso.get().load(Image).placeholder(R.drawable.profile).into(holder.profileImage);
-                                    }
-                                    else {
+
+
+                                    String email=null;
+                                    String phoneno=null;
+                                    String Image=null;
+                                    for (DataSnapshot innersnap:dataSnapshot.getChildren()) {
+                                        if (dataSnapshot.hasChild("image")) {
+                                            Image=innersnap.child("image").getValue().toString();
+                                            Picasso.get().load(Image).placeholder(R.drawable.profile).into(holder.profileImage);
+                                        }
                                         email = innersnap.child("email").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);
                                         holder.userStatus.setText(phoneno);
+                                        if (innersnap.child("userState").hasChild("state")){
+                                                String state=innersnap.child("userState").child("state").getValue().toString();
+                                                String time=innersnap.child("userState").child("date").getValue().toString();
+                                                String date=innersnap.child("userState").child("time").getValue().toString();
+                                                if (state.equals("online"))
+                                                    holder.user_online.setVisibility(View.VISIBLE);
+                                                else if (state.equals("offline"))
+                                                    holder.user_online.setVisibility(View.INVISIBLE);
+                                        }
+                                        else{
+                                               holder.user_online.setVisibility(View.INVISIBLE);
+                                            }
+
+
                                     }
                                 }
 
@@ -110,6 +127,7 @@ public class ContactsActivity extends AppCompatActivity {
     {
         TextView userName,userStatus;
         CircleImageView profileImage;
+        ImageView user_online;
 
         public ContactsViewHolder(View itemView) {
             super(itemView);
@@ -117,6 +135,7 @@ public class ContactsActivity extends AppCompatActivity {
             userName=itemView.findViewById(R.id.user_profile_name);
             userStatus=itemView.findViewById(R.id.user_profile_status);
             profileImage=itemView.findViewById(R.id.users_profile_image);
+            user_online=itemView.findViewById(R.id.user_online);
         }
     }
 
