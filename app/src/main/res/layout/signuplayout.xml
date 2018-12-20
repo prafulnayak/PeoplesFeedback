@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:background="@drawable/background_two">
 
     <FrameLayout
         android:id="@+id/llpic"
@@ -17,21 +17,20 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <com.mikhaellopez.circularimageview.CircularImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
             android:src="@drawable/profile"/>
 
-        <com.mikhaellopez.circularimageview.CircularImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_marginLeft="38dp"
             android:layout_marginTop="5dp"
-            android:src="@drawable/ic_add__black24dp"
-            android:background="@color/colorPrimaryDark"/>
+            android:src="@drawable/ic_add__black24dp"/>
 
     </FrameLayout>
 

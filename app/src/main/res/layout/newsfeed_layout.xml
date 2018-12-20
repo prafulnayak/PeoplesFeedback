@@ -139,6 +139,7 @@
         android:id="@+id/userpost"
         android:layout_width="match_parent"
         android:layout_height="350dp"
+        android:scaleType="fitXY"
         android:layout_below="@id/postTagname"
         android:adjustViewBounds="true"
         android:layout_marginTop="@dimen/five_dp" />
