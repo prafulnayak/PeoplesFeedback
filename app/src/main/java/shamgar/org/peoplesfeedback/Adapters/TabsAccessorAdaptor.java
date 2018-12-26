@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import shamgar.org.peoplesfeedback.Fragments.Chat;
 import shamgar.org.peoplesfeedback.Fragments.Home;
 import shamgar.org.peoplesfeedback.Fragments.Notifications;
 import shamgar.org.peoplesfeedback.Fragments.Politicians;
@@ -33,6 +34,10 @@ public class TabsAccessorAdaptor extends FragmentPagerAdapter
                     return politicians;
 
                 case 2:
+                     Chat chat=new Chat();
+                     return chat;
+
+                case 3:
                     Notifications notifications=new Notifications();
                     return notifications;
 
@@ -48,7 +53,7 @@ public class TabsAccessorAdaptor extends FragmentPagerAdapter
     @Override
     public int getCount()
     {
-        return 3;
+        return 4;
     }
 
     @Nullable
@@ -59,8 +64,7 @@ public class TabsAccessorAdaptor extends FragmentPagerAdapter
         {
             case 0:
 
-                return "Home";
-
+            return "Home";
 
             case 1:
 
@@ -68,9 +72,14 @@ public class TabsAccessorAdaptor extends FragmentPagerAdapter
 
             case 2:
 
+                return "Chat";
+
+            case 3:
+
                 return "Notifications";
 
             default:
+
                 return null;
         }
     }
