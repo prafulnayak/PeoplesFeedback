@@ -2,6 +2,7 @@ package shamgar.org.peoplesfeedback.Fragments;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -92,6 +93,8 @@ public class Home extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home, container, false);
+        Log.i("Home", " onCreateView");
+        Toast.makeText(getActivity(), "onCreateView" + newsList.size(), Toast.LENGTH_LONG).show();
 
         return view;
 
@@ -105,6 +108,8 @@ public class Home extends Fragment {
 //        getNewsDetailsFromPost();
 //        new AsyncTaskForNews().execute();
 //        new AsyncTaskForNews().execute();
+        Log.i("Home", " onCreate");
+        Toast.makeText(getActivity(), "onCreate" + newsList.size(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -117,8 +122,8 @@ public class Home extends Fragment {
         seekBar = view.findViewById(R.id.seekBar);
         switch1 = view.findViewById(R.id.switch1);
 
-        Log.i("Home", " Home Fragment");
-        Toast.makeText(getActivity(), "home", Toast.LENGTH_LONG).show();
+        Log.i("Home", " onViewCreated");
+        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
 
         recyclerView = view.findViewById(R.id.home_rv);
         recyclerView.setHasFixedSize(true);
@@ -141,7 +146,7 @@ public class Home extends Fragment {
         //checking switch is on or off
         checkinSwtichStatus();
         getNewsKeyFromConstituancy();
-        Toast.makeText(getActivity(), "home" + newsList.size(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), "onViewCreated" + newsList.size(), Toast.LENGTH_LONG).show();
     }
     private void getNewsKeyFromConstituancy() {
         FirebaseDatabase.getInstance().getReference().child(INDIA)
@@ -269,17 +274,58 @@ public class Home extends Fragment {
         recyclerView.setAnimation(null);
         adapter = new HomeAdapter(newsList, getActivity());
         recyclerView.setAdapter(adapter);
+        Log.i("Home", " onResume");
+        Toast.makeText(getActivity(), "onResume", Toast.LENGTH_LONG).show();
+
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
+        Log.i("Home", " onStart");
+        Toast.makeText(getActivity(), "onStart", Toast.LENGTH_LONG).show();
 //        new AsyncTaskForNews().execute();
 
 
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("Home", " onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("Home", " onStop");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.i("Home", " onDestroyView");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("Home", " onDestroy");
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.i("Home", " onAttach");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i("Home", " onDetach");
+    }
+
 
     private void checkinSwtichStatus()
     {
