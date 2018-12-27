@@ -1,18 +1,10 @@
 package shamgar.org.peoplesfeedback.UI;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
@@ -24,24 +16,14 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import javax.net.ssl.SSLServerSocket;
-
-import shamgar.org.peoplesfeedback.Adapters.HorizontalAdapter;
 import shamgar.org.peoplesfeedback.Adapters.TabsAccessorAdaptor;
-import shamgar.org.peoplesfeedback.Fragments.Chat;
-import shamgar.org.peoplesfeedback.Fragments.Home;
-import shamgar.org.peoplesfeedback.Fragments.Notifications;
-import shamgar.org.peoplesfeedback.Fragments.Politicians;
 import shamgar.org.peoplesfeedback.R;
-import shamgar.org.peoplesfeedback.Utils.MyFrameLayout;
-import shamgar.org.peoplesfeedback.Utils.OnSwipeTouchListener;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 public class HomeScreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
@@ -54,7 +36,6 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
     private RecyclerView horizontal_recycler_view;
     private ArrayList<String> horizontalList;
     private ArrayList<Integer> imagesList;
-    private HorizontalAdapter horizontalAdapter;
     private GestureDetector gestureDetector;
     private Toolbar toolbar;
     private DatabaseReference usersRef;
@@ -62,9 +43,7 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
 
 
 
-    final int[] ICONS = new int[]
-
-            {
+    final int[] ICONS = new int[]{
                     R.drawable.ic_notifications_white_24dp,
                     R.drawable.ic_people_black_24dp,
                     R.drawable.ic_home_white_24dp
@@ -87,18 +66,10 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
         currentUser=mAuth.getCurrentUser().getUid();
         usersRef= FirebaseDatabase.getInstance().getReference();
 
-        horizontal_recycler_view= (RecyclerView) findViewById(R.id.horizontal_recycler_view);
+        tabLayout= (TabLayout) findViewById(R.id.maintabs);
+        viewPager=(ViewPager)findViewById(R.id.mainviewpager);
         toolbar= (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
-
-        horizontalList=new ArrayList<>();
-        horizontalList.add("Home");
-        horizontalList.add("Politicians");
-        horizontalList.add("Chat");
-        horizontalList.add("Notifications");
 
         imagesList=new ArrayList<>();
         imagesList.add(R.drawable.ic_home_white_24dp);
@@ -106,18 +77,10 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
         imagesList.add(R.drawable.ic_chat_black_24dp);
         imagesList.add(R.drawable.ic_notifications_white_24dp);
 
-        horizontalAdapter=new HorizontalAdapter(this,horizontalList,imagesList);
-        LinearLayoutManager horizontalLayoutManagaer
-                = new LinearLayoutManager(HomeScreenActivity.this, LinearLayoutManager.HORIZONTAL, false);
-        horizontal_recycler_view.setLayoutManager(horizontalLayoutManagaer);
-        horizontal_recycler_view.setAdapter(horizontalAdapter);
+        tabsAccessorAdaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
+        viewPager.setAdapter(tabsAccessorAdaptor);
+        tabLayout.setupWithViewPager(viewPager);
 
-
-
-        Home home = new Home();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.frame_container, home,"Home");
-        transaction.commit();
 
         gestureDetector=new GestureDetector(this);
 
