@@ -1,48 +1,36 @@
 package shamgar.org.peoplesfeedback.Fragments;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import shamgar.org.peoplesfeedback.Adapters.HomeAdapter;
@@ -70,6 +58,8 @@ public class Home extends Fragment {
     static List<String> list = new ArrayList<>();
     static ArrayList<News> newsList = new ArrayList<>();
     static ArrayList<String> nearbyConstuencies = new ArrayList<String>();
+    static boolean top = true;
+    private List<String> list5 = new ArrayList<>();
     LinearLayoutManager layoutManager;
     private SeekBar seekBar;
     private Switch switch1;
@@ -80,7 +70,9 @@ public class Home extends Fragment {
     View view;
     private String bookskey;
     private static int displayedposition = 0;
-
+    private static String lastKey = "";
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     public Home() {
         // Required empty public constructor
@@ -125,12 +117,12 @@ public class Home extends Fragment {
         Log.i("Home", " onViewCreated");
         Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
 
-        recyclerView = view.findViewById(R.id.home_rv);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAnimation(null);
-        adapter = new HomeAdapter(newsList, getActivity());
+//        recyclerView = view.findViewById(R.id.home_rv);
+//        recyclerView.setHasFixedSize(true);
+//        layoutManager = new LinearLayoutManager(getActivity());
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAnimation(null);
+//        adapter = new HomeAdapter(newsList, getActivity());
 
 //        recyclerView.setHasFixedSize(true);
 //        recyclerView.setLayoutManager(linearLayoutManager);
@@ -145,29 +137,168 @@ public class Home extends Fragment {
 
         //checking switch is on or off
         checkinSwtichStatus();
-        getNewsKeyFromConstituancy();
+        if(list.size() == 0)
+            getPosts();
+//        getNewsKeyFromConstituancy();
         Toast.makeText(getActivity(), "onViewCreated" + newsList.size(), Toast.LENGTH_LONG).show();
     }
+
+    private void getPosts() {
+        Query postQuery = FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child(sharedPreference.readDistrict())
+                .child(CONSTITUANCY)
+                .child(sharedPreference.readConstituancy())
+                .child(POSTIDCON).orderByKey().limitToLast(1);
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(!list.contains(dataSnapshot.getKey())){
+                    list5.add(dataSnapshot.getKey());
+                    lastKey = dataSnapshot.getKey();
+                    list.add(0,dataSnapshot.getKey());
+                    getNewsDetailsFromPost(true);
+                    Log.e("log: ","key in: "+dataSnapshot.getKey());
+                    Log.e("log: ","key in s: "+s);
+                }
+//                if(list5.size() == 5){
+//                    lastKey = list5.get(0);
+//                    Collections.reverse(list5);
+//                    list.addAll(list5);
+//                    Log.e("log: ","last key: "+dataSnapshot.getKey());
+//                    Log.e("log: ","key in: "+list.get(list.size()-5));
+//                    getNewsDetailsFromPost();
+////                    getMorePosts();
+//                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        postQuery.addChildEventListener(childEventListener);
+    }
+
+    private void getMorePosts() {
+        Query postQuery = FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child(sharedPreference.readDistrict())
+                .child(CONSTITUANCY)
+                .child(sharedPreference.readConstituancy())
+                .child(POSTIDCON).orderByKey().endAt(lastKey).limitToLast(5);
+
+
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                if(!list5.contains(dataSnapshot.getKey())){
+                    list5.add(dataSnapshot.getKey());
+
+                    Log.e("log: ","key in: "+dataSnapshot.getKey());
+                    Log.e("log: ","key in s: "+s);
+                }
+                if(list5.size() == 5){
+                    lastKey = list5.get(0);
+                    Collections.reverse(list5);
+                    list.addAll(list5);
+                    Log.e("log: ","last key: "+dataSnapshot.getKey());
+                    Log.e("log: ","key in: "+list.get(list.size()-5));
+//                    getMorePosts();
+//                    list5.clear();
+                    getNewsDetailsFromPost(false);
+                }
+                if(lastKey.equalsIgnoreCase(dataSnapshot.getKey())){
+                    lastKey = list5.get(0);
+                    Collections.reverse(list5);
+                    list.addAll(list5);
+                    Log.e("log: ","last key: "+dataSnapshot.getKey());
+                    Log.e("log: ","key in: "+list.get(list.size()-5));
+//                    getMorePosts();
+//                    list5.clear();
+                    getNewsDetailsFromPost(false);
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        postQuery.addChildEventListener(childEventListener);
+//        postQuery.addValueEventListener(valueEventListener);
+    }
+
     private void getNewsKeyFromConstituancy() {
         FirebaseDatabase.getInstance().getReference().child(INDIA)
                 .child(sharedPreference.readState())
                 .child(sharedPreference.readDistrict())
                 .child(CONSTITUANCY)
                 .child(sharedPreference.readConstituancy())
-                .child(POSTIDCON).addValueEventListener(new ValueEventListener() {
+                .child(POSTIDCON).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    //if key exist no need to add or else add to the list
-                    if(!list.contains(snapshot.getKey())){
-                        list.add(snapshot.getKey());
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(!list.contains(dataSnapshot.getKey())){
+                        list.add(dataSnapshot.getKey());
 
                         Log.e("log: ","key in: "+dataSnapshot.getKey());
-
-                    }
+                        Log.e("log: ","key in s: "+s);
                 }
 
-                getNewsDetailsFromPost();
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                Log.e("log: ","changed key: "+dataSnapshot.getKey());
+                Log.e("log: ","changed key s: "+s);
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -175,16 +306,37 @@ public class Home extends Fragment {
 
             }
         });
+//                addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+//                    //if key exist no need to add or else add to the list
+//                    if(!list.contains(snapshot.getKey())){
+//                        list.add(snapshot.getKey());
+//
+//                        Log.e("log: ","key in: "+dataSnapshot.getKey());
+//
+//                    }
+//                }
+//
+//                getNewsDetailsFromPost();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
 
 
     }
 
-    private void getNewsDetailsFromPost()
+    private void getNewsDetailsFromPost(final boolean top)
     {
-        for (int i=0;i<list.size();i++){
+        for (int i=0;i<list5.size();i++){
            FirebaseDatabase.getInstance().getReference().child(POSTS)
-                    .child(list.get(i)).addValueEventListener(new ValueEventListener() {
+                    .child(list5.get(i)).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
@@ -194,7 +346,7 @@ public class Home extends Fragment {
                         Posts posts = dataSnapshot.getValue(Posts.class);
                         int likes =Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount()));
                         int share = Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount()));
-                        addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share);
+                        addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share,top);
                       //  Log.e("Post",""+posts.getImageUrl());
                         Log.e("Post data snap key",""+likes+share);
                       //  Log.e("Post list ",""+list.get(p));
@@ -209,10 +361,11 @@ public class Home extends Fragment {
                 }
             });
         }
+        list5.clear();
 
     }
 
-    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share) {
+    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share, boolean top) {
 
         News news = new News(
                 key,
@@ -233,15 +386,21 @@ public class Home extends Fragment {
                 }
             }
             if(isNewNews){
-                newsList.add(0,news);
-                recyclerView = view.findViewById(R.id.home_rv);
-                recyclerView.smoothScrollToPosition(0);
-                recyclerView.setHasFixedSize(true);
-                layoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(layoutManager);
-                adapter = new HomeAdapter(newsList, getActivity());
-                recyclerView.setAdapter(adapter);
+                if(top){
+                    newsList.add(0,news);
+                }else {
+                    newsList.add(news);
+                }
+
+//                recyclerView = view.findViewById(R.id.home_rv);
+
+//                recyclerView.setHasFixedSize(true);
+//                layoutManager = new LinearLayoutManager(getActivity());
+//                recyclerView.setLayoutManager(layoutManager);
+//                adapter = new HomeAdapter(newsList, getActivity());
+//                recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+//                recyclerView.smoothScrollToPosition(0);
             }
 
 
@@ -250,7 +409,7 @@ public class Home extends Fragment {
 //        adapter = new HomeAdapter(newsList, getActivity());
 //        recyclerView.setAdapter(adapter);
 
-
+            loading = true;
 
 
     }
@@ -266,7 +425,7 @@ public class Home extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        adapter.notifyDataSetChanged();
+
         recyclerView = view.findViewById(R.id.home_rv);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
@@ -274,6 +433,33 @@ public class Home extends Fragment {
         recyclerView.setAnimation(null);
         adapter = new HomeAdapter(newsList, getActivity());
         recyclerView.setAdapter(adapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0) //check for scroll down
+                {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (loading)
+                    {
+                        if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
+                        {
+                            loading = false;
+                            Log.v("...", "Last Item Wow !");
+                            Toast.makeText(getActivity(),"Loging More..",Toast.LENGTH_SHORT).show();
+//                            Do pagination.. i.e. fetch new data
+                            getMorePosts();
+//                            loading = true;
+                        }
+                    }
+                }
+
+            }
+        });
+        adapter.notifyDataSetChanged();
         Log.i("Home", " onResume");
         Toast.makeText(getActivity(), "onResume", Toast.LENGTH_LONG).show();
 
@@ -455,14 +641,15 @@ public class Home extends Fragment {
                                                                                 for (DataSnapshot newlist:dataSnapshot.getChildren())
                                                                                 {
                                                                                     if(!list.contains(newlist.getKey())) {
-                                                                                        list.add(0,newlist.getKey());
+                                                                                        list5.add(newlist.getKey());
+
                                                                                         Log.e("log: ","key in: "+newlist.getKey());
-                                                                                        getNewsDetailsFromPost();
+
                                                                                     }
 
-
                                                                                 }
-
+                                                                                Collections.reverse(list5);
+                                                                                getNewsDetailsFromPost(true);
 
                                                                             }
 
