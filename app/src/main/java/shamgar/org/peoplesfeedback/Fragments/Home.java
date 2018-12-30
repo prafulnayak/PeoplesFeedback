@@ -101,7 +101,7 @@ public class Home extends Fragment {
 //        new AsyncTaskForNews().execute();
 //        new AsyncTaskForNews().execute();
         Log.i("Home", " onCreate");
-        Toast.makeText(getActivity(), "onCreate" + newsList.size(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), "onCreate" + newsList.size(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -115,7 +115,7 @@ public class Home extends Fragment {
         switch1 = view.findViewById(R.id.switch1);
 
         Log.i("Home", " onViewCreated");
-        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
 
 //        recyclerView = view.findViewById(R.id.home_rv);
 //        recyclerView.setHasFixedSize(true);
@@ -140,7 +140,7 @@ public class Home extends Fragment {
         if(list.size() == 0)
             getPosts();
 //        getNewsKeyFromConstituancy();
-        Toast.makeText(getActivity(), "onViewCreated" + newsList.size(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), "onViewCreated" + newsList.size(), Toast.LENGTH_LONG).show();
     }
 
     private void getPosts() {
@@ -461,7 +461,7 @@ public class Home extends Fragment {
         });
         adapter.notifyDataSetChanged();
         Log.i("Home", " onResume");
-        Toast.makeText(getActivity(), "onResume", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), "onResume", Toast.LENGTH_LONG).show();
 
 
     }
@@ -470,7 +470,7 @@ public class Home extends Fragment {
     public void onStart() {
         super.onStart();
         Log.i("Home", " onStart");
-        Toast.makeText(getActivity(), "onStart", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), "onStart", Toast.LENGTH_LONG).show();
 //        new AsyncTaskForNews().execute();
 
 

@@ -350,7 +350,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         politics.setPoliticianId("1234");
           String timeStamp = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss").format(Calendar.getInstance().getTime());
 
-        Followings followings = new Followings();
+//        Followings followings = new Followings();
         final People people = new People("u",
                 sharedPreference.readName(),
                 sharedPreference.readEmail(),
