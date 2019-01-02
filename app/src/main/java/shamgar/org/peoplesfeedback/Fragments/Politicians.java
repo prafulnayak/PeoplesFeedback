@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,8 +21,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 import shamgar.org.peoplesfeedback.Adapters.Politicians.PoliticiansStateWiseAdapter;
 
+import shamgar.org.peoplesfeedback.Model.StateCm;
 import shamgar.org.peoplesfeedback.R;
 
 /**
@@ -35,6 +37,7 @@ public class Politicians extends Fragment  {
     private PoliticiansStateWiseAdapter politiciansStateWiseAdapter;
 
     private CardView politianCadrview;
+    private ArrayList<StateCm> stateList = new ArrayList<>();
 
     public Politicians() {
         // Required empty public constructor
@@ -44,7 +47,7 @@ public class Politicians extends Fragment  {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        politiciansStateWiseAdapter=new PoliticiansStateWiseAdapter(getActivity());
+        politiciansStateWiseAdapter=new PoliticiansStateWiseAdapter(stateList,getActivity());
 
         politiciansRecyclerView=view.findViewById(R.id.politiciansRecyclerView);
         politiciansRecyclerView.setHasFixedSize(true);
@@ -74,8 +77,8 @@ public class Politicians extends Fragment  {
                 });
             }
         });
-
-        getStates();
+        if(stateList.size()== 0)
+            getStates();
     }
 
     private void getStates() {
@@ -87,7 +90,17 @@ public class Politicians extends Fragment  {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Log.e("state", ""+snapshot.getKey());
+                    StateCm stateCm = snapshot.getValue(StateCm.class);
+//                    if(stateCm.getCM() != null){
+                        Log.e("state cm", ""+stateCm.getCM()+snapshot.getValue().toString());
+                        stateCm.setStateName(snapshot.getKey());
+                        stateList.add(stateCm);
+//                    }
+//                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
                 }
+                politiciansStateWiseAdapter.notifyDataSetChanged();
+
+
             }
 
             @Override

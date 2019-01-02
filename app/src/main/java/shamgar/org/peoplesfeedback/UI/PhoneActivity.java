@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import shamgar.org.peoplesfeedback.Model.Followings;
 import shamgar.org.peoplesfeedback.Model.People;
 import shamgar.org.peoplesfeedback.Model.Politics;
 import shamgar.org.peoplesfeedback.R;
