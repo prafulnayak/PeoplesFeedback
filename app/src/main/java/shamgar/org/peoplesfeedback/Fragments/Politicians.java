@@ -82,7 +82,7 @@ public class Politicians extends Fragment  {
     }
 
     private void getStates() {
-        Query postQuery = FirebaseDatabase.getInstance().getReference().child("Politicians")
+        Query postQuery = FirebaseDatabase.getInstance().getReference().child("Politics")
                 .child("india").child("state");
 
         ValueEventListener valueEventListener = new ValueEventListener() {

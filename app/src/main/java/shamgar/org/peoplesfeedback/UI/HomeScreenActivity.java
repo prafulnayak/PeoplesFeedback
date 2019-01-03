@@ -194,6 +194,7 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
             startActivity(contacts);
             finish();
         }
+
         return true;
     }
 

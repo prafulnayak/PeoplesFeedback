@@ -49,8 +49,9 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent subist=new Intent(context, ConstituencyListActivity.class);
-                context.startActivity(subist);
+                Intent intent=new Intent(context, ConstituencyListActivity.class);
+                intent.putExtra("state",details.getStateName());
+                context.startActivity(intent);
             }
         });
 

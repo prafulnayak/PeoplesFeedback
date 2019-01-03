@@ -9,7 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import shamgar.org.peoplesfeedback.Model.News;
+import shamgar.org.peoplesfeedback.Model.PartyStateMla;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.ViewAllPoliticiansActivity;
 
@@ -17,9 +22,13 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
 
     private final Context mContext;
     private static RecyclerView horizontalList;
+    private HorizantalPoliticianAdapter horizontalAdapter;
+    private ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas = new ArrayList<ArrayList<PartyStateMla>>();
+    private ArrayList<PartyStateMla> partyStateMlas = new ArrayList<>();
 
-    public VerticalPoliticianAdapter(Context mContext) {
+    public VerticalPoliticianAdapter(Context mContext, ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas) {
         this.mContext = mContext;
+        this.masterPartyStateMlas = masterPartyStateMlas;
     }
 
     @NonNull
@@ -32,6 +41,17 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
 
     @Override
     public void onBindViewHolder(@NonNull VerticalViewHolder holder, int position) {
+        final ArrayList<PartyStateMla> partyStateMlas = masterPartyStateMlas.get(position);
+        switch (position){
+            case 0:
+                holder.headingRV.setText("State Party");
+                break;
+            case 1:
+                holder.headingRV.setText("State Party Head");
+                break;
+            default:
+                holder.headingRV.setText(partyStateMlas.get(0).getHeading()+" Politicians");
+        }
         holder.politicians_view_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,26 +60,32 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
             }
         });
 
+        horizontalList.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+        horizontalAdapter = new HorizantalPoliticianAdapter(partyStateMlas);
+        horizontalList.setAdapter(horizontalAdapter);
+
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return masterPartyStateMlas.size();
     }
 
     public class VerticalViewHolder extends RecyclerView.ViewHolder
     {
-        private HorizantalPoliticianAdapter horizontalAdapter;
+//        private HorizantalPoliticianAdapter horizontalAdapter;
         private Button politicians_view_all;
+        private TextView headingRV;
 
         public VerticalViewHolder(View itemView) {
             super(itemView);
+            headingRV = itemView.findViewById(R.id.feedbackHeading);
             Context context = itemView.getContext();
             horizontalList = (RecyclerView) itemView.findViewById(R.id.horizontal_recycler_view_politicians);
             politicians_view_all = (Button) itemView.findViewById(R.id.politicians_view_all);
-            horizontalList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            horizontalAdapter = new HorizantalPoliticianAdapter();
-            horizontalList.setAdapter(horizontalAdapter);
+//            horizontalList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+//            horizontalAdapter = new HorizantalPoliticianAdapter();
+//            horizontalList.setAdapter(horizontalAdapter);
         }
     }
 }
