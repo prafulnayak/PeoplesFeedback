@@ -114,7 +114,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         userRef= FirebaseDatabase.getInstance().getReference().child("people");
 
         FirebaseUser user = mAuth.getCurrentUser();
-        if(user.getPhoneNumber()!=null){
+        if(user.getPhoneNumber()!=null && sharedPreference.readPhoneNo().length()>2){
             updateUI(user);
         }
 
@@ -145,7 +145,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
         adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        DatabaseReference states = database.getReference("states");
+        DatabaseReference states = database.getReference("india");
         states.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -174,7 +174,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 stateTextview = (TextView)adapterView.getSelectedView();
                 result = stateTextview.getText().toString();
 
-                DatabaseReference ref = database.getReference("states/"+result);
+                DatabaseReference ref = database.getReference("india/"+result);
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
@@ -207,7 +207,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             {
                 districtTextview = (TextView)adapterView.getSelectedView();
                 district = districtTextview.getText().toString();
-                DatabaseReference ref = database.getReference("states/"+result+"/"+district+"/con");
+                DatabaseReference ref = database.getReference("india/"+result+"/"+district+"/constituancy");
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
