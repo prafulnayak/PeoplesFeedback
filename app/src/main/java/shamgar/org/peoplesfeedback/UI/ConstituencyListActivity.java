@@ -50,7 +50,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(llm);
-        adapter = new VerticalPoliticianAdapter(getApplicationContext(),masterPartyStateMlas);
+        adapter = new VerticalPoliticianAdapter(getApplicationContext(),masterPartyStateMlas,state);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(decoration);
 

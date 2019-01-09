@@ -25,10 +25,12 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
     private HorizantalPoliticianAdapter horizontalAdapter;
     private ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas = new ArrayList<ArrayList<PartyStateMla>>();
     private ArrayList<PartyStateMla> partyStateMlas = new ArrayList<>();
+    private String state;
 
-    public VerticalPoliticianAdapter(Context mContext, ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas) {
+    public VerticalPoliticianAdapter(Context mContext, ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas,String state) {
         this.mContext = mContext;
         this.masterPartyStateMlas = masterPartyStateMlas;
+        this.state=state;
     }
 
     @NonNull
@@ -56,6 +58,7 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
             @Override
             public void onClick(View v) {
                 Intent viewAll=new Intent(mContext, ViewAllPoliticiansActivity.class);
+                viewAll.putExtra("state",state);
                 mContext.startActivity(viewAll);
             }
         });

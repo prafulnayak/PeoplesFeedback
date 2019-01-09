@@ -99,10 +99,7 @@ public class Politicians extends Fragment  {
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
                 }
                 politiciansStateWiseAdapter.notifyDataSetChanged();
-
-
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -116,10 +113,6 @@ public class Politicians extends Fragment  {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_politicians, container, false);
-
-
-
-
 
         return view;
     }

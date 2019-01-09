@@ -287,16 +287,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 });
         if (!senderUserId.equals(receiverUserId)) {
             pm.getMenu().findItem(R.id.invite).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    if (current_state.equals("new")) {
-                        sendchatREquest(senderUserId,pm);
-                    }
-                    if (current_state.equals("request sent")) {
-                        cancelChatRequest(pm);
-                    }
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (current_state.equals("new")) {
+                                sendchatREquest(senderUserId,pm);
+                            }
+                            if (current_state.equals("request sent")) {
+                                cancelChatRequest(pm);
+                            }
 
-                    return true;
+                            return true;
                 }
             });
         }
