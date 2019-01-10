@@ -7,13 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import shamgar.org.peoplesfeedback.R;
 
 public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<ConstituencyListDetailsAdapter.ConstituencyViewHolder> {
     private Context context;
+    private ArrayList<String> constituencyList;
 
-    public ConstituencyListDetailsAdapter(Context context) {
+    public ConstituencyListDetailsAdapter(Context context, ArrayList<String> constituencyList) {
         this.context=context;
+        this.constituencyList=constituencyList;
 
 
     }
@@ -32,7 +36,7 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
 
     @Override
     public int getItemCount() {
-        return 5;
+        return constituencyList.size();
     }
 
     public class ConstituencyViewHolder extends RecyclerView.ViewHolder

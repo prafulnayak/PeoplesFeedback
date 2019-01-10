@@ -8,15 +8,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.Profile_TagActivity;
 
 public class TaglistAdapter extends RecyclerView.Adapter {
 
     private Context context;
+    private ArrayList<String> tagList;
 
-    public TaglistAdapter(Context context) {
+    public TaglistAdapter(Context context, ArrayList<String> tagList) {
         this.context=context;
+        this.tagList=tagList;
 
     }
 
@@ -43,7 +47,7 @@ public class TaglistAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 5;
+        return tagList.size();
     }
 
     public class TaglistViewHolder extends RecyclerView.ViewHolder

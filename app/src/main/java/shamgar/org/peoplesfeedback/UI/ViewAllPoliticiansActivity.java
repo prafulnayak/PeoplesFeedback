@@ -19,7 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import shamgar.org.peoplesfeedback.Adapters.Politicians.ViewAllPoliticiansAdapter;
-import shamgar.org.peoplesfeedback.Model.StateCm;
 import shamgar.org.peoplesfeedback.R;
 
 import static android.widget.LinearLayout.VERTICAL;
@@ -83,7 +82,7 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
                     Log.e("districtsList", ""+MPList);
                     DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-                    allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList);
+                    allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
                     viewAllRecyclerView.setHasFixedSize(true);
                     viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
                     viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
@@ -119,7 +118,7 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
                     Log.e("districtsList", ""+districtList);
                     DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-                    allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList);
+                    allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state);
                     viewAllRecyclerView.setHasFixedSize(true);
                     viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
                     viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
