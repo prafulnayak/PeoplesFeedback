@@ -42,8 +42,8 @@ public class ConstituencyListActivity extends AppCompatActivity {
         String state = getIntent().getStringExtra("state");
 
 
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         recyclerView=(RecyclerView)findViewById(R.id.vertical_politicians_sub_list);
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(),VERTICAL);
@@ -133,15 +133,4 @@ public class ConstituencyListActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home)
-        {
-            Intent backpressed=new Intent(ConstituencyListActivity.this, HomeScreenActivity.class);
-            startActivity(backpressed);
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

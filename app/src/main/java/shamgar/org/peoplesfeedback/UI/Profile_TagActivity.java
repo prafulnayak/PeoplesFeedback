@@ -23,6 +23,10 @@ public class Profile_TagActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tag_profile_updated);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         tag_gridViewImages=(ImageButton)findViewById(R.id.tag_gridViewImages);
         recyclerView=(RecyclerView)findViewById(R.id.profile_tag_gridImages_rv);
         tag_gridViewImages.setOnClickListener(new View.OnClickListener() {

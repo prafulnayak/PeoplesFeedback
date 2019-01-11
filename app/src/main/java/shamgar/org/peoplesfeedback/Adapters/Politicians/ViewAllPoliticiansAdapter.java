@@ -73,7 +73,6 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                                 if (!snapshot.getKey().equals("Constituancy")){
                                     TagList.add(snapshot.getKey().toString());
                                 }
-
                             }
                             Log.e("taglist", "" + TagList);
                             holder.taglistRecyclerView.setVisibility(View.VISIBLE);
@@ -83,7 +82,6 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                             holder.taglistRecyclerView.setAdapter(taglistAdapter);
                             taglistAdapter.notifyDataSetChanged();
                         }
-
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
 

@@ -38,6 +38,9 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_all_politicians);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
          state = getIntent().getStringExtra("state");
 
         Toast.makeText(getApplicationContext(),"state "+ state,Toast.LENGTH_SHORT).show();

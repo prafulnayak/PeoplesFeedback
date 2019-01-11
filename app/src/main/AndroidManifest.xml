@@ -63,12 +63,16 @@
         <!-- </provider> -->
 
         <activity android:name=".UI.CameraActivity" />
-        <activity android:name=".UI.ConstituencyListActivity" />
-        <activity android:name=".UI.ViewAllPoliticiansActivity" />
+        <activity android:name=".UI.ConstituencyListActivity"
+            android:parentActivityName=".UI.MainActivity"/>
+        <activity android:name=".UI.ViewAllPoliticiansActivity"
+            android:parentActivityName=".UI.MainActivity"/>
         <activity android:name=".UI.ContactsActivity" />
         <activity android:name=".UI.ChatActivity" />
-        <activity android:name=".UI.Profile_TagActivity" />
-        <activity android:name=".UI.User_profile_Activity" />
+        <activity android:name=".UI.Profile_TagActivity"
+            android:parentActivityName=".UI.MainActivity"/>
+        <activity android:name=".UI.User_profile_Activity"
+            android:parentActivityName=".UI.MainActivity"/>
         <activity android:name=".UI.Entry"></activity>
     </application>
 
