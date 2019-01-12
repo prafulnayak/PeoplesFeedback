@@ -18,7 +18,7 @@
             android:background="@drawable/button_backround">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/tagDistrictName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -31,7 +31,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"/>
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tagName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -42,10 +42,10 @@
                 android:text="GVMC"
                 android:textColor="@color/white"
                 android:textSize="14sp"
-                android:layout_below="@+id/textView2"/>
+                android:layout_below="@+id/tagDistrictName"/>
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/tagFollowButton"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_marginBottom="8dp"
@@ -56,7 +56,7 @@
                 android:layout_centerHorizontal="true"
                 android:background="@drawable/white_round_background"
                 android:textAllCaps="false"
-                android:layout_below="@id/textView3"/>
+                android:layout_below="@id/tagName"/>
 
             <ImageButton
                 android:id="@+id/imageButton"
@@ -65,12 +65,12 @@
                 android:background="@color/colorPrimaryDark"
                 app:srcCompat="@drawable/ic_screen_share_white_24dp"
                 tools:ignore="VectorDrawableCompat"
-                android:layout_toRightOf="@+id/button"
-                android:layout_below="@id/textView3"
+                android:layout_toRightOf="@+id/tagFollowButton"
+                android:layout_below="@id/tagName"
                 android:layout_margin="@dimen/dimen_15"/>
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/followersForTags"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -79,8 +79,8 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_margin="@dimen/dimen_15"
-              android:layout_toLeftOf="@+id/button"
-                android:layout_below="@id/textView3"/>
+              android:layout_toLeftOf="@+id/tagFollowButton"
+                android:layout_below="@id/tagName"/>
 
 
         </RelativeLayout>
