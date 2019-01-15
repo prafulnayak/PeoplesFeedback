@@ -18,22 +18,11 @@ import shamgar.org.peoplesfeedback.R;
 
 public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<ConstituencyListDetailsAdapter.ConstituencyViewHolder> {
     private Context context;
-    private ArrayList<String> constituencyList;
-    private ArrayList<String> constituencyMlaImage;
-    private ArrayList<String> constituencyMlaname;
-    private ArrayList<String> constituencyMlaParty;
-    private ArrayList<String> constituencyMlaRating;
+
 
     private ArrayList<MLAModel> mlaModels;
 
-    public ConstituencyListDetailsAdapter(Context context, ArrayList<String> constituencyList, ArrayList<String> constituencyMlaImage, ArrayList<String> constituencyMlaname, ArrayList<String> constituencyMlaParty, ArrayList<String> constituencyMlaRating) {
-        this.constituencyList=constituencyList;
-        this.context=context;
-        this.constituencyMlaImage=constituencyMlaImage;
-        this.constituencyMlaname=constituencyMlaname;
-        this.constituencyMlaParty=constituencyMlaParty;
-        this.constituencyMlaRating=constituencyMlaRating;
-    }
+
 
     public ConstituencyListDetailsAdapter(Context context, ArrayList<MLAModel> mlaModels) {
         this.context = context;

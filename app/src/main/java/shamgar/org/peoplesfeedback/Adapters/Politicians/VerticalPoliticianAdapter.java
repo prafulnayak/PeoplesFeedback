@@ -24,7 +24,7 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
     private static RecyclerView horizontalList;
     private HorizantalPoliticianAdapter horizontalAdapter;
     private ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas = new ArrayList<ArrayList<PartyStateMla>>();
-    private ArrayList<PartyStateMla> partyStateMlas = new ArrayList<>();
+
     private String state;
 
     public VerticalPoliticianAdapter(Context mContext, ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas,String state) {
@@ -86,9 +86,7 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
             Context context = itemView.getContext();
             horizontalList = (RecyclerView) itemView.findViewById(R.id.horizontal_recycler_view_politicians);
             politicians_view_all = (Button) itemView.findViewById(R.id.politicians_view_all);
-//            horizontalList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-//            horizontalAdapter = new HorizantalPoliticianAdapter();
-//            horizontalList.setAdapter(horizontalAdapter);
+
         }
     }
 }

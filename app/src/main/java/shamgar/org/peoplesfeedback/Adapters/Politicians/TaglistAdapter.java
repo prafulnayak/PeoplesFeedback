@@ -18,20 +18,11 @@ import shamgar.org.peoplesfeedback.UI.Profile_TagActivity;
 public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistViewHolder> {
 
     private Context context;
-    private ArrayList<String> tagnames;
-    private ArrayList<String> rating;
-    private ArrayList<String> votes;
-    private String s;
+
 
     private ArrayList<GovAgency> govAgencies;
 
-    public TaglistAdapter(Context context, ArrayList<String> tagnames, ArrayList<String> rating, ArrayList<String> votes, String s) {
-        this.context=context;
-        this.tagnames=tagnames;
-        this.rating=rating;
-        this.votes=votes;
-        this.s=s;
-    }
+
 
     public TaglistAdapter(Context context, ArrayList<GovAgency> govAgencies) {
         this.context = context;
