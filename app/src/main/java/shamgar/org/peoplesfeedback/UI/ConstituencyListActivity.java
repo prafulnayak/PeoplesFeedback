@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -62,25 +63,29 @@ public class ConstituencyListActivity extends AppCompatActivity {
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("Party");
 
+
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    PartyStateMla singleSnapParty = new PartyStateMla();
-                    singleSnapParty.setName(snapshot.getKey());
-                    singleSnapParty.setHeading("State Party");
-                    stateMajorParty.add(singleSnapParty);
+                if(masterPartyStateMlas.size()== 0){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        PartyStateMla singleSnapParty = new PartyStateMla();
+                        singleSnapParty.setName(snapshot.getKey());
+                        singleSnapParty.setHeading("State Party");
+                        stateMajorParty.add(singleSnapParty);
 
-                    PartyStateMla singleSnapPartyHead = new PartyStateMla();
-                    Log.e("child",snapshot.getValue().toString());
-                    singleSnapPartyHead.setName(snapshot.getValue().toString());
-                    singleSnapParty.setHeading("State Party Head");
-                    stateMajorPartyHead.add(singleSnapPartyHead);
+                        PartyStateMla singleSnapPartyHead = new PartyStateMla();
+                        Log.e("child",snapshot.getValue().toString());
+                        singleSnapPartyHead.setName(snapshot.getValue().toString());
+                        singleSnapParty.setHeading("State Party Head");
+                        stateMajorPartyHead.add(singleSnapPartyHead);
+                    }
+
+                    masterPartyStateMlas.add(stateMajorParty);
+                    masterPartyStateMlas.add(stateMajorPartyHead);
+                    getStateMlaList(state);
                 }
 
-                masterPartyStateMlas.add(stateMajorParty);
-                masterPartyStateMlas.add(stateMajorPartyHead);
-                getStateMlaList(state);
             }
 
             @Override
@@ -95,33 +100,46 @@ public class ConstituencyListActivity extends AppCompatActivity {
     private void getStateMlaList(String state) {
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("MLA").child("district");
-        ValueEventListener valueEventListener = new ValueEventListener() {
+
+        ChildEventListener childEventListener = new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onChildAdded(DataSnapshot snapshot, String s) {
+                ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
 
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                    ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
+                if(snapshot.hasChild("Constituancy")){
+                    DataSnapshot snap = snapshot.child("Constituancy");
+                    for(DataSnapshot dataSnapshotP: snap.getChildren()){
+                        PartyStateMla singleSnapPoliticians = new PartyStateMla();
 
+                        singleSnapPoliticians.setHeading(snapshot.getKey());
+                        singleSnapPoliticians.setName(dataSnapshotP.child("mla_name").getValue(String.class));
 
-                    if(snapshot.hasChild("Constituancy")){
-                        DataSnapshot snap = snapshot.child("Constituancy");
-                        for(DataSnapshot dataSnapshotP: snap.getChildren()){
-                            PartyStateMla singleSnapPoliticians = new PartyStateMla();
+                        Log.e("pol child",singleSnapPoliticians.getHeading());
+                        Log.e("pol child",dataSnapshotP.child("mla_name").getValue(String.class));
 
-                            singleSnapPoliticians.setHeading(snapshot.getKey());
-                            singleSnapPoliticians.setName(dataSnapshotP.child("mla_name").getValue(String.class));
-
-                            Log.e("pol child",singleSnapPoliticians.getHeading());
-                            Log.e("pol child",dataSnapshotP.child("mla_name").getValue(String.class));
-
-                            districtPoliticians.add(singleSnapPoliticians);
-
-                        }
-                        masterPartyStateMlas.add(districtPoliticians);
-                        adapter.notifyDataSetChanged();
+                        districtPoliticians.add(singleSnapPoliticians);
 
                     }
+                    masterPartyStateMlas.add(districtPoliticians);
+                    adapter.notifyDataSetChanged();
+
                 }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -129,7 +147,43 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
             }
         };
-        postQuery.addValueEventListener(valueEventListener);
+
+//        ValueEventListener valueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+//                    ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
+//
+//
+//                    if(snapshot.hasChild("Constituancy")){
+//                        DataSnapshot snap = snapshot.child("Constituancy");
+//                        for(DataSnapshot dataSnapshotP: snap.getChildren()){
+//                            PartyStateMla singleSnapPoliticians = new PartyStateMla();
+//
+//                            singleSnapPoliticians.setHeading(snapshot.getKey());
+//                            singleSnapPoliticians.setName(dataSnapshotP.child("mla_name").getValue(String.class));
+//
+//                            Log.e("pol child",singleSnapPoliticians.getHeading());
+//                            Log.e("pol child",dataSnapshotP.child("mla_name").getValue(String.class));
+//
+//                            districtPoliticians.add(singleSnapPoliticians);
+//
+//                        }
+//                        masterPartyStateMlas.add(districtPoliticians);
+//                        adapter.notifyDataSetChanged();
+//
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//        postQuery.addValueEventListener(valueEventListener);
+        postQuery.addChildEventListener(childEventListener);
         adapter.notifyDataSetChanged();
     }
 

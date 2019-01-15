@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -85,27 +86,48 @@ public class Politicians extends Fragment  {
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("Politics")
                 .child("india").child("state");
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        ChildEventListener childEventListener = new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.e("state", ""+snapshot.getKey());
-                    StateCm stateCm = snapshot.getValue(StateCm.class);
+            public void onChildAdded(DataSnapshot snapshot, String s) {
+                Log.e("state", ""+snapshot.getKey());
+                StateCm stateCm = snapshot.getValue(StateCm.class);
 //                    if(stateCm.getCM() != null){
-                        Log.e("state cm", ""+stateCm.getCM()+snapshot.getValue().toString());
-                        stateCm.setStateName(snapshot.getKey());
-                        stateList.add(stateCm);
-//                    }
-//                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
-                }
+                Log.e("state cm", ""+stateCm.getCM()+snapshot.getValue().toString());
+                stateCm.setStateName(snapshot.getKey());
+
+                stateList.add(stateCm);
+
                 politiciansStateWiseAdapter.notifyDataSetChanged();
             }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                StateCm stateCm = dataSnapshot.getValue(StateCm.class);
+                for(int i =0; i<stateList.size();i++){
+                    if(stateList.get(i).getStateName().equals(dataSnapshot.getKey())){
+                        stateList.get(i).setRating(stateCm.getRating());
+                        politiciansStateWiseAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         };
-        postQuery.addValueEventListener(valueEventListener);
+
+        postQuery.addChildEventListener(childEventListener);
     }
 
     @Override
