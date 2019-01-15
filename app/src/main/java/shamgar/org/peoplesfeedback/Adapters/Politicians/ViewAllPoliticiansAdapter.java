@@ -2,7 +2,6 @@ package shamgar.org.peoplesfeedback.Adapters.Politicians;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,12 +20,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import shamgar.org.peoplesfeedback.Model.TagDataModel;
+import shamgar.org.peoplesfeedback.Model.GovAgency;
+import shamgar.org.peoplesfeedback.Model.MLAModel;
 import shamgar.org.peoplesfeedback.R;
-
-import static android.widget.LinearLayout.VERTICAL;
 
 public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPoliticiansAdapter.ViewallViewHolder> {
     Context context;
@@ -40,7 +38,8 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
     ArrayList<String> constituencyMlaParty=new ArrayList<>();
     ArrayList<String> constituencyMlaRating=new ArrayList<>();
 
-
+    ArrayList<GovAgency> govAgencies = new ArrayList<>();
+    ArrayList<MLAModel> mlaModels = new ArrayList<>();
 
     private TaglistAdapter taglistAdapter;
     private ConstituencyListDetailsAdapter constituencyListDetailsAdapter;
@@ -81,11 +80,17 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                     constituencyMlaname.clear();
                     constituencyMlaParty.clear();
                     constituencyMlaRating.clear();
+//                    govAgencies.clear();
+                    holder.taglistRecyclerView.setVisibility(View.VISIBLE);
+                    holder.constituencyRecyclerview.setVisibility(View.VISIBLE);
                     Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
                             .child(state).child("MLA").child("district").child(districtList.get(position));
+
                     ValueEventListener valueEventListener = new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            govAgencies.clear();
+                            mlaModels.clear();
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 if (!snapshot.exists()){
                                     Toast.makeText(context,"data not avaliable",Toast.LENGTH_SHORT).show();
@@ -95,15 +100,38 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                                     tagnames.add(snapshot.getKey().toString());
                                     rating.add(snapshot.child("rating").getValue().toString());
                                     votes.add(snapshot.child("votes").getValue().toString());
+                                    GovAgency govAgency = snapshot.getValue(GovAgency.class);
+                                    govAgency.setGovAgencyName(snapshot.getKey());
+                                    govAgency.setDistrictName(districtList.get(position));
+                                    govAgencies.add(govAgency);
+                                }else {
+                                    for(DataSnapshot dataSnapshotC : snapshot.getChildren()){
+                                        MLAModel mlaModel = dataSnapshotC.getValue(MLAModel.class);
+                                        Log.e("mla con",dataSnapshotC.getKey()+mlaModel.getMla_name()+mlaModel.getRating()+mlaModel.getMla_image());
+
+                                        mlaModel.setConstituancyName(dataSnapshotC.getKey());
+                                        mlaModels.add(mlaModel);
+                                    }
                                 }
+
                             }
+
                             Log.e("districtdfsadf", "" + districtList.get(position).toString());
-                            holder.taglistRecyclerView.setVisibility(View.VISIBLE);
-                            taglistAdapter = new TaglistAdapter(context, tagnames,rating,votes,districtList.get(position).toString());
+//                            holder.taglistRecyclerView.setVisibility(View.VISIBLE);
+//                            taglistAdapter = new TaglistAdapter(context, tagnames,rating,votes,districtList.get(position).toString());
+                            taglistAdapter = new TaglistAdapter(context, govAgencies);
                             holder.taglistRecyclerView.setHasFixedSize(true);
                             holder.taglistRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                             holder.taglistRecyclerView.setAdapter(taglistAdapter);
                             taglistAdapter.notifyDataSetChanged();
+
+//                            holder.constituencyRecyclerview.setVisibility(View.VISIBLE);
+//                            constituencyListDetailsAdapter=new ConstituencyListDetailsAdapter(context,constituencyList,constituencyMlaImage,constituencyMlaname,constituencyMlaParty,constituencyMlaRating);
+                            constituencyListDetailsAdapter=new ConstituencyListDetailsAdapter(context,mlaModels);
+                            holder.constituencyRecyclerview.setHasFixedSize(true);
+                            holder.constituencyRecyclerview.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+                            holder.constituencyRecyclerview.setAdapter(constituencyListDetailsAdapter);
+                            constituencyListDetailsAdapter.notifyDataSetChanged();
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
@@ -136,7 +164,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                         public void onCancelled(DatabaseError databaseError) {
                         }
                     };
-                    postQuery2.addValueEventListener(valueEventListener1);
+//                    postQuery2.addValueEventListener(valueEventListener1);
                 }
                 else
                 {

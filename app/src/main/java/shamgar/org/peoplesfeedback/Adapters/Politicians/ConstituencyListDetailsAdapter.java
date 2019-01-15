@@ -11,9 +11,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 
+import shamgar.org.peoplesfeedback.Model.MLAModel;
 import shamgar.org.peoplesfeedback.R;
 
 public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<ConstituencyListDetailsAdapter.ConstituencyViewHolder> {
@@ -24,6 +24,8 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
     private ArrayList<String> constituencyMlaParty;
     private ArrayList<String> constituencyMlaRating;
 
+    private ArrayList<MLAModel> mlaModels;
+
     public ConstituencyListDetailsAdapter(Context context, ArrayList<String> constituencyList, ArrayList<String> constituencyMlaImage, ArrayList<String> constituencyMlaname, ArrayList<String> constituencyMlaParty, ArrayList<String> constituencyMlaRating) {
         this.constituencyList=constituencyList;
         this.context=context;
@@ -31,6 +33,11 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
         this.constituencyMlaname=constituencyMlaname;
         this.constituencyMlaParty=constituencyMlaParty;
         this.constituencyMlaRating=constituencyMlaRating;
+    }
+
+    public ConstituencyListDetailsAdapter(Context context, ArrayList<MLAModel> mlaModels) {
+        this.context = context;
+        this.mlaModels = mlaModels;
     }
 
 
@@ -44,9 +51,11 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
     @Override
     public void onBindViewHolder(@NonNull ConstituencyViewHolder holder, int position) {
 
-        holder.constituency_mla_name.setText(constituencyMlaname.get(position));
-        holder.txtMlaConstituency.setText(constituencyList.get(position));
-        holder.txt_MlaRating_In_ConstituencyList.setText(constituencyMlaRating.get(position));
+        MLAModel mlaModel = mlaModels.get(position);
+
+        holder.constituency_mla_name.setText(mlaModel.getMla_name());
+        holder.txtMlaConstituency.setText(mlaModel.getConstituancyName());
+        holder.txt_MlaRating_In_ConstituencyList.setText(String.valueOf(mlaModel.getRating()));
 
         Glide.with(context).load("https://upload.wikimedia.org/wikipedia/commons/e/e1/Nuernberg-fronfeste-und-kettensteg-v-O.jpg").into(holder.constituency_mla_image);
 
@@ -54,7 +63,7 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
 
     @Override
     public int getItemCount() {
-        return constituencyList.size();
+        return mlaModels.size();
     }
 
     public class ConstituencyViewHolder extends RecyclerView.ViewHolder

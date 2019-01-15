@@ -49,17 +49,27 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
         viewAllRecyclerView=(RecyclerView)findViewById(R.id.viewAllRcyclerView);
         gettingMlaList=(Button) findViewById(R.id.gettingMlaList);
         gettingMPList=(Button) findViewById(R.id.gettingMPList);
+
+        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+//        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state);
+        viewAllRecyclerView.setHasFixedSize(true);
+        viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+//        viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
+        viewAllRecyclerView.addItemDecoration(decoration);
+
         getDistricts();
 
         gettingMlaList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state);
                 getDistricts();
             }
         });
         gettingMPList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
                 getDistrictsMpList();
             }
         });
@@ -68,6 +78,7 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
 
     private void getDistrictsMpList()
     {
+        MPList.clear();
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("MP");
 
@@ -75,22 +86,26 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                MPList.clear();
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.e("Mps", ""+snapshot.getKey());
+
+                if(MPList.size() == 0){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+
+                        Log.e("Mps", ""+snapshot.getKey());
 
 //                    if(stateCm.getCM() != null){
-                    MPList.add(snapshot.getKey().toString());
+                        MPList.add(snapshot.getKey().toString());
 //                    }
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
-                    Log.e("districtsList", ""+MPList);
-                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-                    allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
-                    viewAllRecyclerView.setHasFixedSize(true);
-                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-                    viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
-                    viewAllRecyclerView.addItemDecoration(decoration);
-                    allPoliticiansAdapter.notifyDataSetChanged();
+                        Log.e("districtsList", ""+MPList);
+//                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
+//                    viewAllRecyclerView.setHasFixedSize(true);
+//                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+                        viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
+//                    viewAllRecyclerView.addItemDecoration(decoration);
+                        allPoliticiansAdapter.notifyDataSetChanged();
+                    }
+
                 }
             }
             @Override
@@ -112,21 +127,25 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.e("districts", ""+snapshot.getKey());
+                if(districtList.size() == 0){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+
+                        Log.e("districts", ""+snapshot.getKey());
 
 //                    if(stateCm.getCM() != null){
-                    districtList.add(snapshot.getKey().toString());
+                        districtList.add(snapshot.getKey().toString());
 //                    }
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
-                    Log.e("districtsList", ""+districtList);
-                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-                    allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state);
-                    viewAllRecyclerView.setHasFixedSize(true);
-                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-                    viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
-                    viewAllRecyclerView.addItemDecoration(decoration);
-                    allPoliticiansAdapter.notifyDataSetChanged();
+                        Log.e("districtsList", ""+districtList);
+//                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state);
+//                    viewAllRecyclerView.setHasFixedSize(true);
+//                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+                        viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
+//                    viewAllRecyclerView.addItemDecoration(decoration);
+                        allPoliticiansAdapter.notifyDataSetChanged();
+                    }
+
                 }
             }
             @Override

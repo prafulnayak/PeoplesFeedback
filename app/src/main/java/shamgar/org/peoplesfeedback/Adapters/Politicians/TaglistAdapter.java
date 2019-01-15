@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import shamgar.org.peoplesfeedback.Model.GovAgency;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.Profile_TagActivity;
 
@@ -22,12 +23,19 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
     private ArrayList<String> votes;
     private String s;
 
+    private ArrayList<GovAgency> govAgencies;
+
     public TaglistAdapter(Context context, ArrayList<String> tagnames, ArrayList<String> rating, ArrayList<String> votes, String s) {
         this.context=context;
         this.tagnames=tagnames;
         this.rating=rating;
         this.votes=votes;
         this.s=s;
+    }
+
+    public TaglistAdapter(Context context, ArrayList<GovAgency> govAgencies) {
+        this.context = context;
+        this.govAgencies = govAgencies;
     }
 
 
@@ -40,16 +48,19 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
 
     @Override
     public void onBindViewHolder(@NonNull TaglistViewHolder holder, final int position) {
-        holder.district_name_in_tag_list.setText(s);
-        holder.municipality_tag_tag_list.setText(tagnames.get(position).toString());
-        holder.tag_rating_in_tag_list.setText(rating.get(position).toString());
-        holder.votes_for_tag_in_tag_List.setText(votes.get(position).toString());
+
+        final GovAgency govAgency = govAgencies.get(position);
+
+        holder.district_name_in_tag_list.setText(govAgency.getDistrictName());
+        holder.municipality_tag_tag_list.setText(govAgency.getGovAgencyName());
+        holder.tag_rating_in_tag_list.setText(String.valueOf(govAgency.getRating()));
+        holder.votes_for_tag_in_tag_List.setText(String.valueOf(govAgency.getVotes()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent tags_profile=new Intent(context, Profile_TagActivity.class);
-                tags_profile.putExtra("district",s);
-                tags_profile.putExtra("tag",tagnames.get(position));
+                tags_profile.putExtra("district",govAgency.getDistrictName());
+                tags_profile.putExtra("tag",govAgency.getGovAgencyName());
                 context.startActivity(tags_profile);
             }
         });
@@ -58,7 +69,7 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
 
     @Override
     public int getItemCount() {
-        return tagnames.size();
+        return govAgencies.size();
     }
 
     public class TaglistViewHolder extends RecyclerView.ViewHolder
