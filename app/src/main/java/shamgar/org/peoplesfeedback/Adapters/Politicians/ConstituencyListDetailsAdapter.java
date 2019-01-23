@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.Adapters.Politicians;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 
 import shamgar.org.peoplesfeedback.Model.MLAModel;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.UI.Profile_mla_Activity;
 
 public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<ConstituencyListDetailsAdapter.ConstituencyViewHolder> {
     private Context context;
@@ -40,11 +42,21 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
     @Override
     public void onBindViewHolder(@NonNull ConstituencyViewHolder holder, int position) {
 
-        MLAModel mlaModel = mlaModels.get(position);
+        final MLAModel mlaModel = mlaModels.get(position);
 
         holder.constituency_mla_name.setText(mlaModel.getMla_name());
         holder.txtMlaConstituency.setText(mlaModel.getConstituancyName());
         holder.txt_MlaRating_In_ConstituencyList.setText(String.valueOf(mlaModel.getRating()));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mlaProfile=new Intent(context, Profile_mla_Activity.class);
+                mlaProfile.putExtra("mlaName",mlaModel.getMla_name());
+                mlaProfile.putExtra("mlaConstituency",mlaModel.getConstituancyName());
+                context.startActivity(mlaProfile);
+            }
+        });
 
         Glide.with(context).load("https://upload.wikimedia.org/wikipedia/commons/e/e1/Nuernberg-fronfeste-und-kettensteg-v-O.jpg").into(holder.constituency_mla_image);
 

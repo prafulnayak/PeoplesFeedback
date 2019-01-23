@@ -44,8 +44,8 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
 
         holder.district_name_in_tag_list.setText(govAgency.getDistrictName());
         holder.municipality_tag_tag_list.setText(govAgency.getGovAgencyName());
-        holder.tag_rating_in_tag_list.setText(String.valueOf(govAgency.getRating()));
-        holder.votes_for_tag_in_tag_List.setText(String.valueOf(govAgency.getVotes()));
+        holder.tag_rating_in_tag_list.setText("Rating "+String.valueOf(govAgency.getRating()));
+        holder.votes_for_tag_in_tag_List.setText("Votes"+String.valueOf(govAgency.getVotes()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
