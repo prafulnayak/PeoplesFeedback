@@ -31,7 +31,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +114,22 @@ public class ChatActivity extends AppCompatActivity {
                     .child(messageSenderId)
                     .child(messageReceiverId)
                     .push();
+
+
+            String saveCurrentTime,saveCurrentDate;
+            Calendar calendar=Calendar.getInstance();
+            SimpleDateFormat currentDate=new SimpleDateFormat("MMM dd,yyyy");
+            saveCurrentDate=currentDate.format(calendar.getTime());
+            SimpleDateFormat currentTime=new SimpleDateFormat("hh:mm a");
+            saveCurrentTime=currentTime.format(calendar.getTime());
+
             String messagePushId=userMessageKeyRef.getKey();
             Map messageTextBody=new HashMap();
             messageTextBody.put("message",message);
             messageTextBody.put("type","text");
             messageTextBody.put("from",messageSenderId);
+            messageTextBody.put("time",saveCurrentTime);
+            messageTextBody.put("date",saveCurrentDate);
 
             Map messageBodyDetails=new HashMap();
             messageBodyDetails.put(messageSenderRef+"/"+messagePushId,messageTextBody);

@@ -2,6 +2,9 @@ package shamgar.org.peoplesfeedback.UI;
 
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,12 +24,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import shamgar.org.peoplesfeedback.Adapters.TabsAccessorAdaptor;
+import shamgar.org.peoplesfeedback.Fragments.Chat;
+import shamgar.org.peoplesfeedback.Fragments.Home;
+import shamgar.org.peoplesfeedback.Fragments.Notifications;
+import shamgar.org.peoplesfeedback.Fragments.Politicians;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
-public class HomeScreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
+public class HomeScreenActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -77,106 +85,119 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
         imagesList.add(R.drawable.ic_chat_black_24dp);
         imagesList.add(R.drawable.ic_notifications_white_24dp);
 
-        tabsAccessorAdaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
-        viewPager.setAdapter(tabsAccessorAdaptor);
+
+        setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-
-
-        gestureDetector=new GestureDetector(this);
-
+        setupTabIcons();
+    }
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(imagesList.get(0));
+        tabLayout.getTabAt(1).setIcon(imagesList.get(1));
+        tabLayout.getTabAt(2).setIcon(imagesList.get(2));
+        tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+    }
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(new Home(), "Home");
+        adapter.addFrag(new Politicians(), "Politicians");
+        adapter.addFrag(new Chat(), "Chat");
+        adapter.addFrag(new Notifications(), "Notification");
+        viewPager.setAdapter(adapter);
     }
 
 
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-    }
-
-    @Override
-    public boolean onFling(MotionEvent downEvent, MotionEvent moveEvent, float velocityX, float velocityY) {
-        boolean result=false;
-        float diffy=moveEvent.getY()-downEvent.getY();
-        float diffx=moveEvent.getX()-downEvent.getX();
-        if (Math.abs(diffx)>Math.abs(diffy)) {
-            //swipe left right
-
-            if (Math.abs(diffx)>100 && Math.abs(velocityX)>100)
-            {
-                if (diffx>0)
-                {
-                    onSwipeRight();
-                }
-                else
-                {
-                    onSwipeLeft();
-                }
-                result=true;
-            }
-        }
-        else
-        {
-            //swipe up down
-        }
-        return result;
-    }
-
-    private void onSwipeRight() {
-        Toast.makeText(getApplicationContext(), "Swipe to the right",
-                Toast.LENGTH_SHORT).show();
-
-    }
-
-    private void onSwipeLeft()
-    {
-//        Home home=new Home();
-//        Politicians politicians=new Politicians();
-//        Fragment homeFragment=getHomeFragment(home);
-//        Fragment PoliticiansFragment=getPoliticiansFragment(politicians);
-//        Fragment chatFragment=getChatFragment(new Chat());
-//        Fragment NotificationFragment=getNotificationsFragment(new Notifications());
-       Toast.makeText(getApplicationContext(), "Swipe to the left",
-                Toast.LENGTH_SHORT).show();
-
-//         strhome=homeFragment.toString();
-       // pol=PoliticiansFragment.getTag().toString();
 
 
-      //   chat=chatFragment.toString();
-       // notifications=NotificationFragment.toString();
-
-//        if (strhome.contains("Home"))
-//        {
-//                getSupportFragmentManager().beginTransaction()
-//                                .replace(R.id.frame_container, new Politicians(),"Politicians")
-//                                .commit();
+//    @Override
+//    public boolean onDown(MotionEvent e) {
+//        return false;
+//    }
+//
+//    @Override
+//    public void onShowPress(MotionEvent e) {
+//
+//    }
+//
+//    @Override
+//    public boolean onSingleTapUp(MotionEvent e) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+//        return false;
+//    }
+//
+//    @Override
+//    public void onLongPress(MotionEvent e) {
+//    }
+//
+//    @Override
+//    public boolean onFling(MotionEvent downEvent, MotionEvent moveEvent, float velocityX, float velocityY) {
+//        boolean result=false;
+//        float diffy=moveEvent.getY()-downEvent.getY();
+//        float diffx=moveEvent.getX()-downEvent.getX();
+//        if (Math.abs(diffx)>Math.abs(diffy)) {
+//            //swipe left right
+//
+//            if (Math.abs(diffx)>100 && Math.abs(velocityX)>100)
+//            {
+//                if (diffx>0)
+//                {
+//                    onSwipeRight();
+//                }
+//                else
+//                {
+//                    onSwipeLeft();
+//                }
+//                result=true;
+//            }
 //        }
-
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        gestureDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
+//        else
+//        {
+//            //swipe up down
+//        }
+//        return result;
+//    }
+//
+//    private void onSwipeRight() {
+//        Toast.makeText(getApplicationContext(), "Swipe to the right",
+//                Toast.LENGTH_SHORT).show();
+//
+//    }
+//
+//    private void onSwipeLeft()
+//    {
+////        Home home=new Home();
+////        Politicians politicians=new Politicians();
+////        Fragment homeFragment=getHomeFragment(home);
+////        Fragment PoliticiansFragment=getPoliticiansFragment(politicians);
+////        Fragment chatFragment=getChatFragment(new Chat());
+////        Fragment NotificationFragment=getNotificationsFragment(new Notifications());
+//        Toast.makeText(getApplicationContext(), "Swipe to the left",
+//                Toast.LENGTH_SHORT).show();
+//
+////         strhome=homeFragment.toString();
+//        // pol=PoliticiansFragment.getTag().toString();
+//
+//
+//        //   chat=chatFragment.toString();
+//        // notifications=NotificationFragment.toString();
+//
+////        if (strhome.contains("Home"))
+////        {
+////                getSupportFragmentManager().beginTransaction()
+////                                .replace(R.id.frame_container, new Politicians(),"Politicians")
+////                                .commit();
+////        }
+//
+//    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        gestureDetector.onTouchEvent(event);
+//        return super.onTouchEvent(event);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -242,5 +263,34 @@ public class HomeScreenActivity extends AppCompatActivity implements GestureDete
             updateUserStatus("offline");
         }
 
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFrag(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }

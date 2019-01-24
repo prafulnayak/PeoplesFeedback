@@ -67,20 +67,33 @@
                 tools:ignore="VectorDrawableCompat"
                 android:layout_toRightOf="@+id/mlaFollowButton"
                 android:layout_below="@id/mlaName"
-                android:layout_margin="@dimen/dimen_15"/>
+                android:layout_marginTop="@dimen/dimen_15"
+                android:layout_marginLeft="30dp"/>
 
             <TextView
                 android:id="@+id/followersForMla"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="followers"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:layout_margin="@dimen/dimen_15"
+               android:layout_marginTop="10dp"
                 android:layout_toLeftOf="@+id/mlaFollowButton"
                 android:layout_below="@id/mlaName"/>
+            <TextView
+                android:id="@+id/followersForMlaCount"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:layout_toLeftOf="@+id/mlaFollowButton"
+                android:layout_below="@id/followersForMla"/>
 
 
         </RelativeLayout>
@@ -121,7 +134,7 @@
                     app:layout_constraintVertical_bias="0.135" />
 
                 <TextView
-                    android:id="@+id/textView6"
+                    android:id="@+id/overallVotesMla"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -138,7 +151,7 @@
                     app:layout_constraintVertical_bias="0.661" />
 
                 <TextView
-                    android:id="@+id/textView7"
+                    android:id="@+id/overallRatingMla"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -189,7 +202,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"/>
         <SeekBar
-            android:id="@+id/seekBar2"
+            android:id="@+id/mlaRatingSeekbar"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -197,12 +210,12 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:max="10"
+            android:max="100"
             android:progress="3"
             android:layout_below="@+id/textView8"/>
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/mlaRatingPercentage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -213,7 +226,7 @@
             android:text="rating percentage"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
-            android:layout_below="@id/seekBar2"/>
+            android:layout_below="@id/mlaRatingSeekbar"/>
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -223,7 +236,7 @@
             android:layout_marginStart="8dp"
             android:orientation="horizontal"
             android:weightSum="2"
-            android:layout_below="@+id/textView9">
+            android:layout_below="@+id/mlaRatingPercentage">
 
             <ImageButton
                 android:id="@+id/tag_gridViewImages"

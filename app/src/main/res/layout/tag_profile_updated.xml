@@ -67,20 +67,36 @@
                 tools:ignore="VectorDrawableCompat"
                 android:layout_toRightOf="@+id/tagFollowButton"
                 android:layout_below="@id/tagName"
-                android:layout_margin="@dimen/dimen_15"/>
+                android:layout_marginTop="@dimen/dimen_15"
+                android:layout_marginLeft="30dp"/>
 
             <TextView
                 android:id="@+id/followersForTags"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/tagName"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="@dimen/dimen_15"
+                android:layout_toLeftOf="@+id/tagFollowButton"
                 android:gravity="center"
                 android:text="followers"
                 android:textColor="@color/white"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_margin="@dimen/dimen_15"
-              android:layout_toLeftOf="@+id/tagFollowButton"
-                android:layout_below="@id/tagName"/>
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/followersForTagsCount"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/followersForTags"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="@dimen/dimen_15"
+                android:layout_marginBottom="@dimen/dimen_15"
+                android:layout_toLeftOf="@+id/tagFollowButton"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
 
         </RelativeLayout>
@@ -189,7 +205,7 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"/>
     <SeekBar
-        android:id="@+id/seekBar2"
+        android:id="@+id/profileTagRating"
         style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -197,12 +213,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:max="10"
+        android:max="100"
         android:progress="3"
        android:layout_below="@+id/textView8"/>
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/tagRatingPercentage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -213,7 +229,7 @@
         android:text="rating percentage"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
-        android:layout_below="@id/seekBar2"/>
+        android:layout_below="@id/profileTagRating"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -223,7 +239,7 @@
         android:layout_marginStart="8dp"
         android:orientation="horizontal"
         android:weightSum="2"
-        android:layout_below="@+id/textView9">
+        android:layout_below="@+id/tagRatingPercentage">
 
         <ImageButton
             android:id="@+id/tag_gridViewImages"

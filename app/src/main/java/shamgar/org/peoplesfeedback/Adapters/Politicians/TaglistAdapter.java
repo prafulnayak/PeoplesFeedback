@@ -18,15 +18,15 @@ import shamgar.org.peoplesfeedback.UI.Profile_TagActivity;
 public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistViewHolder> {
 
     private Context context;
-
-
     private ArrayList<GovAgency> govAgencies;
+    private String state;
 
 
 
-    public TaglistAdapter(Context context, ArrayList<GovAgency> govAgencies) {
+    public TaglistAdapter(Context context, ArrayList<GovAgency> govAgencies, String state) {
         this.context = context;
         this.govAgencies = govAgencies;
+        this.state=state;
     }
 
 
@@ -44,14 +44,15 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
 
         holder.district_name_in_tag_list.setText(govAgency.getDistrictName());
         holder.municipality_tag_tag_list.setText(govAgency.getGovAgencyName());
-        holder.tag_rating_in_tag_list.setText("Rating "+String.valueOf(govAgency.getRating()));
-        holder.votes_for_tag_in_tag_List.setText("Votes"+String.valueOf(govAgency.getVotes()));
+        holder.tag_rating_in_tag_list.setText("Rating: "+String.valueOf(govAgency.getRating())+"%");
+        holder.votes_for_tag_in_tag_List.setText("Votes: "+String.valueOf(govAgency.getVotes()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent tags_profile=new Intent(context, Profile_TagActivity.class);
                 tags_profile.putExtra("district",govAgency.getDistrictName());
                 tags_profile.putExtra("tag",govAgency.getGovAgencyName());
+                tags_profile.putExtra("state",state);
                 context.startActivity(tags_profile);
             }
         });

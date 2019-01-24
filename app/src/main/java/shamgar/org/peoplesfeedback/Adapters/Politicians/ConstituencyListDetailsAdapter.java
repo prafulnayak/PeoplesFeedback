@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -20,15 +21,17 @@ import shamgar.org.peoplesfeedback.UI.Profile_mla_Activity;
 
 public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<ConstituencyListDetailsAdapter.ConstituencyViewHolder> {
     private Context context;
-
-
     private ArrayList<MLAModel> mlaModels;
+    private String state;
+    private String district;
 
 
 
-    public ConstituencyListDetailsAdapter(Context context, ArrayList<MLAModel> mlaModels) {
+    public ConstituencyListDetailsAdapter(Context context, ArrayList<MLAModel> mlaModels, String state, String district) {
         this.context = context;
         this.mlaModels = mlaModels;
+        this.state=state;
+        this.district=district;
     }
 
 
@@ -46,7 +49,7 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
 
         holder.constituency_mla_name.setText(mlaModel.getMla_name());
         holder.txtMlaConstituency.setText(mlaModel.getConstituancyName());
-        holder.txt_MlaRating_In_ConstituencyList.setText(String.valueOf(mlaModel.getRating()));
+        holder.txt_MlaRating_In_ConstituencyList.setText(String.valueOf(mlaModel.getRating())+"%");
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +57,11 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
                 Intent mlaProfile=new Intent(context, Profile_mla_Activity.class);
                 mlaProfile.putExtra("mlaName",mlaModel.getMla_name());
                 mlaProfile.putExtra("mlaConstituency",mlaModel.getConstituancyName());
+                mlaProfile.putExtra("state",state);
+                mlaProfile.putExtra("district",district);
+                mlaProfile.putExtra("rating",mlaModel.getRating());
+                mlaProfile.putExtra("votes",mlaModel.getVotes());
+                Toast.makeText(context,"rating "+mlaModel.getVotes(),Toast.LENGTH_SHORT).show();
                 context.startActivity(mlaProfile);
             }
         });

@@ -54,6 +54,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         String fromUserId=messages.getFrom();
         String fromMessageType=messages.getType();
+        String time=messages.getDate()+"  "+messages.getTime();
 
         usersRef=FirebaseDatabase.getInstance().getReference().child("people");
         usersRef.orderByChild("phoneno").equalTo(fromUserId)
@@ -74,22 +75,28 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         if (fromMessageType.equals("text")){
             holder.receiveMessagesText.setVisibility(View.INVISIBLE);
             holder.receiverProfileImage.setVisibility(View.INVISIBLE);
+            holder.receiver_messages_time.setVisibility(View.INVISIBLE);
+            holder.sender_messages_time.setVisibility(View.INVISIBLE);
             holder.sendMessagesText.setVisibility(View.INVISIBLE);
             if (fromUserId.equals(messageSenderId)){
                 holder.sendMessagesText.setVisibility(View.VISIBLE);
+                holder.sender_messages_time.setVisibility(View.VISIBLE);
                 holder.sendMessagesText.setBackgroundResource(R.drawable.sender_messages_layout);
                 holder.sendMessagesText.setTextColor(Color.BLACK);
                 holder.sendMessagesText.setText(messages.getMessage());
+                holder.sender_messages_time.setText(time);
             }
             else {
 
 
                 holder.receiveMessagesText.setVisibility(View.VISIBLE);
                 holder.receiverProfileImage.setVisibility(View.VISIBLE);
+                holder.receiver_messages_time.setVisibility(View.VISIBLE);
 
                 holder.receiveMessagesText.setBackgroundResource(R.drawable.receiver_message_layout);
                 holder.receiveMessagesText.setTextColor(Color.BLACK);
                 holder.receiveMessagesText.setText(messages.getMessage());
+                holder.receiver_messages_time.setText(time);
 
             }
         }
@@ -104,7 +111,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     public class MessagesViewHolder extends RecyclerView.ViewHolder
     {
-        public TextView sendMessagesText,receiveMessagesText;
+        public TextView sendMessagesText,receiveMessagesText,receiver_messages_time,sender_messages_time;
         public CircleImageView receiverProfileImage;
 
         public MessagesViewHolder(View itemView) {
@@ -113,6 +120,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             sendMessagesText=itemView.findViewById(R.id.sender_messages);
             receiveMessagesText=itemView.findViewById(R.id.receiver_messages);
             receiverProfileImage=itemView.findViewById(R.id.message_profile_image);
+            receiver_messages_time=itemView.findViewById(R.id.receiver_messages_time);
+            sender_messages_time=itemView.findViewById(R.id.sender_messages_time);
 
 
 

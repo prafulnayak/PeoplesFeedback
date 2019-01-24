@@ -36,6 +36,7 @@
             android:id="@+id/maintabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:tabTextAppearance="@style/MineCustomTabText"
             android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
 

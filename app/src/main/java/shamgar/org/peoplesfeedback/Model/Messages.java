@@ -1,17 +1,19 @@
 package shamgar.org.peoplesfeedback.Model;
 
 public class Messages {
-    private String from,message,type;
+    private String from,message,type,time,date;
 
     public Messages()
     {
 
     }
 
-    public Messages(String from, String message, String type) {
+    public Messages(String from, String message, String type, String time, String date) {
         this.from = from;
         this.message = message;
         this.type = type;
+        this.time = time;
+        this.date = date;
     }
 
     public String getFrom() {
@@ -36,5 +38,21 @@ public class Messages {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

@@ -18,15 +18,19 @@ public class MLAModel {
     @SerializedName("rating")
     private long rating;
 
+    @SerializedName("Votes")
+    private long votes;
+
     public MLAModel() {
     }
 
-    public MLAModel(String constituancyName, String mlaImage, String mlaName, String party, long rating) {
+    public MLAModel(String constituancyName, String mla_image, String mla_name, String party, long rating, long votes) {
         this.constituancyName = constituancyName;
-        this.mla_image = mlaImage;
-        this.mla_name = mlaName;
+        this.mla_image = mla_image;
+        this.mla_name = mla_name;
         this.party = party;
         this.rating = rating;
+        this.votes = votes;
     }
 
     public String getConstituancyName() {
@@ -67,5 +71,13 @@ public class MLAModel {
 
     public void setRating(long rating) {
         this.rating = rating;
+    }
+
+    public long getVotes() {
+        return votes;
+    }
+
+    public void setVotes(long votes) {
+        this.votes = votes;
     }
 }

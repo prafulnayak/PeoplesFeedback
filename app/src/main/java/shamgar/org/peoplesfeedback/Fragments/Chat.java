@@ -97,6 +97,8 @@ public class Chat extends Fragment {
                                             Image[0] =innersnap.child("image").getValue().toString();
                                             Picasso.get().load(Image[0]).placeholder(R.drawable.profile).into(holder.profileImage);
                                         }
+
+                                        //have to change email to username
                                         email = innersnap.child("email").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);

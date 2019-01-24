@@ -81,7 +81,6 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                                     return;
                                 }
                                 if (!snapshot.getKey().equals("Constituancy")){
-
                                     GovAgency govAgency = snapshot.getValue(GovAgency.class);
                                     govAgency.setGovAgencyName(snapshot.getKey());
                                     govAgency.setDistrictName(districtList.get(position));
@@ -89,7 +88,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                                 }else {
                                     for(DataSnapshot dataSnapshotC : snapshot.getChildren()){
                                         MLAModel mlaModel = dataSnapshotC.getValue(MLAModel.class);
-                                        Log.e("mla con",dataSnapshotC.getKey()+mlaModel.getMla_name()+mlaModel.getRating()+mlaModel.getMla_image());
+                                        Log.e("mla con",dataSnapshotC.getKey()+mlaModel.getMla_name()+mlaModel.getRating()+mlaModel.getMla_image()+mlaModel.getVotes());
 
                                         mlaModel.setConstituancyName(dataSnapshotC.getKey());
                                         mlaModels.add(mlaModel);
@@ -101,7 +100,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                             Log.e("districtdfsadf", "" + districtList.get(position).toString());
 //                            holder.taglistRecyclerView.setVisibility(View.VISIBLE);
 //                            taglistAdapter = new TaglistAdapter(context, tagnames,rating,votes,districtList.get(position).toString());
-                            taglistAdapter = new TaglistAdapter(context, govAgencies);
+                            taglistAdapter = new TaglistAdapter(context, govAgencies,state);
                             holder.taglistRecyclerView.setHasFixedSize(true);
                             holder.taglistRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                             holder.taglistRecyclerView.setAdapter(taglistAdapter);
@@ -109,7 +108,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
 
 //                            holder.constituencyRecyclerview.setVisibility(View.VISIBLE);
 //                            constituencyListDetailsAdapter=new ConstituencyListDetailsAdapter(context,constituencyList,constituencyMlaImage,constituencyMlaname,constituencyMlaParty,constituencyMlaRating);
-                            constituencyListDetailsAdapter=new ConstituencyListDetailsAdapter(context,mlaModels);
+                            constituencyListDetailsAdapter=new ConstituencyListDetailsAdapter(context,mlaModels,state, districtList.get(position));
                             holder.constituencyRecyclerview.setHasFixedSize(true);
                             holder.constituencyRecyclerview.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
                             holder.constituencyRecyclerview.setAdapter(constituencyListDetailsAdapter);
