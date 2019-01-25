@@ -10,6 +10,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,7 +43,9 @@ import static android.widget.LinearLayout.VERTICAL;
 public class Profile_TagActivity extends AppCompatActivity {
 
     private ImageButton tag_gridViewImages;
-    private TextView tagName,tagDistrictName,followersForTags,followersForTagsCount,tagRatingPercentage;
+    private TextView tagName,tagDistrictName,followersForTags,
+            followersForTagsCount,tagRatingPercentage
+            ,overallVotesTag,overallRatingTag;
     private Button tagFollowButton;
     private SeekBar profileTagRating;
 
@@ -51,12 +54,23 @@ public class Profile_TagActivity extends AppCompatActivity {
     private String district,tag,tagRating,state;
     private SharedPreferenceConfig sharedPreferenceConfig;
 
+    private ArrayList<String> images;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tag_profile_updated);
 
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
+        images=new ArrayList<>();
+        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
+        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
+        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
+        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
+        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
+        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
+        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
+        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -74,6 +88,8 @@ public class Profile_TagActivity extends AppCompatActivity {
         followersForTagsCount=(TextView)findViewById(R.id.followersForTagsCount);
         profileTagRating=(SeekBar) findViewById(R.id.profileTagRating);
         tagRatingPercentage=(TextView) findViewById(R.id.tagRatingPercentage);
+        overallRatingTag=(TextView) findViewById(R.id.overallRatingTag);
+        overallVotesTag=(TextView) findViewById(R.id.overallVotesTag);
 
         //checking user is following or not
         Query postQuery =  FirebaseDatabase.getInstance().getReference().child("District")
@@ -96,9 +112,30 @@ public class Profile_TagActivity extends AppCompatActivity {
         };
         postQuery.addValueEventListener(valueEventListener);
 
+        //getting overall rating and votes
+        Query postQuery1 =  FirebaseDatabase.getInstance().getReference().child("States")
+                .child(state).child("MLA").child("district").child(district).child(tag);
+        ValueEventListener valueEventListener2 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    String rating=dataSnapshot.child("rating").getValue().toString();
+                    String Votes=dataSnapshot.child("votes").getValue().toString();
+                    overallRatingTag.setText(rating+"%");
+                    overallVotesTag.setText("Total votes: "+Votes);
+                }else {
+                    Log.e("overall rating","data not exists");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        postQuery1.addValueEventListener(valueEventListener2);
+
         //getting district name and tag from previous intent
         tagDistrictName.setText(district);
-        tagName.setText(tag);
+        tagName.setText("@"+tag);
 
         //listener for user is following or not
         tagFollowButton.setOnClickListener(new View.OnClickListener() {
@@ -139,25 +176,9 @@ public class Profile_TagActivity extends AppCompatActivity {
         tag_gridViewImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 4);
-                layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                    @Override
-                    public int getSpanSize(int position) {
-                        int mod = position % 4;
-
-                        if(position == 0 || position == 1)
-                            return 2;
-                        else if(position < 4)
-                            return 2;
-                        else if(mod == 0 || mod == 1)
-                            return 1;
-                        else
-                            return 2;
-                    }
-                });
-                adapter=new Tag_Profile_Images_Adapter(getApplicationContext());
-                recyclerView.setLayoutManager(layoutManager);
+                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+                StaggeredGridLayoutManager staggeredGridLayoutManager=new StaggeredGridLayoutManager(2,LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(staggeredGridLayoutManager);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setNestedScrollingEnabled(false);
             }

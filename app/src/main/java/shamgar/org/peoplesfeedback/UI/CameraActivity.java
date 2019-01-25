@@ -115,7 +115,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         submit = findViewById(R.id.submit);
         camera = findViewById(R.id.camera);
 
-
         chkGvmc = findViewById(R.id.gvmc);
         chkTraffic = findViewById(R.id.trafficPolice);
         chkPolice = findViewById(R.id.Police);
@@ -130,15 +129,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         mlatagName.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v)
-            {
-
+            public void onClick(View v) {
                 Query query=FirebaseDatabase.getInstance().getReference("Politicians")
                         .orderByChild("constituancy").equalTo(address.getCity());
-
                 query.addValueEventListener(valueEventListener);
-
-
             }
         });
 
@@ -147,8 +141,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         camera.setOnClickListener(this);
 
         dispatchTakePictureIntent();
-
-
     }
 
     @Override
@@ -442,8 +434,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
        }
    };
 
-    private void get_listof_constituency_mla()
-    {
+    private void get_listof_constituency_mla() {
         Query query=FirebaseDatabase.getInstance().getReference("Politicians")
                 .orderByChild("district")
                 .equalTo(address.getCity());
@@ -511,8 +502,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         });
 
     }
-
-
     private void dispatchTakePictureIntent()
     {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -619,7 +608,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
        switch (requestCode)
        {
            case 10:
-           {
+            {
                if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED);
                configureButton();
                return;
@@ -636,19 +625,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void chechedTag(View view)
-    {
-        switch (view.getId())
-        {
-
+    public void chechedTag(View view) {
+        switch (view.getId()) {
             case R.id.gvmc:
-
                 chkTraffic.setChecked(false);
                 chkPolice.setChecked(false);
                 chkOthers.setChecked(false);
                 chklocality.setChecked(false);
                 this.tag="GVMC";
-
                 break;
 
             case R.id.trafficPolice:

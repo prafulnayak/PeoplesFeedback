@@ -1,13 +1,19 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.content.DialogInterface;
+import android.provider.ContactsContract;
+import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -33,8 +40,12 @@ public class Profile_mla_Activity extends AppCompatActivity {
     private TextView mlanametxt,txtmlaConstituency,followersForMlaCount,mlaRatingPercentage,overallVotesMla,overallRatingMla;
     private Button mlaFollowButton;
     private SeekBar mlaRatingSeekbar;
+    private ImageView mla_gridViewImages;
+    private RecyclerView profile_mla_gridImages_rv;
 
     private SharedPreferenceConfig sharedPreferenceConfig;
+    private ArrayList<String> images;
+    private Tag_Profile_Images_Adapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +53,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_mla_);
 
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
+
+        images=new ArrayList<>();
+        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
+        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
+        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
+        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
+        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
+        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
+        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
+        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
 
         mlanametxt=findViewById(R.id.mlaDistrictName);
         txtmlaConstituency=findViewById(R.id.mlaName);
@@ -51,6 +72,8 @@ public class Profile_mla_Activity extends AppCompatActivity {
         mlaRatingPercentage=findViewById(R.id.mlaRatingPercentage);
         overallRatingMla=findViewById(R.id.overallRatingMla);
         overallVotesMla=findViewById(R.id.overallVotesMla);
+        mla_gridViewImages=findViewById(R.id.mla_gridViewImages);
+        profile_mla_gridImages_rv=findViewById(R.id.profile_mla_gridImages_rv);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,6 +107,31 @@ public class Profile_mla_Activity extends AppCompatActivity {
             }
         };
         postQuery.addValueEventListener(valueEventListener);
+
+        //getting overall rating and votes
+        Query postQuery1 =  FirebaseDatabase.getInstance().getReference().child("States")
+                .child(state).child("MLA").child("district").child(district).child("Constituancy").child(mlaConstituency);
+        ValueEventListener valueEventListener2 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                  String rating=dataSnapshot.child("rating").getValue().toString();
+                  String Votes=dataSnapshot.child("votes").getValue().toString();
+
+                  overallRatingMla.setText(rating+"%");
+                  overallVotesMla.setText("Total Votes: "+Votes);
+                }else {
+                  Log.e("overall rating","data not exists");
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        postQuery1.addValueEventListener(valueEventListener2);
+
         //implementing follow functionality for mla
         mlaFollowButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +202,18 @@ public class Profile_mla_Activity extends AppCompatActivity {
                             }
                         })
                         .show();
+            }
+        });
+
+        //getting images from fire base
+        mla_gridViewImages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+                StaggeredGridLayoutManager staggeredGridLayoutManager=new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+                profile_mla_gridImages_rv.setLayoutManager(staggeredGridLayoutManager);
+                profile_mla_gridImages_rv.setAdapter(adapter);
+                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
             }
         });
 

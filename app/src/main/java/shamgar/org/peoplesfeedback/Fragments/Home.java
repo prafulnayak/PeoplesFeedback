@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -63,6 +64,7 @@ public class Home extends Fragment {
     LinearLayoutManager layoutManager;
     private SeekBar seekBar;
     private Switch switch1;
+    private TextView displayLocationRange,set_DisTance_Range;
     private String switchStatus;
     private int seekbarPosition;
     private Parcelable recyclerViewState;
@@ -73,6 +75,7 @@ public class Home extends Fragment {
     private static String lastKey = "";
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
+
 
     public Home() {
         // Required empty public constructor
@@ -113,6 +116,8 @@ public class Home extends Fragment {
         floatingActionButton = view.findViewById(R.id.floating_action);
         seekBar = view.findViewById(R.id.seekBar);
         switch1 = view.findViewById(R.id.switch1);
+        set_DisTance_Range = view.findViewById(R.id.set_DisTance_Range);
+        displayLocationRange = view.findViewById(R.id.displayLocationRange);
 
         Log.i("Home", " onViewCreated");
 //        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
@@ -526,12 +531,16 @@ public class Home extends Fragment {
                 if (isChecked==true)
                 {
                     switch1.setText("Off");
+                    set_DisTance_Range.setVisibility(View.VISIBLE);
+                    displayLocationRange.setVisibility(View.VISIBLE);
+                    seekBar.setVisibility(View.VISIBLE);
                     seekBar.setEnabled(true);
                     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
                         {
                             seekbarPosition =seekBar.getProgress();
+                            displayLocationRange.setText("Location Range "+String.valueOf(seekbarPosition)+"Km");
                             gettingNearbyPosts(seekbarPosition);
                         }
                         @Override
@@ -551,6 +560,9 @@ public class Home extends Fragment {
                     switchStatus = switch1.getTextOff().toString();
                     seekBar.setEnabled(false);
                     switch1.setText("On");
+                    set_DisTance_Range.setVisibility(View.GONE);
+                    displayLocationRange.setVisibility(View.GONE);
+                    seekBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -592,15 +604,11 @@ public class Home extends Fragment {
                                     .child(sharedPreference.readState())
                                     .child(sharedPreference.readDistrict())
                                     .child(CONSTITUANCY)
-                                    .addValueEventListener(new ValueEventListener()
-                                    {
+                                    .addValueEventListener(new ValueEventListener() {
                                         @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot)
-                                        {
-                                            if (dataSnapshot.exists())
-                                            {
-                                                for (DataSnapshot constituences:dataSnapshot.getChildren())
-                                                {
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                for (DataSnapshot constituences:dataSnapshot.getChildren()) {
                                                     String nearLat=constituences.child("latitude").getValue().toString();
                                                     String nearLon=constituences.child("longitude").getValue().toString();
 
@@ -617,16 +625,13 @@ public class Home extends Fragment {
 
                                                     Log.d("distance", String.valueOf(distance));
 
-                                                    if(finalTemp > distance)
-                                                    {
-                                                        if (!nearbyConstuencies.contains(constituences.getKey()))
-                                                        {
+                                                    if(finalTemp > distance) {
+                                                        if (!nearbyConstuencies.contains(constituences.getKey())) {
                                                             nearbyConstuencies.add(constituences.getKey());
                                                         }
                                                         Log.e("log: ","constituences in: "+nearbyConstuencies);
 
-                                                            for (int i=0;i<nearbyConstuencies.size();i++)
-                                                            {
+                                                            for (int i=0;i<nearbyConstuencies.size();i++) {
 
                                                                 final int finalI = i;
                                                                 FirebaseDatabase.getInstance().getReference().child(INDIA)
@@ -636,27 +641,20 @@ public class Home extends Fragment {
                                                                         .child(nearbyConstuencies.get(i)).child("PostID")
                                                                         .addValueEventListener(new ValueEventListener() {
                                                                             @Override
-                                                                            public void onDataChange(DataSnapshot dataSnapshot)
-                                                                            {
-                                                                                for (DataSnapshot newlist:dataSnapshot.getChildren())
-                                                                                {
+                                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                for (DataSnapshot newlist:dataSnapshot.getChildren()) {
                                                                                     if(!list.contains(newlist.getKey())) {
                                                                                         list5.add(newlist.getKey());
 
                                                                                         Log.e("log: ","key in: "+newlist.getKey());
 
                                                                                     }
-
                                                                                 }
                                                                                 Collections.reverse(list5);
                                                                                 getNewsDetailsFromPost(true);
-
                                                                             }
-
                                                                             @Override
-                                                                            public void onCancelled(DatabaseError databaseError)
-                                                                            {
-
+                                                                            public void onCancelled(DatabaseError databaseError) {
                                                                             }
                                                                         });
                                                         }
