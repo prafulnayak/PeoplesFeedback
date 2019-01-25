@@ -139,24 +139,24 @@ public class ContactsActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-         super.onOptionsItemSelected(item);
-         if (item.getItemId()==android.R.id.home)
-         {
-             Intent HomeScreenActivity=new Intent(ContactsActivity.this,HomeScreenActivity.class);
-             startActivity(HomeScreenActivity);
-             finish();
-         }
-
-         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent HomeScreenActivity=new Intent(ContactsActivity.this,HomeScreenActivity.class);
-        startActivity(HomeScreenActivity);
-        finish();
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//         super.onOptionsItemSelected(item);
+//         if (item.getItemId()==android.R.id.home)
+//         {
+//             Intent HomeScreenActivity=new Intent(ContactsActivity.this,HomeScreenActivity.class);
+//             startActivity(HomeScreenActivity);
+//             finish();
+//         }
+//
+//         return true;
+//    }
+//
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        Intent HomeScreenActivity=new Intent(ContactsActivity.this,HomeScreenActivity.class);
+//        startActivity(HomeScreenActivity);
+//        finish();
+//    }
 }

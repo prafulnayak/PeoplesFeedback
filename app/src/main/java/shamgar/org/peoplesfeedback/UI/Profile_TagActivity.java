@@ -176,6 +176,27 @@ public class Profile_TagActivity extends AppCompatActivity {
         tag_gridViewImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Query numofFol =  FirebaseDatabase.getInstance().getReference().child("District")
+                        .child(district).child(tag).child("Followers");
+                ValueEventListener valueEventListener1 = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            String numOfFollowers= String.valueOf(dataSnapshot.getChildrenCount());
+                            // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
+                            followersForTagsCount.setText(numOfFollowers);
+                        }else {
+                            Toast.makeText(getApplicationContext()," no followers for "+tag,Toast.LENGTH_SHORT).show();
+                            followersForTagsCount.setText("0");
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                };
+                numofFol.addValueEventListener(valueEventListener1);
+
                 adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
                 StaggeredGridLayoutManager staggeredGridLayoutManager=new StaggeredGridLayoutManager(2,LinearLayoutManager.VERTICAL);
                 recyclerView.setLayoutManager(staggeredGridLayoutManager);

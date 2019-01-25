@@ -243,6 +243,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential)
@@ -251,10 +252,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 String phonenumber= phoneNo.getText().toString();
                 sharedPreference.writePhoneNo(phonenumber);
                signInWithPhoneAuthCredential(credential);
-                loadingbar.setTitle("Phone verification");
-                loadingbar.setMessage("please wait,while we are verifying with your code");
-                loadingbar.setCanceledOnTouchOutside(false);
-                loadingbar.show();
             }
 
             @Override
@@ -317,7 +314,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             // Sign in success, update UI with the signed-in user's information
-                                            Log.v(TAG, "signInWithCredential:success");
+                                            Log.e(TAG, "signInWithCredential:success");
                                             Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
                                             //                            signOut();
                                             FirebaseUser user = task1.getResult().getUser();
@@ -392,8 +389,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-
-
                     Toast.makeText(PhoneActivity.this, "login success: "+people.getName(), Toast.LENGTH_LONG).show();
                 }else
                     Toast.makeText(PhoneActivity.this, "login Fail: "+people.getName(), Toast.LENGTH_LONG).show();
@@ -409,6 +404,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                         updates.put("email", sharedPreference.readEmail());
                         updates.put("name", sharedPreference.readName());
                         updates.put("state", sharedPreference.readState());
+                        updates.put("phoneno", sharedPreference.readPhoneNo());
 ////                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
 ////                            @Override
 ////                            public void onSuccess(Void aVoid) {

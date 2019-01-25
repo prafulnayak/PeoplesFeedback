@@ -102,7 +102,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.postImageDescription.setText(news.getDescription());
         holder.num_likes.setText(String.valueOf(news.getLikes()));
         holder.num_shares.setText(String.valueOf(news.getShares()));
-        holder.setLikeButton(news.getPostId());
+        setLikeButton(news.getPostId(),holder);
         holder.posttimestamp.setText(news.getPostedDate());
         Glide.with(ctx)
                 .load(news.getImageUrl())
@@ -116,7 +116,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             public void onClick(View v) {
                 statusLike=true;
                 if (statusLike) {
-                    dbRefLike.child(news.getPostId()).child("Likes").child(mAuth.getCurrentUser().getUid()).setValue("RandomValue");
+                    dbRefLike.child(news.getPostId()).child("Likes").child(sharedPreference.readPhoneNo().substring(3)).setValue("1");
                     statusLike = false;
                 }
             }
@@ -132,7 +132,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     pm.setGravity(Gravity.END);
                 }
                 manageChatRequests(news.getReceiverUserId(),pm);
+                makeSpam(news.getPostId(),pm);
                 pm.show();
+
 
             }
         });
@@ -144,7 +146,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 statusShare=true;
                 if (statusShare) {
                     Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
-                    dbRefShare.child(news.getPostId()).child("Share").push().child(mAuth.getCurrentUser().getUid()).setValue(sharedPreference.readPhoneNo());
+                    dbRefShare.child(news.getPostId()).child("Share").push().setValue(sharedPreference.readPhoneNo());
                     statusShare=false;
                 }
 
@@ -166,11 +168,57 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         String state = addresses.get(0).getAdminArea();
         String country = addresses.get(0).getCountryName();
         String postalCode = addresses.get(0).getPostalCode();
-        String knownName = addresses.get(0).getFeatureName(); //
+        String knownName = addresses.get(0).getFeatureName();
 
         holder.postlocation.setText(address);
 
 
+    }
+
+    public void setLikeButton(final String post_key, final RecyclerViewHolder holder)
+    {
+        dbRefLike.child(post_key).child("Likes").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if (dataSnapshot.hasChild(sharedPreference.readPhoneNo().substring(3)))
+                {
+                    holder.imglike.setText(getEmojiByUnicode(0x270A));
+                }
+                else
+                {
+                    holder.imglike.setText(getEmojiByUnicode(0x1F44D));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+    }
+    public String getEmojiByUnicode(int unicode){
+        return new String(Character.toChars(unicode));
+    }
+
+    private void makeSpam(final String postId, PopupMenu pm) {
+        pm.getMenu().findItem(R.id.spam).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
+                dbRefLike.child(postId).child("Spam")
+                        .child(sharedPreference.readPhoneNo().substring(3))
+                        .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Toast.makeText(ctx,"Spammed the post ",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                return true;
+            }
+        });
     }
 
 
@@ -187,8 +235,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         private ImageButton imgview,imgshare,postsubmenuOptions;
         CircularImageView userimage, mlaimage;
         TextView imglike;
-        private DatabaseReference databaseReference;
-        private FirebaseAuth firebaseAuth;
+
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
@@ -211,37 +258,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             imgshare=itemView.findViewById(R.id.imgshares);
             imgview=itemView.findViewById(R.id.imgViews);
             postsubmenuOptions=itemView.findViewById(R.id.postsubmenuOptions);
-            firebaseAuth=FirebaseAuth.getInstance();
-            databaseReference= FirebaseDatabase.getInstance().getReference().child("Posts");
+
 
 
         }
-        public String getEmojiByUnicode(int unicode){
-            return new String(Character.toChars(unicode));
-        }
 
-        public void setLikeButton(final String post_key)
-        {
-          databaseReference.child(post_key).child("Likes").addListenerForSingleValueEvent(new ValueEventListener() {
-               @Override
-                public void onDataChange(DataSnapshot dataSnapshot)
-               {
-                        if (dataSnapshot.hasChild(firebaseAuth.getCurrentUser().getUid()))
-                        {
-                            imglike.setText(getEmojiByUnicode(0x270A));
-                        }
-                       else
-                       {
-                           imglike.setText(getEmojiByUnicode(0x1F44D));
-                       }
-                  }
 
-                @Override
-              public void onCancelled(DatabaseError databaseError) {
-               }
-           });
 
-       }
         
     }
 
@@ -303,6 +326,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         else {
             pm.getMenu().findItem(R.id.invite).setVisible(false);
         }
+
+
 
 
 

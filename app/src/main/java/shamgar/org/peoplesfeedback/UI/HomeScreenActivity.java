@@ -213,7 +213,12 @@ public class HomeScreenActivity extends AppCompatActivity {
         if (item.getItemId()==R.id.contacts) {
             Intent contacts=new Intent(HomeScreenActivity.this,ContactsActivity.class);
             startActivity(contacts);
-            finish();
+
+        }
+        if (item.getItemId()==R.id.profile){
+            Intent user_profile=new Intent(HomeScreenActivity.this,User_profile_Activity.class);
+            startActivity(user_profile);
+
         }
 
         return true;

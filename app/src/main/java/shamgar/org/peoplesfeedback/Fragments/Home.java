@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.Fragments;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -10,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -39,6 +41,7 @@ import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.CameraActivity;
+import shamgar.org.peoplesfeedback.UI.HomeScreenActivity;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
@@ -64,7 +67,7 @@ public class Home extends Fragment {
     LinearLayoutManager layoutManager;
     private SeekBar seekBar;
     private Switch switch1;
-    private TextView displayLocationRange,set_DisTance_Range;
+    private TextView displayLocationRange,set_DisTance_Range,locRanTxt;
     private String switchStatus;
     private int seekbarPosition;
     private Parcelable recyclerViewState;
@@ -87,6 +90,7 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         view = inflater.inflate(R.layout.fragment_home, container, false);
         Log.i("Home", " onCreateView");
         Toast.makeText(getActivity(), "onCreateView" + newsList.size(), Toast.LENGTH_LONG).show();
@@ -110,14 +114,14 @@ public class Home extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
         sharedPreference = new SharedPreferenceConfig(getActivity());
-
-
         floatingActionButton = view.findViewById(R.id.floating_action);
         seekBar = view.findViewById(R.id.seekBar);
         switch1 = view.findViewById(R.id.switch1);
         set_DisTance_Range = view.findViewById(R.id.set_DisTance_Range);
         displayLocationRange = view.findViewById(R.id.displayLocationRange);
+        locRanTxt = view.findViewById(R.id.locRanTxt);
 
         Log.i("Home", " onViewCreated");
 //        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
@@ -540,8 +544,9 @@ public class Home extends Fragment {
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
                         {
                             seekbarPosition =seekBar.getProgress();
-                            displayLocationRange.setText("Location Range "+String.valueOf(seekbarPosition)+"Km");
+                            displayLocationRange.setText("Location Range "+String.valueOf(seekbarPosition)+" Km");
                             gettingNearbyPosts(seekbarPosition);
+                            locRanTxt.setText(String.valueOf(seekbarPosition)+" Km");
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar)
@@ -551,12 +556,15 @@ public class Home extends Fragment {
                         @Override
                         public void onStopTrackingTouch(SeekBar seekBar)
                         {
-
+                            set_DisTance_Range.setVisibility(View.GONE);
+                            displayLocationRange.setVisibility(View.GONE);
+                            seekBar.setVisibility(View.GONE);
                         }
                     });
                 }
                 else
                 {
+                    locRanTxt.setText("0 Km");
                     switchStatus = switch1.getTextOff().toString();
                     seekBar.setEnabled(false);
                     switch1.setText("On");

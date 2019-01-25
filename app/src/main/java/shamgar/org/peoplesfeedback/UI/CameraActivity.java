@@ -79,7 +79,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private SharedPreferenceConfig sharedPreference;
     private String key;
 
-    private  TextView mlatagName;
+
 
     private static final String CHAR_LIST =
             "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -120,22 +120,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         chkPolice = findViewById(R.id.Police);
         chkOthers = findViewById(R.id.others);
         chklocality = findViewById(R.id.locality);
-        mlatagName = findViewById(R.id.mlatagName);
+
 
         editMLatag.setVisibility(View.GONE);
 
          address=new UserAddress();
-
-        mlatagName.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                Query query=FirebaseDatabase.getInstance().getReference("Politicians")
-                        .orderByChild("constituancy").equalTo(address.getCity());
-                query.addValueEventListener(valueEventListener);
-            }
-        });
-
 
         submit.setOnClickListener(this);
         camera.setOnClickListener(this);
@@ -403,36 +392,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
-
-    ValueEventListener valueEventListener=new ValueEventListener()
-   {
-
-       @Override
-       public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-       {
-           if (dataSnapshot.exists())
-            {
-                for(DataSnapshot mlaname : dataSnapshot.getChildren())
-                {
-                    constituency=mlaname.child("constituancy").getValue().toString();
-                    mlaID=mlaname.child("id").getValue().toString();
-                }
-                mlatagName.setText(constituency+" is your current location constituency");
-            }
-            else
-            {
-                mlatagName.setVisibility(View.GONE);
-                editMLatag.setVisibility(View.VISIBLE);
-                get_listof_constituency_mla();
-            }
-       }
-
-       @Override
-       public void onCancelled(@NonNull DatabaseError databaseError)
-       {
-
-       }
-   };
 
     private void get_listof_constituency_mla() {
         Query query=FirebaseDatabase.getInstance().getReference("Politicians")

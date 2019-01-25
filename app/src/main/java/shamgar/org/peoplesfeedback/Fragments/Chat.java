@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +53,7 @@ public class Chat extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view= inflater.inflate(R.layout.fragment_chat, container, false);
         mAuth= FirebaseAuth.getInstance();
         currentUserId=mAuth.getCurrentUser().getPhoneNumber();
@@ -84,6 +87,7 @@ public class Chat extends Fragment {
                     @Override
                     protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Contacts model) {
                         final  String userIds=getRef(position).getKey();
+                        Log.e("ids",userIds);
                         final String[] Image = {"default image"};
                         userRef.orderByChild("phoneno").equalTo(userIds).addValueEventListener(new ValueEventListener() {
                             @Override
@@ -102,6 +106,7 @@ public class Chat extends Fragment {
                                         email = innersnap.child("email").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);
+                                        Log.e("email",email);
 
                                         if (innersnap.child("userState").hasChild("state")){
                                                 String state=innersnap.child("userState").child("state").getValue().toString();

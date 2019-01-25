@@ -69,8 +69,10 @@
         <activity
             android:name=".UI.ViewAllPoliticiansActivity"
             android:parentActivityName=".UI.MainActivity" />
-        <activity android:name=".UI.ContactsActivity" />
-        <activity android:name=".UI.ChatActivity" />
+        <activity android:name=".UI.ContactsActivity"
+            android:parentActivityName=".UI.MainActivity"/>
+        <activity android:name=".UI.ChatActivity"
+            android:parentActivityName=".UI.MainActivity"/>
         <activity
             android:name=".UI.Profile_TagActivity"
             android:parentActivityName=".UI.MainActivity" />

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +29,7 @@ import shamgar.org.peoplesfeedback.Adapters.Politicians.PoliticiansStateWiseAdap
 
 import shamgar.org.peoplesfeedback.Model.StateCm;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.UI.HomeScreenActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,8 +50,8 @@ public class Politicians extends Fragment  {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        politiciansStateWiseAdapter=new PoliticiansStateWiseAdapter(stateList,getActivity());
 
+        politiciansStateWiseAdapter=new PoliticiansStateWiseAdapter(stateList,getActivity());
         politiciansRecyclerView=view.findViewById(R.id.politiciansRecyclerView);
         politiciansRecyclerView.setHasFixedSize(true);
         politiciansRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -134,6 +136,7 @@ public class Politicians extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view= inflater.inflate(R.layout.fragment_politicians, container, false);
 
         return view;
