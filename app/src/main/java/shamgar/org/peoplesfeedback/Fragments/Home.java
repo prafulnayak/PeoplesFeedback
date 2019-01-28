@@ -240,7 +240,7 @@ public class Home extends Fragment {
                     Collections.reverse(list5);
                     list.addAll(list5);
                     Log.e("log: ","last key: "+dataSnapshot.getKey());
-                    Log.e("log: ","key in: "+list.get(list.size()-5));
+//                    Log.e("log: ","key in: "+list.get(list.size()-5));
 //                    getMorePosts();
 //                    list5.clear();
                     getNewsDetailsFromPost(false);

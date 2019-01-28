@@ -145,7 +145,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
         adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        DatabaseReference states = database.getReference("india");
+        DatabaseReference states = database.getReference("States");
         states.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -174,7 +174,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 stateTextview = (TextView)adapterView.getSelectedView();
                 result = stateTextview.getText().toString();
 
-                DatabaseReference ref = database.getReference("india/"+result);
+                DatabaseReference ref = database.getReference("States/"+result+"/MLA"+"/district");
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
@@ -207,7 +207,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             {
                 districtTextview = (TextView)adapterView.getSelectedView();
                 district = districtTextview.getText().toString();
-                DatabaseReference ref = database.getReference("india/"+result+"/"+district+"/constituancy");
+                DatabaseReference ref = database.getReference("States/"+result+"/MLA"+"/district/"+district+"/Constituancy");
                 ref.addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.VerticalPoliticianAdapter;
 import shamgar.org.peoplesfeedback.Model.PartyStateMla;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 import static android.widget.LinearLayout.VERTICAL;
 
@@ -33,7 +34,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
     private ArrayList<PartyStateMla> stateMajorPartyHead = new ArrayList<>();
     private ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas = new ArrayList<ArrayList<PartyStateMla>>();
 //    private ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
-
+    SharedPreferenceConfig sharedPreferenceConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_constituency_list);
 
         String state = getIntent().getStringExtra("state");
-
+        sharedPreferenceConfig = new SharedPreferenceConfig(this);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,7 +84,8 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
                     masterPartyStateMlas.add(stateMajorParty);
                     masterPartyStateMlas.add(stateMajorPartyHead);
-                    getStateMlaList(state);
+//                    getStateMlaList(state);
+                    getOwnConstituancyMlaList(state);
                 }
 
             }
@@ -95,6 +97,36 @@ public class ConstituencyListActivity extends AppCompatActivity {
         };
 
         postQuery.addValueEventListener(valueEventListener);
+    }
+
+    private void getOwnConstituancyMlaList(String state){
+        Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
+                .child(state).child("MLA").child("district").child("Visakhapatnam").child("Constituancy");
+
+      ValueEventListener valueEventListener = new ValueEventListener() {
+          @Override
+          public void onDataChange(DataSnapshot dataSnapshot) {
+              Log.e("con: ",dataSnapshot.getKey()+dataSnapshot.getChildren().toString()+sharedPreferenceConfig.readConstituancy());
+//              DataSnapshot ss= dataSnapshot.getChildren();
+              if(dataSnapshot.exists()){
+                  for(DataSnapshot snap: dataSnapshot.getChildren()){
+                      Log.e("con2",snap.getKey());
+                  }
+              }
+//              if(dataSnapshot.hasChildren()){
+//                  Log.e("con2: ","has");
+//              }
+//              for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+//                  Log.e("con2: ",snapshot.getKey());
+//              }
+          }
+
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+
+          }
+      };
+      postQuery.addValueEventListener(valueEventListener);
     }
 
     private void getStateMlaList(String state) {
@@ -121,7 +153,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
                     }
                     masterPartyStateMlas.add(districtPoliticians);
-                    adapter.notifyDataSetChanged();
+//                    adapter.notifyDataSetChanged();
 
                 }
 
