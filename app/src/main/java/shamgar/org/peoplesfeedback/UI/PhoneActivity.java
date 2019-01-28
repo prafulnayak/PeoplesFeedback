@@ -398,6 +398,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateExistingUserDetails() {
         DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
+
                         Map<String, Object> updates = new HashMap<String,Object>();
                         updates.put("constituancy",sharedPreference.readConstituancy());
                         updates.put("dist", sharedPreference.readDistrict());

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
 import shamgar.org.peoplesfeedback.R;
@@ -40,7 +44,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
     private TextView mlanametxt,txtmlaConstituency,followersForMlaCount,mlaRatingPercentage,overallVotesMla,overallRatingMla;
     private Button mlaFollowButton;
     private SeekBar mlaRatingSeekbar;
-    private ImageView mla_gridViewImages;
+    private ImageView mla_gridViewImage;
     private RecyclerView profile_mla_gridImages_rv;
 
     private SharedPreferenceConfig sharedPreferenceConfig;
@@ -72,7 +76,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
         mlaRatingPercentage=findViewById(R.id.mlaRatingPercentage);
         overallRatingMla=findViewById(R.id.overallRatingMla);
         overallVotesMla=findViewById(R.id.overallVotesMla);
-        mla_gridViewImages=findViewById(R.id.mla_gridViewImages);
+        mla_gridViewImage = findViewById(R.id.mla_grid_image);
         profile_mla_gridImages_rv=findViewById(R.id.profile_mla_gridImages_rv);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -206,7 +210,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
         });
 
         //getting images from fire base
-        mla_gridViewImages.setOnClickListener(new View.OnClickListener() {
+        mla_gridViewImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
@@ -224,7 +228,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName).child("Followers")
                 .child(sharedPreferenceConfig.readPhoneNo().substring(3))
-                .child("following").setValue("1")
+                .setValue("1")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -242,11 +246,11 @@ public class Profile_mla_Activity extends AppCompatActivity {
     private void postingMlaRating() {
         String saveCurrentDate;
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat currentDate = new SimpleDateFormat("MMM,yyyy");
+        SimpleDateFormat currentDate = new SimpleDateFormat("MMMyyyy");
         saveCurrentDate = currentDate.format(calendar.getTime());
         FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName)
-                .child("votes")
+                .child("Votes")
                 .child(saveCurrentDate)
                 .child(sharedPreferenceConfig.readPhoneNo().substring(3))
                 .setValue(tagRating).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -265,7 +269,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
     private void postingOverallRating(){
         Query postQuery=FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName)
-                .child("votes");
+                .child("Votes");
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -298,35 +302,44 @@ public class Profile_mla_Activity extends AppCompatActivity {
     }
 
     private void tagAverage(float average, int size){
+        Map<String, Object> updates = new HashMap<String,Object>();
+        updates.put("rating",average);
+        updates.put("votes", size);
         FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("MLA").child("district").child(district).child("Constituancy").child(mlaConstituency)
-                .child("rating")
-                .setValue(average).addOnCompleteListener(new OnCompleteListener<Void>() {
+                .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"rating updated",Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(),"Some error was occurred while updating rating",Toast.LENGTH_SHORT).show();
-                }
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
             }
         });
-
-        FirebaseDatabase.getInstance().getReference().child("States")
-                .child(state).child("MLA").child("district").child(district).child("Constituancy").child(mlaConstituency)
-                .child("votes")
-                .setValue(size).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"votes updated",Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(),"Some error was occurred while updating votes",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//                .child("rating")
+//                .setValue(average).addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                if (task.isSuccessful()){
+//                    Toast.makeText(getApplicationContext(),"rating updated",Toast.LENGTH_SHORT).show();
+//                }
+//                else {
+//                    Toast.makeText(getApplicationContext(),"Some error was occurred while updating rating",Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//
+//        FirebaseDatabase.getInstance().getReference().child("States")
+//                .child(state).child("MLA").child("district").child(district).child("Constituancy").child(mlaConstituency)
+//                .child("votes")
+//                .setValue(size).addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                if (task.isSuccessful()){
+//                    Toast.makeText(getApplicationContext(),"votes updated",Toast.LENGTH_SHORT).show();
+//                }
+//                else {
+//                    Toast.makeText(getApplicationContext(),"Some error was occurred while updating votes",Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
     }
 
 }
