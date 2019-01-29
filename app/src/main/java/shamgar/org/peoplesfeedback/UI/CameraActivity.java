@@ -585,7 +585,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkOthers.setChecked(false);
                 chklocality.setChecked(false);
-                this.tag="GVMC";
+                this.tag="Municipality";
                 break;
 
             case R.id.trafficPolice:
@@ -595,6 +595,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkOthers.setChecked(false);
                 chklocality.setChecked(false);
                 this.tag="Traffic";
+
                 break;
 
             case R.id.Police:
@@ -612,7 +613,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkTraffic.setChecked(false);
                 chklocality.setChecked(false);
-
                 this.tag="Others";
                 break;
 
@@ -622,8 +622,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkTraffic.setChecked(false);
                 chkOthers.setChecked(false);
+                this.tag="Collector";
 
-                this.tag="Locality";
         }
     }
 

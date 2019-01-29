@@ -239,7 +239,7 @@
             android:layout_below="@+id/mlaRatingPercentage">
 
             <ImageButton
-                android:id="@+id/mla_gridViewImages"
+                android:id="@+id/mla_grid_image"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
