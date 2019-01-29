@@ -72,13 +72,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private String tag = "";
 
     private CheckBox chkGvmc, chkTraffic, chkPolice, chkOthers,chklocality;
-
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private SharedPreferenceConfig sharedPreference;
     private String key;
-
-
 
     private static final String CHAR_LIST =
             "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -86,8 +83,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private LocationManager locationManager;
     private LocationListener locationListener;
     private double latitude,logntude;
-
-
 
     private String  mlaID,MLAname,constituency;
     private UserAddress address;
@@ -122,8 +117,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
 
         editMLatag.setVisibility(View.GONE);
-
-         address=new UserAddress();
+        address=new UserAddress();
 
         submit.setOnClickListener(this);
         camera.setOnClickListener(this);
