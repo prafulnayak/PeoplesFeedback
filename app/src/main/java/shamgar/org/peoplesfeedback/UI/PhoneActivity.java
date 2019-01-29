@@ -33,6 +33,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -63,23 +64,27 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     private CheckBox checkmale,checkfemale;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ProgressDialog loadingbar;
-    ArrayList<String> state = new ArrayList<String>();
-    ArrayList<String> districts = new ArrayList<String>();
-    ArrayList<String> constituency = new ArrayList<String>();
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     String mVerificationId;
     PhoneAuthProvider.ForceResendingToken mResendToken;
 
     FirebaseAuth mAuth;
-    private Spinner spinstate,spindist,spinnerConstituency;
-    private ArrayAdapter adapter,adapter1,adapter2;
+
+
     private String result;
-    private TextView stateTextview,districtTextview;
     private SharedPreferences.Editor editor;
     private String district;
-    private TextView constituencyTextview;
+
     private SharedPreferenceConfig sharedPreference;
     private DatabaseReference databaseReference,userRef;
+
+    private Spinner spinnerState,spinnerDistrict,spinnerConstituency;
+    private ArrayAdapter stateAdapter,districtAdapter,constituencyAdapter;
+    private ArrayList<String> state=new ArrayList<>();
+    private ArrayList<String> districts=new ArrayList<>();
+    private ArrayList<String> constituency=new ArrayList<>();
+    private String currentState,currentDistrict,currentConstituency;
+    private TextView stateTextview,districtTextview,constituencyTextview;
 
     //    @Override
         //    protected void onStart() {
@@ -130,119 +135,120 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         btncontinue.setOnClickListener(this);
         btnnext.setOnClickListener(this);
 
-        spinstate =  findViewById(R.id.spinnerstate);
-        spindist = findViewById(R.id.spinnerdistrict);
+        spinnerState =  findViewById(R.id.spinnerstate);
+        spinnerDistrict = findViewById(R.id.spinnerdistrict);
         spinnerConstituency =  findViewById(R.id.spinnerConstituency);
 
         checkmale =  findViewById(R.id.checkmale);
         checkfemale =  findViewById(R.id.checkfemale);
 
-        adapter= new ArrayAdapter(this,android.R.layout.simple_spinner_item,state);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        getStates();
 
-        adapter1= new ArrayAdapter(this,android.R.layout.simple_spinner_item,districts);
-        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        DatabaseReference states = database.getReference("india");
-        states.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot children) {
-
-                        //Get map of users in datasnapshot
-                        state.clear();
-                        for(DataSnapshot states:children.getChildren())
-                        {
-                            state.add((String) states.getKey());
-                        }
-                        spinstate.setAdapter(adapter);
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-        spinstate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                stateTextview = (TextView)adapterView.getSelectedView();
-                result = stateTextview.getText().toString();
-
-                DatabaseReference ref = database.getReference("india/"+result);
-                ref.addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                districts.clear();
-                                for(DataSnapshot district : dataSnapshot.getChildren())
-                                {
-                                    districts.add((String) district.getKey());
-                                }
-                                spindist.setAdapter(adapter1);
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError)
-                            {
-                                //handle databaseError
-                            }
-                        });
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView)
-            {
-
-            }
-        });
-        spindist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                districtTextview = (TextView)adapterView.getSelectedView();
-                district = districtTextview.getText().toString();
-                DatabaseReference ref = database.getReference("india/"+result+"/"+district+"/constituancy");
-                ref.addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                constituency.clear();
-                                for(DataSnapshot constituencies : dataSnapshot.getChildren())
-                                {
-                                    constituency.add((String) constituencies.getKey());
-                                }
-                                spinnerConstituency.setAdapter(adapter2);
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError)
-                            {
-                                //handle databaseError
-                            }
-                        });
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                constituencyTextview = (TextView)adapterView.getSelectedView();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
+//        adapter= new ArrayAdapter(this,android.R.layout.simple_spinner_item,state);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//        adapter1= new ArrayAdapter(this,android.R.layout.simple_spinner_item,districts);
+//        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//        adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
+//        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        DatabaseReference states = database.getReference("india");
+//        states.addListenerForSingleValueEvent(
+//                new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot children) {
+//                        //Get map of users in datasnapshot
+//                        state.clear();
+//                        for(DataSnapshot states:children.getChildren())
+//                        {
+//                            state.add((String) states.getKey());
+//                        }
+//                        spinstate.setAdapter(adapter);
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//        spinstate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+//        {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+//            {
+//                stateTextview = (TextView)adapterView.getSelectedView();
+//                result = stateTextview.getText().toString();
+//
+//                DatabaseReference ref = database.getReference("india/"+result);
+//                ref.addListenerForSingleValueEvent(
+//                        new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                districts.clear();
+//                                for(DataSnapshot district : dataSnapshot.getChildren())
+//                                {
+//                                    districts.add((String) district.getKey());
+//                                }
+//                                spindist.setAdapter(adapter1);
+//                            }
+//                            @Override
+//                            public void onCancelled(DatabaseError databaseError)
+//                            {
+//                                //handle databaseError
+//                            }
+//                        });
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView)
+//            {
+//
+//            }
+//        });
+//        spindist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+//        {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+//            {
+//                districtTextview = (TextView)adapterView.getSelectedView();
+//                district = districtTextview.getText().toString();
+//                DatabaseReference ref = database.getReference("india/"+result+"/"+district+"/constituancy");
+//                ref.addListenerForSingleValueEvent(
+//                        new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                constituency.clear();
+//                                for(DataSnapshot constituencies : dataSnapshot.getChildren())
+//                                {
+//                                    constituency.add((String) constituencies.getKey());
+//                                }
+//                                spinnerConstituency.setAdapter(adapter2);
+//                            }
+//                            @Override
+//                            public void onCancelled(DatabaseError databaseError)
+//                            {
+//                                //handle databaseError
+//                            }
+//                        });
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//
+//        spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+//        {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                constituencyTextview = (TextView)adapterView.getSelectedView();
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//            }
+//        });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
@@ -293,6 +299,123 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    private void getStates(){
+        Query query= FirebaseDatabase.getInstance().getReference().child("States");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    state.clear();
+                    for (DataSnapshot states:dataSnapshot.getChildren()){
+                        Log.e("states",states.getKey());
+                        state.add(states.getKey());
+                    }
+                    stateAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,state);
+                    stateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerState.setAdapter(stateAdapter);
+
+                    spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            currentState=parent.getSelectedItem().toString();
+                            stateTextview = (TextView)parent.getSelectedView();
+                            getDistricts(currentState);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
+
+    private void getDistricts(final String currentState) {
+        Query query= FirebaseDatabase.getInstance().getReference().child("States")
+                .child(currentState).child("MLA").child("district");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    districts.clear();
+                    for (DataSnapshot states:dataSnapshot.getChildren()){
+                        Log.e("states",states.getKey());
+                        districts.add(states.getKey());
+                    }
+                    districtAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,districts);
+                    districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerDistrict.setAdapter(districtAdapter);
+
+                    spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            currentDistrict=parent.getSelectedItem().toString();
+                            districtTextview = (TextView)parent.getSelectedView();
+                            getConstituency(currentState,currentDistrict);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
+
+    private void getConstituency(String state, String currentDistrict) {
+        Query query= FirebaseDatabase.getInstance().getReference().child("States")
+                .child(state).child("MLA").child("district").child(currentDistrict).child("Constituancy");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    constituency.clear();
+                    for (DataSnapshot states:dataSnapshot.getChildren()){
+                        Log.e("states",states.getKey());
+                        constituency.add(states.getKey());
+                    }
+                    constituencyAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,constituency);
+                    constituencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerConstituency.setAdapter(constituencyAdapter);
+
+                    spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            constituencyTextview = (TextView)parent.getSelectedView();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
 
 
     private void signInWithPhoneAuthCredential(final PhoneAuthCredential credential)
@@ -325,8 +448,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                                             // ...
                                         }
                                     });
-
-
                         }
                         else {
                             loadingbar.dismiss();

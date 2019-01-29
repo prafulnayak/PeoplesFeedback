@@ -115,7 +115,6 @@ public class ChatActivity extends AppCompatActivity {
                     .child(messageReceiverId)
                     .push();
 
-
             String saveCurrentTime,saveCurrentDate;
             Calendar calendar=Calendar.getInstance();
             SimpleDateFormat currentDate=new SimpleDateFormat("MMM dd,yyyy");
@@ -206,6 +205,6 @@ public class ChatActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+                });      
     }
 }

@@ -240,7 +240,7 @@ public class Home extends Fragment {
                     Collections.reverse(list5);
                     list.addAll(list5);
                     Log.e("log: ","last key: "+dataSnapshot.getKey());
-                    Log.e("log: ","key in: "+list.get(list.size()-5));
+//                    Log.e("log: ","key in: "+list.get(list.size()-5));
 //                    getMorePosts();
 //                    list5.clear();
                     getNewsDetailsFromPost(false);
@@ -380,7 +380,8 @@ public class Home extends Fragment {
                 key,
                 sharedPreference.readPhoneNo(),"url",posts.getHeading(),
                 posts.getDescription(),sharedPreference.readConstituancy(),
-                posts.getImageUrl(),Double.parseDouble(posts.getLatitude()),
+                posts.getImageUrl(),
+                Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
                 posts.getTagId(),posts.getView(),likes,share,posts.getPostedOn(),1,posts.getUser());
@@ -442,6 +443,7 @@ public class Home extends Fragment {
         recyclerView.setAnimation(null);
         adapter = new HomeAdapter(newsList, getActivity());
         recyclerView.setAdapter(adapter);
+        recyclerView.setNestedScrollingEnabled(false);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
