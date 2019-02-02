@@ -57,7 +57,6 @@ import shamgar.org.peoplesfeedback.ConstantName.*;
 
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
-import static shamgar.org.peoplesfeedback.ConstantName.NamesC.PEOPLE;
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener   {
 
@@ -147,7 +146,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 if(location!=null){
                     latitude = location.getLatitude();
                     logntude = location.getLongitude();
-                    pushImageToFirebase();
+                    checkOwnConstituancyOrNot(latitude,logntude);
+
                 }else {
                     Toast.makeText(this, "Location ON Issue",Toast.LENGTH_SHORT).show();
                 }
@@ -156,7 +156,50 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void pushImageToFirebase() {
+    private void checkOwnConstituancyOrNot(final double latitude, final double logntude) {
+        FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child(sharedPreference.readDistrict())
+                .child(CONSTITUANCY)
+                .child(sharedPreference.readConstituancy())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        double lat = (double) dataSnapshot.child("latitude").getValue();
+                        double lan = (double) dataSnapshot.child("longitude").getValue();
+
+                        Location startPoint=new Location("locationA");
+                        startPoint.setLatitude(lat);
+                        startPoint.setLongitude(lan);
+
+                        Location endPoint=new Location("locationA");
+                        endPoint.setLatitude(latitude);
+                        endPoint.setLongitude(logntude);
+
+                        double dist=startPoint.distanceTo(endPoint);
+                        int distance = (int)(dist/1000);
+
+                        if(distance>=33){
+                            //open dailogbox
+                            // select constituancy
+                            Log.e("distance greater then 5",""+distance);
+                            pushImageToFirebase("Anantapur Urban");
+                        }else {
+                            pushImageToFirebase(sharedPreference.readConstituancy());
+                            Log.e("distance less then 5",""+distance);
+                        }
+
+                        Log.e("laf",""+lat);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void pushImageToFirebase(final String constituencyToPost) {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -189,12 +232,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 //                Log.e("gggg", "sssssssd");
 
                 //get the url for the image
-                getUrlForDownload();
+                getUrlForDownload(constituencyToPost);
             }
         });
     }
 
-    private void getUrlForDownload() {
+    private void getUrlForDownload(final String constituencyToPost) {
 
         final Posts posts = new Posts();
 
@@ -224,7 +267,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         timeStamp,
                         tag,mAuth.getCurrentUser().getUid());
 
-                postIntoFirebase(posts);
+                postIntoFirebase(posts, constituencyToPost);
 
                 key = randomString(10);
 
@@ -324,7 +367,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
-    private void postIntoFirebase(Posts posts) {
+    private void postIntoFirebase(Posts posts, final String constituencyToPost) {
         final String postKey = FirebaseDatabase.getInstance().getReference().push().getKey();
         FirebaseDatabase.getInstance().getReference().child("Posts").child(postKey).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -333,14 +376,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(CameraActivity.this,"Success Post",Toast.LENGTH_SHORT).show();
 
                     postIntoUserAccount(postKey);
-                    postIntoConstituancyAndTaggedArea(postKey);
+                    postIntoConstituancyAndTaggedArea(postKey, constituencyToPost);
                 }
             }
         });
 
     }
 
-    private void postIntoConstituancyAndTaggedArea(final String postKey)
+    private void postIntoConstituancyAndTaggedArea(final String postKey, String constituencyToPost)
     {
         Date now = new Date();
         HashMap<String,String> messageinfo=new HashMap<>();
@@ -351,7 +394,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 .child(sharedPreference.readState())
                 .child(sharedPreference.readDistrict())
                 .child(CONSTITUANCY)
-                .child(sharedPreference.readConstituancy())
+                .child(constituencyToPost)
                 .child("PostID")
                 .child(postKey)
                 .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
