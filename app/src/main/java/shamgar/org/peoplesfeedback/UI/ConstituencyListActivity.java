@@ -101,7 +101,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
     private void getOwnConstituancyMlaList(String state){
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
-                .child(state).child("MLA").child("district").child("Visakhapatnam").child("Constituancy");
+                .child(state).child("MLA").child("district").child(sharedPreferenceConfig.readDistrict()).child("Constituancy");
 
       ValueEventListener valueEventListener = new ValueEventListener() {
           @Override
@@ -109,9 +109,21 @@ public class ConstituencyListActivity extends AppCompatActivity {
               Log.e("con: ",dataSnapshot.getKey()+dataSnapshot.getChildren().toString()+sharedPreferenceConfig.readConstituancy());
 //              DataSnapshot ss= dataSnapshot.getChildren();
               if(dataSnapshot.exists()){
+                  ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
                   for(DataSnapshot snap: dataSnapshot.getChildren()){
+                      PartyStateMla singleSnapPoliticians = new PartyStateMla();
+
+                      singleSnapPoliticians.setHeading(sharedPreferenceConfig.readDistrict());
+                      singleSnapPoliticians.setName(snap.child("mla_name").getValue(String.class));
+
+                      Log.e("pol child",singleSnapPoliticians.getHeading());
+                      Log.e("pol child",snap.child("mla_name").getValue(String.class));
+
+                      districtPoliticians.add(singleSnapPoliticians);
                       Log.e("con2",snap.getKey());
                   }
+                  masterPartyStateMlas.add(districtPoliticians);
+                  adapter.notifyDataSetChanged();
               }
 //              if(dataSnapshot.hasChildren()){
 //                  Log.e("con2: ","has");
