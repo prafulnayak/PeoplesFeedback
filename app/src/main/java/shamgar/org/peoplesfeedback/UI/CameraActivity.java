@@ -286,16 +286,40 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
                 String des = imageDesc.getText().toString();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss").format(Calendar.getInstance().getTime());
-                Posts posts = new Posts(
-                        sharedPreference.readPhoneNo(),
-                        String.valueOf(latitude),
-                        String.valueOf(logntude),
-                        address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
-                        uri.toString(),
-                        des,
-                        des,
-                        timeStamp,
-                        tag,mAuth.getCurrentUser().getUid());
+                Posts posts = null;
+                if(i==0){
+                    posts = new Posts(
+                            sharedPreference.readPhoneNo(),
+                            String.valueOf(latitude),
+                            String.valueOf(logntude),
+                            address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                            uri.toString(),
+                            des,
+                            des,
+                            timeStamp,
+                            tag,
+                            mAuth.getCurrentUser().getUid(),
+                            sharedPreference.readState(),
+                            sharedPreference.readDistrict(),
+                            sharedPreference.readConstituancy());
+                }
+                if(i == 1){
+                    posts = new Posts(
+                            sharedPreference.readPhoneNo(),
+                            String.valueOf(latitude),
+                            String.valueOf(logntude),
+                            address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                            uri.toString(),
+                            des,
+                            des,
+                            timeStamp,
+                            tag,
+                            mAuth.getCurrentUser().getUid(),
+                            currentState,
+                            currentDistrict,
+                            currentConstituency);
+                }
+
 
                 postIntoFirebase(posts,i);
 

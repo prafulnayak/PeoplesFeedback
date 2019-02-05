@@ -25,6 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -221,7 +225,8 @@ public class Home extends Fragment {
 
                 if(!list5.contains(dataSnapshot.getKey())){
                     list5.add(dataSnapshot.getKey());
-
+                    //post view count
+                    postViewsCount(dataSnapshot.getKey());
                     Log.e("log: ","key in: "+dataSnapshot.getKey());
                     Log.e("log: ","key in s: "+s);
                 }
@@ -234,6 +239,7 @@ public class Home extends Fragment {
 //                    getMorePosts();
 //                    list5.clear();
                     getNewsDetailsFromPost(false);
+                    loading=true;
                 }
                 if(lastKey.equalsIgnoreCase(dataSnapshot.getKey())){
                     lastKey = list5.get(0);
@@ -244,7 +250,9 @@ public class Home extends Fragment {
 //                    getMorePosts();
 //                    list5.clear();
                     getNewsDetailsFromPost(false);
+                    loading=false;
                 }
+
 
             }
 
@@ -271,6 +279,20 @@ public class Home extends Fragment {
 
         postQuery.addChildEventListener(childEventListener);
 //        postQuery.addValueEventListener(valueEventListener);
+    }
+
+    private void postViewsCount(String key) {
+        String postKey = FirebaseDatabase.getInstance().getReference().push().getKey();
+        FirebaseDatabase.getInstance().getReference().child("Posts")
+                .child(key)
+                .child("View")
+                .child(postKey).setValue(sharedPreference.readPhoneNo())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.e("View ","posted");
+                    }
+                });
     }
 
     private void getNewsKeyFromConstituancy() {
@@ -355,7 +377,8 @@ public class Home extends Fragment {
                         Posts posts = dataSnapshot.getValue(Posts.class);
                         int likes =Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount()));
                         int share = Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount()));
-                        addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share,top);
+                        int viewCount = Integer.parseInt(String.valueOf(dataSnapshot.child("View").getChildrenCount()));
+                        addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share,viewCount,top);
                       //  Log.e("Post",""+posts.getImageUrl());
                         Log.e("Post data snap key",""+likes+share);
                       //  Log.e("Post list ",""+list.get(p));
@@ -374,7 +397,7 @@ public class Home extends Fragment {
 
     }
 
-    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share, boolean top) {
+    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share, int viewCount, boolean top) {
 
         News news = new News(
                 key,
@@ -384,7 +407,7 @@ public class Home extends Fragment {
                 Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
-                posts.getTagId(),posts.getView(),likes,share,posts.getPostedOn(),1,posts.getUser());
+                posts.getTagId(),viewCount,likes,share,posts.getPostedOn(),1,posts.getUser());
         Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
             Boolean isNewNews = true;
@@ -419,7 +442,7 @@ public class Home extends Fragment {
 //        adapter = new HomeAdapter(newsList, getActivity());
 //        recyclerView.setAdapter(adapter);
 
-            loading = true;
+//            loading = true;
 
 
     }

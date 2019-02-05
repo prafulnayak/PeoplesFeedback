@@ -105,6 +105,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.num_shares.setText(String.valueOf(news.getShares()));
         setLikeButton(news.getPostId(),holder);
         holder.posttimestamp.setText(news.getPostedDate());
+        holder.num_views.setText(String.valueOf(news.getViews()));
         Glide.with(ctx)
                 .load(news.getImageUrl())
                 .error(R.drawable.sai)
