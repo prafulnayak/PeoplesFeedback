@@ -52,6 +52,7 @@ import java.util.Locale;
 import java.util.PriorityQueue;
 
 import shamgar.org.peoplesfeedback.Model.News;
+import shamgar.org.peoplesfeedback.Model.SpamModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -132,7 +133,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     pm.setGravity(Gravity.END);
                 }
                 manageChatRequests(news.getReceiverUserId(),pm);
-                makeSpam(news.getPostId(),pm);
+                makeSpam(news.getPostId(),pm,news.getConstituancy(),sharedPreference.readState(),news.getTag());
                 pm.show();
 
 
@@ -201,14 +202,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         return new String(Character.toChars(unicode));
     }
 
-    private void makeSpam(final String postId, PopupMenu pm) {
+    private void makeSpam(final String postId, PopupMenu pm, final String constituancy, final String state, final String tag) {
         pm.getMenu().findItem(R.id.spam).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
+               // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
                 dbRefLike.child(postId).child("Spam")
                         .child(sharedPreference.readPhoneNo().substring(3))
-                        .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                        .setValue(1).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
@@ -326,10 +328,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         else {
             pm.getMenu().findItem(R.id.invite).setVisible(false);
         }
-
-
-
-
 
     }
     private void sendchatREquest(final String senderUserId, final PopupMenu pm) {
