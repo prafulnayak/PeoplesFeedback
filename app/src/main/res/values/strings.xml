@@ -10,7 +10,7 @@
     <string name="con_preference">shamgar.org.peoplesfeedback.Utils.con_preference</string>
     <string name="phone_no_preference">shamgar.org.peoplesfeedback.Utils.phone_no_preference</string>
     <string name="name_preference">shamgar.org.peoplesfeedback.Utils.name_preference</string>
-    <string name="gensder_preference">shamgar.org.peoplesfeedback.Utils.name_preference</string>
+    <string name="gensder_preference">shamgar.org.peoplesfeedback.Utils.gender_preference</string>
     <string name="user_name">user name</string>
     <string name="mla_name">mla_name</string>
     <string name="constituency_name">contituency: gajuwaka</string>
@@ -20,4 +20,5 @@
 
     <string name="location">location</string>
     <string name="views">50</string>
+    <string name="photo_url_preference">shamgar.org.peoplesfeedback.Utils.photo_url_preference</string>
 </resources>

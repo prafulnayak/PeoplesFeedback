@@ -2,6 +2,7 @@ package shamgar.org.peoplesfeedback.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 import shamgar.org.peoplesfeedback.R;
@@ -15,6 +16,21 @@ public class SharedPreferenceConfig {
         sharedPreferences = context.getSharedPreferences(context.getResources().getString(R.string.login_prferance), Context.MODE_PRIVATE);
 
     }
+
+    public void writePhotoUrl(Uri url){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(context.getResources().getString(R.string.photo_url_preference), String.valueOf(url));
+        Log.i("SharedPreferanceWrite: ",""+url);
+        editor.apply();
+    }
+
+    public String readPhotoUrl(){
+        String url;
+        url = sharedPreferences.getString(context.getResources().getString(R.string.photo_url_preference),"no");
+        Log.i("SharedPreferanceRead: ",""+url);
+        return url;
+    }
+
     public void writeGender(String gender){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(context.getResources().getString(R.string.gensder_preference), gender);

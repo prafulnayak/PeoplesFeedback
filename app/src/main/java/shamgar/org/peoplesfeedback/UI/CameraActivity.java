@@ -519,19 +519,24 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private Location getcurrentLocation()
     {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if ((ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
             Toast.makeText(CameraActivity.this, "not Per", Toast.LENGTH_LONG).show();
 
             ActivityCompat.requestPermissions(CameraActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
                     PERMISSIONS_REQUEST_FINE_LOCATION);
+
             return null;
         }
 
-        @SuppressLint("MissingPermission") Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        @SuppressLint("MissingPermission")
+        Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//        double longitude = location.getLongitude();
+//        double latitude = location.getLatitude();
         return location;
 //        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 //        locationListener = new LocationListener() {

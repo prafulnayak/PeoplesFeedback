@@ -378,6 +378,7 @@ public class Home extends Fragment {
                         int likes =Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount()));
                         int share = Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount()));
                         int viewCount = Integer.parseInt(String.valueOf(dataSnapshot.child("View").getChildrenCount()));
+//                        getUserPhotoUrl(posts,dataSnapshot.getKey(), likes,share,viewCount,top);
                         addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share,viewCount,top);
                       //  Log.e("Post",""+posts.getImageUrl());
                         Log.e("Post data snap key",""+likes+share);
@@ -397,44 +398,40 @@ public class Home extends Fragment {
 
     }
 
-    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share, int viewCount, boolean top) {
+    private void getUserPhotoUrl(String user) {
+        FirebaseDatabase.getInstance().getReference().child("people").child(user.substring(3))
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            String url = dataSnapshot.child("desc").getValue(String.class);
+                        }
+                    }
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void addOrUpdateNewsList(Posts posts, String key, int likes, int share, int viewCount, boolean top) {
+//        getUserPhotoUrl(posts.getUser());
         News news = new News(
                 key,
-                sharedPreference.readPhoneNo(),"url",posts.getHeading(),
-                posts.getDescription(),sharedPreference.readConstituancy(),
+                posts.getUser(),"Unknown Name","url",posts.getHeading(),
+                posts.getDescription(),posts.getConstituancy(),
                 posts.getImageUrl(),
                 Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
                 posts.getTagId(),viewCount,likes,share,posts.getPostedOn(),1,posts.getUser());
+
+        getUserUrl(news,key,top);
+
         Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
-            Boolean isNewNews = true;
-            for(int i=0;i<newsList.size();i++){
-                if(newsList.get(i).getPostId().equals(key)){
-                    Log.e("Postaaa",""+newsList.get(i).getPostId()+""+key);
-                    updateNewsListItem(i,news);
-                    isNewNews = false;
-                }
-            }
-            if(isNewNews){
-                if(top){
-                    newsList.add(0,news);
-                }else {
-                    newsList.add(news);
-                }
 
-//                recyclerView = view.findViewById(R.id.home_rv);
-
-//                recyclerView.setHasFixedSize(true);
-//                layoutManager = new LinearLayoutManager(getActivity());
-//                recyclerView.setLayoutManager(layoutManager);
-//                adapter = new HomeAdapter(newsList, getActivity());
-//                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-//                recyclerView.smoothScrollToPosition(0);
-            }
 
 
 //        }else
@@ -445,6 +442,66 @@ public class Home extends Fragment {
 //            loading = true;
 
 
+    }
+
+    private void getUserUrl(final News news, final String key, final boolean top) {
+        String url;
+        if(news.getPostedBy().length() == 13){
+            FirebaseDatabase.getInstance().getReference().child("people").child(news.getPostedBy().substring(3))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String url = dataSnapshot.child("desc").getValue(String.class);
+                            String name = dataSnapshot.child("name").getValue(String.class);
+                            if(url != null){
+                                news.setUserUrl(url);
+                            }
+                            if(name != null){
+                                news.setName(name);
+                            }
+
+                            checkUpdates(news,key,top);
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            checkUpdates(news,key,top);
+                        }
+                    });
+        }else {
+            checkUpdates(news,key,top);
+        }
+
+
+    }
+
+    private void checkUpdates(News news, String key, boolean top) {
+        Boolean isNewNews = true;
+        for(int i=0;i<newsList.size();i++){
+            if(newsList.get(i).getPostId().equals(key)){
+                Log.e("Postaaa",""+newsList.get(i).getPostId()+""+key);
+                updateNewsListItem(i,news);
+                isNewNews = false;
+            }
+        }
+        if(isNewNews){
+            if(top){
+                newsList.add(0,news);
+            }else {
+                newsList.add(news);
+            }
+
+//                recyclerView = view.findViewById(R.id.home_rv);
+
+//                recyclerView.setHasFixedSize(true);
+//                layoutManager = new LinearLayoutManager(getActivity());
+//                recyclerView.setLayoutManager(layoutManager);
+//                adapter = new HomeAdapter(newsList, getActivity());
+//                recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+//                recyclerView.smoothScrollToPosition(0);
+        }
     }
 
     private void updateNewsListItem(int i, News news)

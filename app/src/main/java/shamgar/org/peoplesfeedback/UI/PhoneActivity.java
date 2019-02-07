@@ -357,7 +357,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 sharedPreference.readGender(),
                 timeStamp,
                 "",
-                "");
+                sharedPreference.readPhotoUrl());
 //        String type,name, phoneno,state,dist,constituancy,gender,createdon,shortheading,desc;
 //        Followings followings;
 //        Follwers follwers;
@@ -397,15 +397,17 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateExistingUserDetails() {
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
+//        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
 
                         Map<String, Object> updates = new HashMap<String,Object>();
+
                         updates.put("constituancy",sharedPreference.readConstituancy());
                         updates.put("dist", sharedPreference.readDistrict());
                         updates.put("email", sharedPreference.readEmail());
                         updates.put("name", sharedPreference.readName());
                         updates.put("state", sharedPreference.readState());
                         updates.put("phoneno", sharedPreference.readPhoneNo());
+                        updates.put("desc",sharedPreference.readPhotoUrl());
 ////                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
 ////                            @Override
 ////                            public void onSuccess(Void aVoid) {
@@ -416,7 +418,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(PhoneActivity.this, "Information Updated ", Toast.LENGTH_LONG).show();
+                Toast.makeText(PhoneActivity.this, "Information Updated "+sharedPreference.readName(), Toast.LENGTH_LONG).show();
             }
         });
 

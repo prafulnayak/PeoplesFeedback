@@ -5,6 +5,7 @@ import java.io.File;
 public class News {
     private String postId;
     private String postedBy;
+    private String name;
     private String userUrl;
     private String heading;
     private String description;
@@ -24,12 +25,14 @@ public class News {
     private int status;
     private String receiverUserId;
 
+
     public News() {
     }
 
-    public News(String postId, String postedBy, String userUrl, String heading, String description, String constituancy, String imageUrl, Double latitude, Double longitude, String address, String mla, String mlaImageUrl, String votePercentage, String tag, int views, int likes, int shares, String postedDate, int status,String receiverUserId) {
+    public News(String postId, String postedBy, String name, String userUrl, String heading, String description, String constituancy, String imageUrl, Double latitude, Double longitude, String address, String mla, String mlaImageUrl, String votePercentage, String tag, int views, int likes, int shares, String postedDate, int status, String receiverUserId) {
         this.postId = postId;
         this.postedBy = postedBy;
+        this.name = name;
         this.userUrl = userUrl;
         this.heading = heading;
         this.description = description;
@@ -47,9 +50,17 @@ public class News {
         this.shares = shares;
         this.postedDate = postedDate;
         this.status = status;
-        this.receiverUserId=receiverUserId;
-
+        this.receiverUserId = receiverUserId;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getReceiverUserId() {
         return receiverUserId;
     }

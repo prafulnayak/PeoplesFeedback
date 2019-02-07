@@ -98,6 +98,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, int position) {
 
         final News news = newsListR.get(position);
+        holder.username.setText(news.getName());
         holder.mlaconstituency.setText(news.getConstituancy());
         holder.postTagname.setText(news.getTag());
         holder.postImageDescription.setText(news.getDescription());
@@ -106,6 +107,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         setLikeButton(news.getPostId(),holder);
         holder.posttimestamp.setText(news.getPostedDate());
         holder.num_views.setText(String.valueOf(news.getViews()));
+        Glide.with(ctx)
+                .load(news.getUserUrl())
+                .error(R.drawable.pflogo)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.userimage);
         Glide.with(ctx)
                 .load(news.getImageUrl())
                 .error(R.drawable.sai)
