@@ -427,7 +427,7 @@ public class Home extends Fragment {
                 "mla","malImageUrl","100",
                 posts.getTagId(),viewCount,likes,share,posts.getPostedOn(),1,posts.getUser());
 
-        getUserUrl(news,key,top);
+        getUserUrl(news,key,top,posts.getState(),posts.getDistrict(),posts.getConstituancy());
 
         Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
@@ -444,7 +444,7 @@ public class Home extends Fragment {
 
     }
 
-    private void getUserUrl(final News news, final String key, final boolean top) {
+    private void getUserUrl(final News news, final String key, final boolean top, final String state, final String district, final String constituancy) {
         String url;
         if(news.getPostedBy().length() == 13){
             FirebaseDatabase.getInstance().getReference().child("people").child(news.getPostedBy().substring(3))
@@ -459,17 +459,63 @@ public class Home extends Fragment {
                             if(name != null){
                                 news.setName(name);
                             }
+                            retrieveMlaNameAndImage(news,key,top,state,district,constituancy);
 
-                            checkUpdates(news,key,top);
 
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            checkUpdates(news,key,top);
+                            retrieveMlaNameAndImage(news,key,top,state,district,constituancy);
                         }
                     });
         }else {
+            retrieveMlaNameAndImage(news,key,top,state,district,constituancy);
+        }
+
+
+    }
+
+    private void retrieveMlaNameAndImage(final News news, final String key, final boolean top, String state, String district, String constituancy) {
+        if(state != null && district != null && constituancy != null){
+            FirebaseDatabase.getInstance().getReference().child("States").child(state).child("MLA")
+                    .child("district").child(district)
+                    .child("Constituancy").child(constituancy).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String mlaUrl = dataSnapshot.child("mla_image").getValue(String.class);
+                    String mlaName = dataSnapshot.child("mla_name").getValue(String.class);
+                    long rating = 90;
+                    try{
+                        rating = dataSnapshot.child("rating").getValue(long.class);
+                        news.setVotePercentage(String.valueOf(rating));
+                        Log.e("rating",""+rating);
+                    }catch (NullPointerException e){
+
+                    }
+
+                    if(mlaUrl != null){
+                        news.setMlaImageUrl(mlaUrl);
+                    }
+                    if(mlaName != null){
+                        news.setMla(mlaName);
+                    }
+
+                    checkUpdates(news,key,top);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    checkUpdates(news,key,top);
+
+                }
+            });
+        }else {
+            news.setMla("Admin Post");
+            if(constituancy == null){
+                news.setConstituancy("Multiple Constituancy");
+            }
             checkUpdates(news,key,top);
         }
 

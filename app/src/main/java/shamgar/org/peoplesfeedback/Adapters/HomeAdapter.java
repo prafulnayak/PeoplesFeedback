@@ -107,6 +107,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         setLikeButton(news.getPostId(),holder);
         holder.posttimestamp.setText(news.getPostedDate());
         holder.num_views.setText(String.valueOf(news.getViews()));
+        holder.mlaname.setText(news.getMla());;
+        holder.postmlarating_perce.setText(String.valueOf(news.getVotePercentage()));
+        Glide.with(ctx)
+                .load(news.getMlaImageUrl())
+                .error(R.drawable.pflogo)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.postMlaImage);
         Glide.with(ctx)
                 .load(news.getUserUrl())
                 .error(R.drawable.pflogo)
@@ -241,7 +249,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder{
         private TextView username,mlaname,mlaconstituency,posttimestamp,postTagname,postImageDescription;
         private TextView postmlarating_perce,postlocation,num_views,num_likes,num_shares;
-        private ImageView userpostimage;
+        private ImageView userpostimage, postMlaImage;
         private ImageButton imgview,imgshare,postsubmenuOptions;
         CircularImageView userimage, mlaimage;
         TextView imglike;
@@ -249,7 +257,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-
+            postMlaImage = itemView.findViewById(R.id.postmlaImage);
             userimage=itemView.findViewById(R.id.postuserImage);
             mlaimage=itemView.findViewById(R.id.postmlaImage);
             username=itemView.findViewById(R.id.postusername);
