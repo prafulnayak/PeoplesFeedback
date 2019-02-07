@@ -9,16 +9,16 @@
 
     <ImageView
         android:id="@+id/camera_imageView"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.477"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.027"
+        app:layout_constraintVertical_bias="0.015"
         app:srcCompat="@drawable/pflogo" />
 
     <Button

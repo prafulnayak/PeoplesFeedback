@@ -52,6 +52,7 @@ import java.util.Locale;
 import java.util.PriorityQueue;
 
 import shamgar.org.peoplesfeedback.Model.News;
+import shamgar.org.peoplesfeedback.Model.SpamModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -97,6 +98,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, int position) {
 
         final News news = newsListR.get(position);
+        holder.username.setText(news.getName());
         holder.mlaconstituency.setText(news.getConstituancy());
         holder.postTagname.setText(news.getTag());
         holder.postImageDescription.setText(news.getDescription());
@@ -104,9 +106,24 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.num_shares.setText(String.valueOf(news.getShares()));
         setLikeButton(news.getPostId(),holder);
         holder.posttimestamp.setText(news.getPostedDate());
+        holder.num_views.setText(String.valueOf(news.getViews()));
+        holder.mlaname.setText(news.getMla()+" (MLA)");;
+        holder.postmlarating_perce.setText(String.valueOf(news.getVotePercentage()+"%"));
+        Glide.with(ctx)
+                .load(news.getMlaImageUrl())
+                .error(R.drawable.pflogo)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.postMlaImage);
+        Glide.with(ctx)
+                .load(news.getUserUrl())
+                .error(R.drawable.pflogo)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.userimage);
         Glide.with(ctx)
                 .load(news.getImageUrl())
-                .error(R.drawable.sai)
+                .error(R.drawable.pflogo)
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userpostimage);
@@ -132,7 +149,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     pm.setGravity(Gravity.END);
                 }
                 manageChatRequests(news.getReceiverUserId(),pm);
-                makeSpam(news.getPostId(),pm);
+                makeSpam(news.getPostId(),pm,news.getConstituancy(),sharedPreference.readState(),news.getTag());
                 pm.show();
 
 
@@ -201,14 +218,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         return new String(Character.toChars(unicode));
     }
 
-    private void makeSpam(final String postId, PopupMenu pm) {
+    private void makeSpam(final String postId, PopupMenu pm, final String constituancy, final String state, final String tag) {
         pm.getMenu().findItem(R.id.spam).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
+               // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
                 dbRefLike.child(postId).child("Spam")
                         .child(sharedPreference.readPhoneNo().substring(3))
-                        .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                        .setValue(1).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
@@ -231,7 +249,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder{
         private TextView username,mlaname,mlaconstituency,posttimestamp,postTagname,postImageDescription;
         private TextView postmlarating_perce,postlocation,num_views,num_likes,num_shares;
-        private ImageView userpostimage;
+        private ImageView userpostimage, postMlaImage;
         private ImageButton imgview,imgshare,postsubmenuOptions;
         CircularImageView userimage, mlaimage;
         TextView imglike;
@@ -239,7 +257,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-
+            postMlaImage = itemView.findViewById(R.id.postmlaImage);
             userimage=itemView.findViewById(R.id.postuserImage);
             mlaimage=itemView.findViewById(R.id.postmlaImage);
             username=itemView.findViewById(R.id.postusername);
@@ -258,14 +276,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             imgshare=itemView.findViewById(R.id.imgshares);
             imgview=itemView.findViewById(R.id.imgViews);
             postsubmenuOptions=itemView.findViewById(R.id.postsubmenuOptions);
-
-
-
         }
-
-
-
-        
     }
 
     //sending chat requests
@@ -326,10 +337,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         else {
             pm.getMenu().findItem(R.id.invite).setVisible(false);
         }
-
-
-
-
 
     }
     private void sendchatREquest(final String senderUserId, final PopupMenu pm) {

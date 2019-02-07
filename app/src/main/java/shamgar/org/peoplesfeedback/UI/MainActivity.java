@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this,""+currentUser.getEmail()+" : "+currentUser.getPhoneNumber()+currentUser.getDisplayName(),Toast.LENGTH_SHORT).show();
             if(currentUser.getEmail()!=null && !currentUser.getEmail().equals("")){
                 sharedPreferences.writeEmail(currentUser.getEmail());
-                sharedPreferences.writeName(currentUser.getDisplayName());
+//                sharedPreferences.writeName(currentUser.getDisplayName());
             }
             Intent intent = new Intent(this,PhoneActivity.class);
             startActivity(intent);
@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                sharedPreferences.writeName(account.getDisplayName());
+                Log.e("display name",sharedPreferences.readName());
+                sharedPreferences.writePhotoUrl(account.getPhotoUrl());
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately

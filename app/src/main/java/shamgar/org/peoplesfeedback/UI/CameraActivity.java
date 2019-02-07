@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,10 +11,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,6 +45,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,7 +62,6 @@ import shamgar.org.peoplesfeedback.ConstantName.*;
 
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
-import static shamgar.org.peoplesfeedback.ConstantName.NamesC.PEOPLE;
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener   {
 
@@ -77,6 +81,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private SharedPreferenceConfig sharedPreference;
     private String key;
+    static final int REQUEST_TAKE_PHOTO = 1;
 
     private static final String CHAR_LIST =
             "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -92,6 +97,15 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private String imageId;
     private FirebaseAuth mAuth;
 
+    private Spinner spinnerState,spinnerDistrict,spinnerConstituency;
+    private ArrayAdapter stateAdapter,districtAdapter,constituencyAdapter;
+    private ArrayList<String> state=new ArrayList<>();
+    private ArrayList<String> districts=new ArrayList<>();
+    private ArrayList<String> constituencies=new ArrayList<>();
+    private String currentState,currentDistrict,currentConstituency;
+
+    private Button dialogConfirm;
+    private String mCurrentPhotoPath;
 
 
     @Override
@@ -141,7 +155,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 if(location!=null){
                     latitude = location.getLatitude();
                     logntude = location.getLongitude();
-                    pushImageToFirebase();
+                    checkOwnConstituancyOrNot(latitude,logntude);
+
                 }else {
                     Toast.makeText(this, "Location ON Issue",Toast.LENGTH_SHORT).show();
                 }
@@ -150,7 +165,76 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void pushImageToFirebase() {
+    private void checkOwnConstituancyOrNot(final double latitude, final double logntude) {
+        FirebaseDatabase.getInstance().getReference().child(INDIA)
+                .child(sharedPreference.readState())
+                .child(sharedPreference.readDistrict())
+                .child(CONSTITUANCY)
+                .child(sharedPreference.readConstituancy())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        double lat = (double) dataSnapshot.child("latitude").getValue();
+                        double lan = (double) dataSnapshot.child("longitude").getValue();
+
+                        Location startPoint=new Location("locationA");
+                        startPoint.setLatitude(lat);
+                        startPoint.setLongitude(lan);
+
+                        Location endPoint=new Location("locationA");
+                        endPoint.setLatitude(latitude);
+                        endPoint.setLongitude(logntude);
+
+                        double dist=startPoint.distanceTo(endPoint);
+                        int distance = (int)(dist/1000);
+
+                        if(distance<=33){
+                            AlertDialog.Builder builder=new AlertDialog.Builder(CameraActivity.this);
+                            builder.setTitle("You are out of registered constituency, please select below");
+                            View mView=getLayoutInflater().inflate(R.layout.custom_dialog,null);
+
+                            spinnerState=mView.findViewById(R.id.spinnerGetStates);
+                            spinnerDistrict=mView.findViewById(R.id.spinnerGetDistricts);
+                            spinnerConstituency=mView.findViewById(R.id.spinnerGetConstituencies);
+
+                            dialogConfirm=mView.findViewById(R.id.dialogBtnConfirm);
+                            dialogConfirm.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (currentConstituency != "Select constituency" && currentDistrict != "Select district" && currentState!="Select state"){
+                                        Toast.makeText(getApplicationContext(),"post into desired constituency",Toast.LENGTH_LONG).show();
+                                        pushImageToFirebase(1);
+                                    }
+                                    else {
+                                        Toast.makeText(getApplicationContext(),"please select fields",Toast.LENGTH_LONG).show();
+
+                                    }
+                                }
+                            });
+                            getStates();
+                            builder.setView(mView);
+                            AlertDialog alertDialog=builder.create();
+                            alertDialog.show();
+
+                            //open dailogbox
+                            // select constituancy
+                            Log.e("distance greater then 5",""+distance);
+                        }else {
+                            pushImageToFirebase(0);
+                            Log.e("distance less then 5",""+distance);
+                        }
+
+                        Log.e("laf",""+lat);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void pushImageToFirebase(final int i) {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -183,12 +267,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 //                Log.e("gggg", "sssssssd");
 
                 //get the url for the image
-                getUrlForDownload();
+                getUrlForDownload(i);
             }
         });
     }
 
-    private void getUrlForDownload() {
+    private void getUrlForDownload(final int i) {
 
         final Posts posts = new Posts();
 
@@ -207,108 +291,44 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
                 String des = imageDesc.getText().toString();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss").format(Calendar.getInstance().getTime());
-                Posts posts = new Posts(
-                        sharedPreference.readPhoneNo(),
-                        String.valueOf(latitude),
-                        String.valueOf(logntude),
-                        address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
-                        uri.toString(),
-                        des,
-                        des,
-                        timeStamp,
-                        tag,mAuth.getCurrentUser().getUid());
+                Posts posts = null;
+                if(i==0){
+                    posts = new Posts(
+                            sharedPreference.readPhoneNo(),
+                            String.valueOf(latitude),
+                            String.valueOf(logntude),
+                            address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                            uri.toString(),
+                            des,
+                            des,
+                            timeStamp,
+                            tag,
+                            mAuth.getCurrentUser().getUid(),
+                            sharedPreference.readState(),
+                            sharedPreference.readDistrict(),
+                            sharedPreference.readConstituancy());
+                }
+                if(i == 1){
+                    posts = new Posts(
+                            sharedPreference.readPhoneNo(),
+                            String.valueOf(latitude),
+                            String.valueOf(logntude),
+                            address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                            uri.toString(),
+                            des,
+                            des,
+                            timeStamp,
+                            tag,
+                            mAuth.getCurrentUser().getUid(),
+                            currentState,
+                            currentDistrict,
+                            currentConstituency);
+                }
 
-                postIntoFirebase(posts);
+
+                postIntoFirebase(posts,i);
 
                 key = randomString(10);
-
-
-//                DatabaseReference mlaReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy());
-////                mlaReference.child("MLAID").child("id").setValue(mlaID).addOnCompleteListener(new OnCompleteListener<Void>()
-////                {
-////                    @Override
-////                    public void onComplete(@NonNull Task<Void> task)
-////                    {
-////                        if (task.isSuccessful()) {
-//////                         Toast.makeText(CameraActivity.this, "mla id added: ", Toast.LENGTH_LONG).show();
-////
-////
-////                        } else
-////                            Toast.makeText(CameraActivity.this, "mla id added failed: ", Toast.LENGTH_LONG).show();
-////
-////                    }
-////                });
-
-
-
-//                DatabaseReference TagReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict());
-//                TagReference.child(tag).child(key).setValue("postid").addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task)
-//                    {
-//                        if (task.isSuccessful()) {
-////                           Toast.makeText(CameraActivity.this, "Tag success: ", Toast.LENGTH_LONG).show();
-//
-//
-//                        } else
-//                            Toast.makeText(CameraActivity.this, "Tag Fail: ", Toast.LENGTH_LONG).show();
-//                    }
-//                });
-
-
-
-
-
-//                DatabaseReference PostReference = FirebaseDatabase.getInstance().getReference("states/" + sharedPreference.readState() + "/" + sharedPreference.readDistrict() + "/con/" + sharedPreference.readConstituancy());
-//                PostReference.child("PostID").child(key).setValue("postid");
-//
-//
-//                PostReference.addListenerForSingleValueEvent(new ValueEventListener()
-//                {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-////                        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
-////                        Map<String, Object> updates = new HashMap<String,Object>();
-////                        updates.put("description", "hello");
-////                        updates.put("mla", "hello");
-////                        updates.put("tag", "hello");
-////                        updates.put("url", "hello");
-////                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-////                            @Override
-////                            public void onSuccess(Void aVoid) {
-////
-////                            }
-////                        });
-//
-//                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-////                        databaseReference.child("Posts").child(key).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
-////
-////
-////                            @Override
-////                            public void onComplete(@NonNull Task<Void> task) {
-////
-////
-////                                if (task.isSuccessful())
-////                                {
-//////                                  Toast.makeText(CameraActivity.this, "post success: ", Toast.LENGTH_LONG).show();
-////                                    finish();
-////
-////                                } else
-////                                {
-////                                     Toast.makeText(CameraActivity.this, "post Fail: ", Toast.LENGTH_LONG).show();
-////                                }
-////
-////                            }
-////                        });
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -318,7 +338,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
-    private void postIntoFirebase(Posts posts) {
+    private void postIntoFirebase(Posts posts, final int i) {
         final String postKey = FirebaseDatabase.getInstance().getReference().push().getKey();
         FirebaseDatabase.getInstance().getReference().child("Posts").child(postKey).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -327,50 +347,88 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(CameraActivity.this,"Success Post",Toast.LENGTH_SHORT).show();
 
                     postIntoUserAccount(postKey);
-                    postIntoConstituancyAndTaggedArea(postKey);
+                    postIntoConstituancyAndTaggedArea(postKey,i);
                 }
             }
         });
 
     }
 
-    private void postIntoConstituancyAndTaggedArea(final String postKey)
+    private void postIntoConstituancyAndTaggedArea(final String postKey, final int i)
     {
         Date now = new Date();
         HashMap<String,String> messageinfo=new HashMap<>();
         messageinfo.put("id",postKey);
         messageinfo.put("date",now.toString());
 
-        FirebaseDatabase.getInstance().getReference().child(INDIA)
-                .child(sharedPreference.readState())
-                .child(sharedPreference.readDistrict())
-                .child(CONSTITUANCY)
-                .child(sharedPreference.readConstituancy())
-                .child("PostID")
-                .child(postKey)
-                .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(CameraActivity.this,"posted in state con",Toast.LENGTH_SHORT).show();
-                postInTagArea(postKey);
+        if (i==0) {
+            FirebaseDatabase.getInstance().getReference().child(INDIA)
+                    .child(sharedPreference.readState())
+                    .child(sharedPreference.readDistrict())
+                    .child(CONSTITUANCY)
+                    .child(sharedPreference.readConstituancy())
+                    .child("PostID")
+                    .child(postKey)
+                    .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
+                    postInTagArea(postKey,i);
+                }
+            });
+        }
+        else if (i==1){
+            FirebaseDatabase.getInstance().getReference().child(INDIA)
+                    .child(currentState)
+                    .child(currentDistrict)
+                    .child(CONSTITUANCY)
+                    .child(currentConstituency)
+                    .child("PostID")
+                    .child(postKey)
+                    .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
+                    postInTagArea(postKey, i);
+                }
+            });
             }
-        });
+
+
+
     }
 
-    private void postInTagArea(String postKey) {
-        FirebaseDatabase.getInstance().getReference().child(INDIA)
-                .child(sharedPreference.readState())
-                .child(sharedPreference.readDistrict())
-                .child(tag)
-                .child("postID")
-                .child(postKey)
-                .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(CameraActivity.this,"posted in tag area",Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
+    private void postInTagArea(String postKey, int i) {
+        if (i==0){
+            FirebaseDatabase.getInstance().getReference().child(INDIA)
+                    .child(sharedPreference.readState())
+                    .child(sharedPreference.readDistrict())
+                    .child(tag)
+                    .child("postID")
+                    .child(postKey)
+                    .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(CameraActivity.this,"posted in tag area",Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        }
+        else if (i==1){
+            FirebaseDatabase.getInstance().getReference().child(INDIA)
+                    .child(currentState)
+                    .child(currentDistrict)
+                    .child(tag)
+                    .child("postID")
+                    .child(postKey)
+                    .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(CameraActivity.this,"posted in tag area",Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        }
     }
 
     private void postIntoUserAccount(String postKey) {
@@ -458,27 +516,48 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private void dispatchTakePictureIntent()
     {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null)
-        {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "shamgar.org.peoplesfeedback.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE );
+                Log.e("uri",photoURI.toString());
+
+            }
         }
     }
     private Location getcurrentLocation()
     {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if ((ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
             Toast.makeText(CameraActivity.this, "not Per", Toast.LENGTH_LONG).show();
 
             ActivityCompat.requestPermissions(CameraActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
                     PERMISSIONS_REQUEST_FINE_LOCATION);
+
             return null;
         }
 
-        @SuppressLint("MissingPermission") Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        @SuppressLint("MissingPermission")
+        Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//        double longitude = location.getLongitude();
+//        double latitude = location.getLatitude();
         return location;
 //        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 //        locationListener = new LocationListener() {
@@ -571,11 +650,43 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            cameraImage.setImageBitmap(imageBitmap);
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            switch (requestCode) {
+                case 1: {
+
+                    if (resultCode == RESULT_OK ) {
+                        File file = new File(mCurrentPhotoPath);
+                        Bitmap bitmap = MediaStore.Images.Media
+                                .getBitmap(this.getContentResolver(), Uri.fromFile(file));
+                        if (bitmap != null) {
+                            cameraImage.setImageBitmap(bitmap);
+                        }
+                    }
+                    break;
+                }
+            }
+
+        } catch (Exception error) {
+            error.printStackTrace();
         }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        Log.e("camera",image.toString());
+        return image;
     }
 
     public void chechedTag(View view) {
@@ -635,6 +746,131 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         return randStr.toString();
     }
 
+    private void getStates(){
+        Query query= FirebaseDatabase.getInstance().getReference().child("States");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    state.clear();
+                    state.add("Select state");
+                    for (DataSnapshot states:dataSnapshot.getChildren()){
+                        Log.e("states",states.getKey());
+                        state.add(states.getKey());
+                    }
+                    stateAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,state);
+                    stateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerState.setAdapter(stateAdapter);
+
+                    spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            currentState=parent.getSelectedItem().toString();
+                            getDistricts(currentState);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
+
+    private void getDistricts(final String currentState) {
+        if (currentState.equalsIgnoreCase("Select state") || currentState.equalsIgnoreCase("All")){
+            districts.clear();
+            constituencies.clear();
+        }
+        Query query= FirebaseDatabase.getInstance().getReference().child("States")
+                .child(currentState).child("MLA").child("district");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    districts.clear();
+                    districts.add("Select district");
+                    for (DataSnapshot states:dataSnapshot.getChildren()){
+                        Log.e("states",states.getKey());
+                        districts.add(states.getKey());
+                    }
+
+                    districtAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,districts);
+                    districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerDistrict.setAdapter(districtAdapter);
+
+                    spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            currentDistrict=parent.getSelectedItem().toString();
+                            getConstituency(currentState,currentDistrict);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
+
+    private void getConstituency(String state, String currentDistrict) {
+        if (currentDistrict.equalsIgnoreCase("Select district") || currentDistrict.equalsIgnoreCase("All") ){
+            constituencies.clear();
+        }
+        Query query= FirebaseDatabase.getInstance().getReference().child("States")
+                .child(state).child("MLA").child("district").child(currentDistrict).child("Constituancy");
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    constituencies.clear();
+                    constituencies.add("Select constituency");
+                    for (DataSnapshot states:dataSnapshot.getChildren()){
+                        Log.e("states",states.getKey());
+                        constituencies.add(states.getKey());
+                    }
+                    constituencyAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,constituencies);
+                    constituencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerConstituency.setAdapter(constituencyAdapter);
+
+                    spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            currentConstituency=adapterView.getSelectedItem().toString();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
 
 
 

@@ -12,9 +12,9 @@ public class Posts {
     String postedOn;
     String tagId;
     String currentUserId;
-    int like;
-    int share;
-    int view;
+    String state;
+    String district;
+    String constituancy;
 
 
 
@@ -22,8 +22,7 @@ public class Posts {
     }
 
 
-
-    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId, String currentUserId) {
+    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId, String currentUserId, String state, String district, String constituancy) {
         this.user = user;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -33,22 +32,10 @@ public class Posts {
         this.description = description;
         this.postedOn = postedOn;
         this.tagId = tagId;
-        this.currentUserId=currentUserId;
-
-    }
-    public Posts(String user, String latitude, String longitude, String address, String imageUrl, String heading, String description, String postedOn, String tagId, int like, int share, int view) {
-        this.user = user;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.address = address;
-        this.imageUrl = imageUrl;
-        this.heading = heading;
-        this.description = description;
-        this.postedOn = postedOn;
-        this.tagId = tagId;
-        this.like = like;
-        this.share = share;
-        this.view = view;
+        this.currentUserId = currentUserId;
+        this.state = state;
+        this.district = district;
+        this.constituancy = constituancy;
     }
 
     public String getUser() {
@@ -123,29 +110,30 @@ public class Posts {
         this.tagId = tagId;
     }
 
-    public int getLike() {
-        return like;
+    public String getState() {
+        return state;
     }
 
-    public void setLike(int like) {
-        this.like = like;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    public int getShare() {
-        return share;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setShare(int share) {
-        this.share = share;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
-    public int getView() {
-        return view;
+    public String getConstituancy() {
+        return constituancy;
     }
 
-    public void setView(int view) {
-        this.view = view;
+    public void setConstituancy(String constituancy) {
+        this.constituancy = constituancy;
     }
+
     public String getCurrentUserId() {
         return currentUserId;
     }

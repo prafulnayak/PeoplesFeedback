@@ -142,208 +142,9 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         checkmale =  findViewById(R.id.checkmale);
         checkfemale =  findViewById(R.id.checkfemale);
 
-<<<<<<< HEAD
+
         getStates();
-=======
-        adapter= new ArrayAdapter(this,android.R.layout.simple_spinner_item,state);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        adapter1= new ArrayAdapter(this,android.R.layout.simple_spinner_item,districts);
-        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        DatabaseReference states = database.getReference("States");
-        states.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot children) {
-
-                        //Get map of users in datasnapshot
-                        state.clear();
-                        for(DataSnapshot states:children.getChildren())
-                        {
-                            state.add((String) states.getKey());
-                        }
-                        spinstate.setAdapter(adapter);
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-        spinstate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                stateTextview = (TextView)adapterView.getSelectedView();
-                result = stateTextview.getText().toString();
-
-                DatabaseReference ref = database.getReference("States/"+result+"/MLA"+"/district");
-                ref.addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                districts.clear();
-                                for(DataSnapshot district : dataSnapshot.getChildren())
-                                {
-                                    districts.add((String) district.getKey());
-                                }
-                                spindist.setAdapter(adapter1);
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError)
-                            {
-                                //handle databaseError
-                            }
-                        });
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView)
-            {
-
-            }
-        });
-        spindist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                districtTextview = (TextView)adapterView.getSelectedView();
-                district = districtTextview.getText().toString();
-                DatabaseReference ref = database.getReference("States/"+result+"/MLA"+"/district/"+district+"/Constituancy");
-                ref.addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                constituency.clear();
-                                for(DataSnapshot constituencies : dataSnapshot.getChildren())
-                                {
-                                    constituency.add((String) constituencies.getKey());
-                                }
-                                spinnerConstituency.setAdapter(adapter2);
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError)
-                            {
-                                //handle databaseError
-                            }
-                        });
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
->>>>>>> d2f7bf2b986410b5b62282a75c12b9fc48a65316
-
-//        adapter= new ArrayAdapter(this,android.R.layout.simple_spinner_item,state);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//        adapter1= new ArrayAdapter(this,android.R.layout.simple_spinner_item,districts);
-//        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//
-//        adapter2= new ArrayAdapter(this,android.R.layout.simple_spinner_item,constituency);
-//        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        DatabaseReference states = database.getReference("india");
-//        states.addListenerForSingleValueEvent(
-//                new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot children) {
-//                        //Get map of users in datasnapshot
-//                        state.clear();
-//                        for(DataSnapshot states:children.getChildren())
-//                        {
-//                            state.add((String) states.getKey());
-//                        }
-//                        spinstate.setAdapter(adapter);
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
-//        spinstate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-//        {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-//            {
-//                stateTextview = (TextView)adapterView.getSelectedView();
-//                result = stateTextview.getText().toString();
-//
-//                DatabaseReference ref = database.getReference("india/"+result);
-//                ref.addListenerForSingleValueEvent(
-//                        new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                districts.clear();
-//                                for(DataSnapshot district : dataSnapshot.getChildren())
-//                                {
-//                                    districts.add((String) district.getKey());
-//                                }
-//                                spindist.setAdapter(adapter1);
-//                            }
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError)
-//                            {
-//                                //handle databaseError
-//                            }
-//                        });
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView)
-//            {
-//
-//            }
-//        });
-//        spindist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-//        {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-//            {
-//                districtTextview = (TextView)adapterView.getSelectedView();
-//                district = districtTextview.getText().toString();
-//                DatabaseReference ref = database.getReference("india/"+result+"/"+district+"/constituancy");
-//                ref.addListenerForSingleValueEvent(
-//                        new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                constituency.clear();
-//                                for(DataSnapshot constituencies : dataSnapshot.getChildren())
-//                                {
-//                                    constituency.add((String) constituencies.getKey());
-//                                }
-//                                spinnerConstituency.setAdapter(adapter2);
-//                            }
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError)
-//                            {
-//                                //handle databaseError
-//                            }
-//                        });
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-//
-//        spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-//        {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                constituencyTextview = (TextView)adapterView.getSelectedView();
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//            }
-//        });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
@@ -573,7 +374,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 sharedPreference.readGender(),
                 timeStamp,
                 "",
-                "");
+                sharedPreference.readPhotoUrl());
 //        String type,name, phoneno,state,dist,constituancy,gender,createdon,shortheading,desc;
 //        Followings followings;
 //        Follwers follwers;
@@ -613,15 +414,17 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateExistingUserDetails() {
-        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
+//        DatabaseReference ref=FirebaseDatabase.getInstance().getReference().child("Posts").child("Z6zi5Dl0hj");
 
                         Map<String, Object> updates = new HashMap<String,Object>();
+
                         updates.put("constituancy",sharedPreference.readConstituancy());
                         updates.put("dist", sharedPreference.readDistrict());
                         updates.put("email", sharedPreference.readEmail());
                         updates.put("name", sharedPreference.readName());
                         updates.put("state", sharedPreference.readState());
                         updates.put("phoneno", sharedPreference.readPhoneNo());
+                        updates.put("desc",sharedPreference.readPhotoUrl());
 ////                        ref.updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
 ////                            @Override
 ////                            public void onSuccess(Void aVoid) {
@@ -632,7 +435,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(PhoneActivity.this, "Information Updated ", Toast.LENGTH_LONG).show();
+                Toast.makeText(PhoneActivity.this, "Information Updated "+sharedPreference.readName(), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -735,7 +538,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         loadingbar.show();
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,        // Phone number to verify
+                "+91"+phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
                 this,               // Activity (for callback binding)

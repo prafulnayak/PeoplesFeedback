@@ -33,8 +33,10 @@ public class ConstituencyListActivity extends AppCompatActivity {
     private ArrayList<PartyStateMla> stateMajorParty = new ArrayList<>();
     private ArrayList<PartyStateMla> stateMajorPartyHead = new ArrayList<>();
     private ArrayList<ArrayList<PartyStateMla>> masterPartyStateMlas = new ArrayList<ArrayList<PartyStateMla>>();
-//    private ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
+
     SharedPreferenceConfig sharedPreferenceConfig;
+
+    ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,62 +103,32 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
     private void getOwnConstituancyMlaList(String state){
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
-                .child(state).child("MLA").child("district").child("Visakhapatnam").child("Constituancy");
+                .child(state).child("MLA").child("district").child(sharedPreferenceConfig.readDistrict()).child("Constituancy");
 
-      ValueEventListener valueEventListener = new ValueEventListener() {
-          @Override
-          public void onDataChange(DataSnapshot dataSnapshot) {
-              Log.e("con: ",dataSnapshot.getKey()+dataSnapshot.getChildren().toString()+sharedPreferenceConfig.readConstituancy());
-//              DataSnapshot ss= dataSnapshot.getChildren();
-              if(dataSnapshot.exists()){
-                  for(DataSnapshot snap: dataSnapshot.getChildren()){
-                      Log.e("con2",snap.getKey());
-                  }
-              }
-//              if(dataSnapshot.hasChildren()){
-//                  Log.e("con2: ","has");
-//              }
-//              for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-//                  Log.e("con2: ",snapshot.getKey());
-//              }
-          }
-
-          @Override
-          public void onCancelled(DatabaseError databaseError) {
-
-          }
-      };
-      postQuery.addValueEventListener(valueEventListener);
-    }
-
-    private void getStateMlaList(String state) {
-        Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
-                .child(state).child("MLA").child("district");
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot snapshot, String s) {
-                ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.exists()){
 
-                if(snapshot.hasChild("Constituancy")){
-                    DataSnapshot snap = snapshot.child("Constituancy");
-                    for(DataSnapshot dataSnapshotP: snap.getChildren()){
+//                    for(DataSnapshot snap: dataSnapshot.getChildren()){
                         PartyStateMla singleSnapPoliticians = new PartyStateMla();
 
-                        singleSnapPoliticians.setHeading(snapshot.getKey());
-                        singleSnapPoliticians.setName(dataSnapshotP.child("mla_name").getValue(String.class));
+                        singleSnapPoliticians.setHeading(sharedPreferenceConfig.readDistrict());
+                        singleSnapPoliticians.setName(dataSnapshot.child("mla_name").getValue(String.class));
 
                         Log.e("pol child",singleSnapPoliticians.getHeading());
-                        Log.e("pol child",dataSnapshotP.child("mla_name").getValue(String.class));
+                        Log.e("pol child",dataSnapshot.child("mla_name").getValue(String.class));
 
                         districtPoliticians.add(singleSnapPoliticians);
-
+                        Log.e("con2",dataSnapshot.getKey());
+//                    }
+                    if(districtPoliticians.size()==1){
+                        masterPartyStateMlas.add(districtPoliticians);
                     }
-                    masterPartyStateMlas.add(districtPoliticians);
-//                    adapter.notifyDataSetChanged();
 
+                    adapter.notifyDataSetChanged();
                 }
-
             }
 
             @Override
@@ -180,43 +152,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
             }
         };
 
-//        ValueEventListener valueEventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-//                    ArrayList<PartyStateMla> districtPoliticians = new ArrayList<>();
-//
-//
-//                    if(snapshot.hasChild("Constituancy")){
-//                        DataSnapshot snap = snapshot.child("Constituancy");
-//                        for(DataSnapshot dataSnapshotP: snap.getChildren()){
-//                            PartyStateMla singleSnapPoliticians = new PartyStateMla();
-//
-//                            singleSnapPoliticians.setHeading(snapshot.getKey());
-//                            singleSnapPoliticians.setName(dataSnapshotP.child("mla_name").getValue(String.class));
-//
-//                            Log.e("pol child",singleSnapPoliticians.getHeading());
-//                            Log.e("pol child",dataSnapshotP.child("mla_name").getValue(String.class));
-//
-//                            districtPoliticians.add(singleSnapPoliticians);
-//
-//                        }
-//                        masterPartyStateMlas.add(districtPoliticians);
-//                        adapter.notifyDataSetChanged();
-//
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        };
-//        postQuery.addValueEventListener(valueEventListener);
-        postQuery.addChildEventListener(childEventListener);
-        adapter.notifyDataSetChanged();
+      postQuery.addChildEventListener(childEventListener);
     }
 
 }

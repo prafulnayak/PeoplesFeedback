@@ -2,7 +2,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="#F7F7F7">
 
     <TextView
         android:id="@+id/feedbackHeading"
@@ -11,21 +12,21 @@
         android:text="Feedback on politicians"
         android:textSize="18sp"
         android:textColor="@color/black"
-        android:layout_margin="@dimen/five_dp"/>
-
+        android:layout_margin="@dimen/dimen_15"/>
     <Button
         android:id="@+id/politicians_view_all"
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_margin="@dimen/five_dp"
+        android:layout_margin="@dimen/dimen_15"
         android:textSize="12dp"
-        android:textColor="@color/white"
+        android:textColor="@color/colorPrimaryDark"
         android:text="View All"
-        android:background="@drawable/round_background"
+        android:background="@drawable/white_round_background"
         android:textAllCaps="false"/>
 
     <android.support.v7.widget.RecyclerView
+        android:layout_margin="8dp"
         android:id="@+id/horizontal_recycler_view_politicians"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
