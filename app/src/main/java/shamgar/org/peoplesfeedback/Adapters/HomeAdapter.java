@@ -111,19 +111,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.postmlarating_perce.setText(String.valueOf(news.getVotePercentage()+"%"));
         Glide.with(ctx)
                 .load(news.getMlaImageUrl())
-                .error(R.drawable.pflogo)
+                .error(R.drawable.ic_account_circle_black)
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(holder.postMlaImage);
+                .into(holder.mlaimage);
         Glide.with(ctx)
                 .load(news.getUserUrl())
-                .error(R.drawable.pflogo)
+                .error(R.drawable.ic_account_circle_black)
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userimage);
         Glide.with(ctx)
                 .load(news.getImageUrl())
-                .error(R.drawable.pflogo)
+                .error(R.drawable.ic_image_black)
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userpostimage);
@@ -249,7 +249,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder{
         private TextView username,mlaname,mlaconstituency,posttimestamp,postTagname,postImageDescription;
         private TextView postmlarating_perce,postlocation,num_views,num_likes,num_shares;
-        private ImageView userpostimage, postMlaImage;
+        private ImageView userpostimage;
         private ImageButton imgview,imgshare,postsubmenuOptions;
         CircularImageView userimage, mlaimage;
         TextView imglike;
@@ -257,7 +257,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
-            postMlaImage = itemView.findViewById(R.id.postmlaImage);
+
             userimage=itemView.findViewById(R.id.postuserImage);
             mlaimage=itemView.findViewById(R.id.postmlaImage);
             username=itemView.findViewById(R.id.postusername);

@@ -539,7 +539,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     }
     private Location getcurrentLocation()
     {
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if ((ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -555,7 +555,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         @SuppressLint("MissingPermission")
-        Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 //        double longitude = location.getLongitude();
 //        double latitude = location.getLatitude();
         return location;
@@ -631,19 +631,43 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     @SuppressLint("MissingPermission")
     private void configureButton()
     {
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+            }
+        };
         locationManager.requestLocationUpdates("gps", 5000, 1000, locationListener);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
+        Log.e("req",""+requestCode+permissions[0]);
        switch (requestCode)
        {
-           case 10:
+           case 123:
             {
-               if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED);
-               configureButton();
-               return;
+               if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                   configureButton();
+               }
+
+
            }
        }
     }

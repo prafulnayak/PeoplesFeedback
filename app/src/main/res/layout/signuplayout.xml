@@ -120,8 +120,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:visibility="gone"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="@dimen/dimen_15">
+                    >
 
 
                     <Spinner
@@ -142,7 +141,6 @@
                         android:layout_marginRight="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="5dp"
-                        android:layout_marginBottom="@dimen/dimen_15"
                         android:paddingLeft="5dp"
                         android:layout_below="@id/spinnerstate"
                         android:foreground="@drawable/stroke_background"/>
@@ -153,7 +151,6 @@
                         android:layout_marginRight="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
                         android:paddingLeft="5dp"
                         android:layout_below="@id/spinnerdistrict"
                         android:foreground="@drawable/stroke_background"/>
