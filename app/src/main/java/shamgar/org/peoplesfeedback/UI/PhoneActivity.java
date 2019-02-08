@@ -18,6 +18,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -44,6 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Model.People;
 import shamgar.org.peoplesfeedback.Model.Politics;
 import shamgar.org.peoplesfeedback.R;
@@ -84,7 +87,9 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     private ArrayList<String> districts=new ArrayList<>();
     private ArrayList<String> constituency=new ArrayList<>();
     private String currentState,currentDistrict,currentConstituency;
-    private TextView stateTextview,districtTextview,constituencyTextview;
+    private TextView stateTextview,districtTextview,constituencyTextview,userName;
+
+    private CircleImageView userpro;
 
     //    @Override
         //    protected void onStart() {
@@ -130,6 +135,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         rlgender = findViewById(R.id.rlgender);
         rllocation = findViewById(R.id.rllocation);
         rlphone = findViewById(R.id.rlphone);
+        userName = findViewById(R.id.userName);
 
         sendVerifyPhoneNo.setOnClickListener(this);
         btncontinue.setOnClickListener(this);
@@ -141,6 +147,17 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
         checkmale =  findViewById(R.id.checkmale);
         checkfemale =  findViewById(R.id.checkfemale);
+
+        userpro =  findViewById(R.id.userpro);
+
+        Glide.with(this)
+                .load(sharedPreference.readPhotoUrl())
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(userpro);
+
+        userName.setText(sharedPreference.readName());
 
 
         getStates();
@@ -202,6 +219,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     state.clear();
+                    state.add("Select State");
                     for (DataSnapshot states:dataSnapshot.getChildren()){
                         Log.e("states",states.getKey());
                         state.add(states.getKey());
@@ -217,7 +235,6 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                             stateTextview = (TextView)parent.getSelectedView();
                             getDistricts(currentState);
                         }
-
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
 
@@ -242,6 +259,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     districts.clear();
+                    districts.add("Select District");
                     for (DataSnapshot states:dataSnapshot.getChildren()){
                         Log.e("states",states.getKey());
                         districts.add(states.getKey());
@@ -282,6 +300,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     constituency.clear();
+                    constituency.add("Select Constituency");
                     for (DataSnapshot states:dataSnapshot.getChildren()){
                         Log.e("states",states.getKey());
                         constituency.add(states.getKey());
@@ -293,6 +312,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            currentConstituency=parent.getSelectedItem().toString();
                             constituencyTextview = (TextView)parent.getSelectedView();
                         }
 
@@ -451,7 +471,12 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()){
 
             case R.id.b_verify_phone_no:
-                sendVerificationCode(phoneNo.getText().toString());
+                if (phoneNo.getText().toString().length()==10){
+                    sendVerificationCode(phoneNo.getText().toString());
+                }else {
+                   phoneNo.setError("please enter valid number");
+                }
+
                 break;
 
             case R.id.btnnext:
@@ -467,18 +492,11 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     btnnext.setVisibility(View.GONE);
                     btncontinue.setVisibility(View.VISIBLE);
 
-
-
-                    if (checkmale.isChecked()&& !checkfemale.isChecked())
-                     {
-
-                    sharedPreference.writeGender("MALE");
-
-                      }
-                    if(!checkmale.isChecked() && checkfemale.isChecked())
-                    {
+                    if (checkmale.isChecked()&& !checkfemale.isChecked()) {
+                        sharedPreference.writeGender("MALE");
+                    }
+                    if(!checkmale.isChecked() && checkfemale.isChecked()) {
                         sharedPreference.writeGender("FEMALE");
-
                     }
                 }
 
@@ -487,10 +505,25 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
             case R.id.btncontinue:
 
+                if (currentState=="Select State"){
+                    Toast.makeText(getApplicationContext(),"select State",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (currentDistrict=="Select District"){
+                    Toast.makeText(getApplicationContext(),"select District",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (currentConstituency=="Select Constituency"){
+                    Toast.makeText(getApplicationContext(),"select Constituency",Toast.LENGTH_LONG).show();
+                    return;
+                }
                 rllocation.setVisibility(View.GONE);
                 btncontinue.setVisibility(View.GONE);
                 rlphone.setVisibility(View.VISIBLE);
                 sendVerifyPhoneNo.setVisibility(View.VISIBLE);
+
+
+
 
                 String state= stateTextview.getText().toString();
                 String district= districtTextview.getText().toString();

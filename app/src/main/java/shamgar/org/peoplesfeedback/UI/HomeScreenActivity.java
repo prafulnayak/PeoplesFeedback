@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,6 +28,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Adapters.TabsAccessorAdaptor;
 import shamgar.org.peoplesfeedback.Fragments.Chat;
 import shamgar.org.peoplesfeedback.Fragments.Home;
@@ -48,6 +51,8 @@ public class HomeScreenActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private DatabaseReference usersRef;
     private String currentUser;
+
+    private CircleImageView profileImage;
 
 
 
@@ -77,7 +82,17 @@ public class HomeScreenActivity extends AppCompatActivity {
         tabLayout= (TabLayout) findViewById(R.id.maintabs);
         viewPager=(ViewPager)findViewById(R.id.mainviewpager);
         toolbar= (Toolbar) findViewById(R.id.toolbar);
+        profileImage=  findViewById(R.id.profileImage);
+
+        Glide.with(this)
+                .load(sharedPreference.readPhotoUrl())
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(profileImage);
+
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
 
         imagesList=new ArrayList<>();
         imagesList.add(R.drawable.ic_home_white_24dp);
@@ -89,6 +104,8 @@ public class HomeScreenActivity extends AppCompatActivity {
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
+
+
     }
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(imagesList.get(0));

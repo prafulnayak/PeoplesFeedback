@@ -1,12 +1,15 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,8 +17,10 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +35,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -63,20 +72,23 @@ import shamgar.org.peoplesfeedback.ConstantName.*;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
 
-public class CameraActivity extends AppCompatActivity implements View.OnClickListener   {
+public class CameraActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 123;
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private ImageView cameraImage;
     private EditText imageDesc;
     private Spinner editMLatag;
     // private TextView imageLoc;
     private Button submit;
+    String provider;
 
     private FloatingActionButton camera;
 
     private String tag = "";
 
-    private CheckBox chkGvmc, chkTraffic, chkPolice, chkOthers,chklocality;
+    private CheckBox chkGvmc, chkTraffic, chkPolice, chkOthers, chklocality;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private SharedPreferenceConfig sharedPreference;
@@ -88,24 +100,28 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private double latitude,logntude;
+    private double latitude, logntude;
 
-    private String  mlaID,MLAname,constituency;
+    private boolean checkper=false;
+
+    private String mlaID, MLAname, constituency;
     private UserAddress address;
-    ArrayList<String> mlalist=new ArrayList<String>();
+    ArrayList<String> mlalist = new ArrayList<String>();
 
     private String imageId;
     private FirebaseAuth mAuth;
 
-    private Spinner spinnerState,spinnerDistrict,spinnerConstituency;
-    private ArrayAdapter stateAdapter,districtAdapter,constituencyAdapter;
-    private ArrayList<String> state=new ArrayList<>();
-    private ArrayList<String> districts=new ArrayList<>();
-    private ArrayList<String> constituencies=new ArrayList<>();
-    private String currentState,currentDistrict,currentConstituency;
+    private Spinner spinnerState, spinnerDistrict, spinnerConstituency;
+    private ArrayAdapter stateAdapter, districtAdapter, constituencyAdapter;
+    private ArrayList<String> state = new ArrayList<>();
+    private ArrayList<String> districts = new ArrayList<>();
+    private ArrayList<String> constituencies = new ArrayList<>();
+    private String currentState, currentDistrict, currentConstituency;
 
     private Button dialogConfirm;
     private String mCurrentPhotoPath;
+    private Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
 
 
     @Override
@@ -114,7 +130,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_camera);
 
         mlalist.add("select constituency");
-        mAuth=FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
 
         sharedPreference = new SharedPreferenceConfig(this);
@@ -132,33 +148,101 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
 
         editMLatag.setVisibility(View.GONE);
-        address=new UserAddress();
+        address = new UserAddress();
 
         submit.setOnClickListener(this);
         camera.setOnClickListener(this);
 
-        dispatchTakePictureIntent();
+
+        //checking self permissions
+
+        if (!checkper){
+            checkLocationPermission();
+        }
+
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            provider = locationManager.getBestProvider(new Criteria(), false);
+
+            dispatchTakePictureIntent();
+
+
+
+    }
+
+    public boolean checkLocationPermission() {
+
+        if ((ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(CameraActivity.this, "not Per", Toast.LENGTH_LONG).show();
+
+            ActivityCompat.requestPermissions(CameraActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSIONS_REQUEST_FINE_LOCATION);
+            checkper=true;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+
+
+                        //Request location updates:
+                        //locationManager.requestLocationUpdates("gps", 500, 1000, (LocationListener) this);
+                        configureButton();
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+
+                }
+                return;
+            }
+
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
 
-              case R.id.camera:
-                  dispatchTakePictureIntent();
-                  break;
+            case R.id.camera:
+                dispatchTakePictureIntent();
+                break;
 
             case R.id.submit:
                 //check weather image is blank or not
                 //check Edit text is blank or not
-                Location location = getcurrentLocation();
-                if(location!=null){
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                Location location = locationManager.getLastKnownLocation("gps");
+                if (location != null) {
                     latitude = location.getLatitude();
                     logntude = location.getLongitude();
-                    checkOwnConstituancyOrNot(latitude,logntude);
+                    checkOwnConstituancyOrNot(latitude, logntude);
 
-                }else {
-                    Toast.makeText(this, "Location ON Issue",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Location ON Issue", Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -177,54 +261,53 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         double lat = (double) dataSnapshot.child("latitude").getValue();
                         double lan = (double) dataSnapshot.child("longitude").getValue();
 
-                        Location startPoint=new Location("locationA");
+                        Location startPoint = new Location("locationA");
                         startPoint.setLatitude(lat);
                         startPoint.setLongitude(lan);
 
-                        Location endPoint=new Location("locationA");
+                        Location endPoint = new Location("locationA");
                         endPoint.setLatitude(latitude);
                         endPoint.setLongitude(logntude);
 
-                        double dist=startPoint.distanceTo(endPoint);
-                        int distance = (int)(dist/1000);
+                        double dist = startPoint.distanceTo(endPoint);
+                        int distance = (int) (dist / 1000);
 
-                        if(distance<=33){
-                            AlertDialog.Builder builder=new AlertDialog.Builder(CameraActivity.this);
+                        if (distance <= 33) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
                             builder.setTitle("You are out of registered constituency, please select below");
-                            View mView=getLayoutInflater().inflate(R.layout.custom_dialog,null);
+                            View mView = getLayoutInflater().inflate(R.layout.custom_dialog, null);
 
-                            spinnerState=mView.findViewById(R.id.spinnerGetStates);
-                            spinnerDistrict=mView.findViewById(R.id.spinnerGetDistricts);
-                            spinnerConstituency=mView.findViewById(R.id.spinnerGetConstituencies);
+                            spinnerState = mView.findViewById(R.id.spinnerGetStates);
+                            spinnerDistrict = mView.findViewById(R.id.spinnerGetDistricts);
+                            spinnerConstituency = mView.findViewById(R.id.spinnerGetConstituencies);
 
-                            dialogConfirm=mView.findViewById(R.id.dialogBtnConfirm);
+                            dialogConfirm = mView.findViewById(R.id.dialogBtnConfirm);
                             dialogConfirm.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    if (currentConstituency != "Select constituency" && currentDistrict != "Select district" && currentState!="Select state"){
-                                        Toast.makeText(getApplicationContext(),"post into desired constituency",Toast.LENGTH_LONG).show();
+                                    if (currentConstituency != "Select constituency" && currentDistrict != "Select district" && currentState != "Select state") {
+                                        Toast.makeText(getApplicationContext(), "post into desired constituency", Toast.LENGTH_LONG).show();
                                         pushImageToFirebase(1);
-                                    }
-                                    else {
-                                        Toast.makeText(getApplicationContext(),"please select fields",Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "please select fields", Toast.LENGTH_LONG).show();
 
                                     }
                                 }
                             });
                             getStates();
                             builder.setView(mView);
-                            AlertDialog alertDialog=builder.create();
+                            AlertDialog alertDialog = builder.create();
                             alertDialog.show();
 
                             //open dailogbox
                             // select constituancy
-                            Log.e("distance greater then 5",""+distance);
-                        }else {
+                            Log.e("distance greater then 5", "" + distance);
+                        } else {
                             pushImageToFirebase(0);
-                            Log.e("distance less then 5",""+distance);
+                            Log.e("distance less then 5", "" + distance);
                         }
 
-                        Log.e("laf",""+lat);
+                        Log.e("laf", "" + lat);
                     }
 
                     @Override
@@ -242,7 +325,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         StorageReference storageRef = storage.getReference();
 
         imageId = FirebaseDatabase.getInstance().getReference().push().getKey();
-        imageId = "images/"+imageId+".jpg";
+        imageId = "images/" + imageId + ".jpg";
         // Create a reference to 'images/mountains.jpg'
         StorageReference mountainImagesRef = storageRef.child(imageId);
 
@@ -286,18 +369,18 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onSuccess(Uri uri) {
 
-               // Toast.makeText(CameraActivity.this, "" + pathReference.getDownloadUrl(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(CameraActivity.this, "" + pathReference.getDownloadUrl(), Toast.LENGTH_SHORT).show();
                 Log.e("url", "" + uri.toString());
 
                 String des = imageDesc.getText().toString();
                 String timeStamp = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss").format(Calendar.getInstance().getTime());
                 Posts posts = null;
-                if(i==0){
+                if (i == 0) {
                     posts = new Posts(
                             sharedPreference.readPhoneNo(),
                             String.valueOf(latitude),
                             String.valueOf(logntude),
-                            address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                            address.getCity() + ", " + address.getDistrict() + ", " + address.getFulladdress() + ", " + address.getKnownName() + ", " + address.getState(),
                             uri.toString(),
                             des,
                             des,
@@ -308,12 +391,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                             sharedPreference.readDistrict(),
                             sharedPreference.readConstituancy());
                 }
-                if(i == 1){
+                if (i == 1) {
                     posts = new Posts(
                             sharedPreference.readPhoneNo(),
                             String.valueOf(latitude),
                             String.valueOf(logntude),
-                            address.getCity()+", "+address.getDistrict()+", "+address.getFulladdress()+", "+address.getKnownName()+", "+address.getState(),
+                            address.getCity() + ", " + address.getDistrict() + ", " + address.getFulladdress() + ", " + address.getKnownName() + ", " + address.getState(),
                             uri.toString(),
                             des,
                             des,
@@ -326,7 +409,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
 
-                postIntoFirebase(posts,i);
+                postIntoFirebase(posts, i);
 
                 key = randomString(10);
             }
@@ -343,25 +426,24 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         FirebaseDatabase.getInstance().getReference().child("Posts").child(postKey).setValue(posts).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Toast.makeText(CameraActivity.this,"Success Post",Toast.LENGTH_SHORT).show();
+                if (task.isSuccessful()) {
+                    Toast.makeText(CameraActivity.this, "Success Post", Toast.LENGTH_SHORT).show();
 
                     postIntoUserAccount(postKey);
-                    postIntoConstituancyAndTaggedArea(postKey,i);
+                    postIntoConstituancyAndTaggedArea(postKey, i);
                 }
             }
         });
 
     }
 
-    private void postIntoConstituancyAndTaggedArea(final String postKey, final int i)
-    {
+    private void postIntoConstituancyAndTaggedArea(final String postKey, final int i) {
         Date now = new Date();
-        HashMap<String,String> messageinfo=new HashMap<>();
-        messageinfo.put("id",postKey);
-        messageinfo.put("date",now.toString());
+        HashMap<String, String> messageinfo = new HashMap<>();
+        messageinfo.put("id", postKey);
+        messageinfo.put("date", now.toString());
 
-        if (i==0) {
+        if (i == 0) {
             FirebaseDatabase.getInstance().getReference().child(INDIA)
                     .child(sharedPreference.readState())
                     .child(sharedPreference.readDistrict())
@@ -373,11 +455,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
-                    postInTagArea(postKey,i);
+                    postInTagArea(postKey, i);
                 }
             });
-        }
-        else if (i==1){
+        } else if (i == 1) {
             FirebaseDatabase.getInstance().getReference().child(INDIA)
                     .child(currentState)
                     .child(currentDistrict)
@@ -392,14 +473,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     postInTagArea(postKey, i);
                 }
             });
-            }
-
+        }
 
 
     }
 
     private void postInTagArea(String postKey, int i) {
-        if (i==0){
+        if (i == 0) {
             FirebaseDatabase.getInstance().getReference().child(INDIA)
                     .child(sharedPreference.readState())
                     .child(sharedPreference.readDistrict())
@@ -409,12 +489,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(CameraActivity.this,"posted in tag area",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             });
-        }
-        else if (i==1){
+        } else if (i == 1) {
             FirebaseDatabase.getInstance().getReference().child(INDIA)
                     .child(currentState)
                     .child(currentDistrict)
@@ -424,7 +503,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                     .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(CameraActivity.this,"posted in tag area",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             });
@@ -439,82 +518,72 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful())
-                    Toast.makeText(CameraActivity.this,"success on people post",Toast.LENGTH_SHORT).show();
+                if (task.isSuccessful())
+                    Toast.makeText(CameraActivity.this, "success on people post", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void get_listof_constituency_mla() {
-        Query query=FirebaseDatabase.getInstance().getReference("Politicians")
+        Query query = FirebaseDatabase.getInstance().getReference("Politicians")
                 .orderByChild("district")
                 .equalTo(address.getCity());
         query.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                if (dataSnapshot.exists())
-                {
-                  // Toast.makeText(getApplicationContext(),"res"+dataSnapshot,Toast.LENGTH_LONG).show();
-                     for(DataSnapshot mlaname : dataSnapshot.getChildren())
-                    {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Toast.makeText(getApplicationContext(),"res"+dataSnapshot,Toast.LENGTH_LONG).show();
+                    for (DataSnapshot mlaname : dataSnapshot.getChildren()) {
                         mlalist.add(mlaname.child("constituancy").getValue().toString());
                     }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,mlalist);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, mlalist);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     editMLatag.setAdapter(adapter);
-                    editMLatag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-                    {
+                    editMLatag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id)
-                        {
-                            TextView mlaname = (TextView)adapterView.getSelectedView();
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                            TextView mlaname = (TextView) adapterView.getSelectedView();
                             constituency = mlaname.getText().toString();
-                            Query query2=FirebaseDatabase.getInstance().getReference("Politicians")
+                            Query query2 = FirebaseDatabase.getInstance().getReference("Politicians")
                                     .orderByChild("constituancy")
                                     .equalTo(constituency);
-                            query2.addValueEventListener(new ValueEventListener()
-                            {
+                            query2.addValueEventListener(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                                {
-                                    for(DataSnapshot mlaid : dataSnapshot.getChildren())
-                                    {
-                                        mlaID=mlaid.child("id").getValue().toString();
-                                        MLAname=mlaid.child("name").getValue().toString();
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot mlaid : dataSnapshot.getChildren()) {
+                                        mlaID = mlaid.child("id").getValue().toString();
+                                        MLAname = mlaid.child("name").getValue().toString();
                                         //Toast.makeText(getApplicationContext(), "mla name"+dataSnapshot, Toast.LENGTH_SHORT).show();
                                     }
                                 }
+
                                 @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError)
-                                {
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                 }
                             });
                         }
+
                         @Override
-                        public void onNothingSelected(AdapterView<?> parent)
-                        {
+                        public void onNothingSelected(AdapterView<?> parent) {
 
                         }
                     });
 
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"no results",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "no results", Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError)
-            {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
 
     }
-    private void dispatchTakePictureIntent()
-    {
+
+    private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
@@ -531,34 +600,34 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         "shamgar.org.peoplesfeedback.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE );
-                Log.e("uri",photoURI.toString());
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                Log.e("uri", photoURI.toString());
 
             }
         }
     }
-    private Location getcurrentLocation()
-    {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if ((ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) &&
-                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+//    private Location getcurrentLocation()
+//    {
+//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        if ((ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) &&
+//                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
+//                        != PackageManager.PERMISSION_GRANTED) {
+//
+//            Toast.makeText(CameraActivity.this, "not Per", Toast.LENGTH_LONG).show();
+//
+//            ActivityCompat.requestPermissions(CameraActivity.this,
+//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
+//                    PERMISSIONS_REQUEST_FINE_LOCATION);
+//
+//            return null;
+//        }
 
-            Toast.makeText(CameraActivity.this, "not Per", Toast.LENGTH_LONG).show();
-
-            ActivityCompat.requestPermissions(CameraActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_REQUEST_FINE_LOCATION);
-
-            return null;
-        }
-
-        @SuppressLint("MissingPermission")
-        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//        double longitude = location.getLongitude();
-//        double latitude = location.getLatitude();
-        return location;
+//        @SuppressLint("MissingPermission")
+//        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+////        double longitude = location.getLongitude();
+////        double latitude = location.getLatitude();
+//        return location;
 //        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 //        locationListener = new LocationListener() {
 //            @Override
@@ -626,11 +695,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 //                configureButton();
 //            }
 //        }
-    }
+    // }
 
-    @SuppressLint("MissingPermission")
-    private void configureButton()
-    {
+
+    private void configureButton() {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -652,25 +720,33 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         };
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         locationManager.requestLocationUpdates("gps", 5000, 1000, locationListener);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        Log.e("req",""+requestCode+permissions[0]);
-       switch (requestCode)
-       {
-           case 123:
-            {
-               if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                   configureButton();
-               }
-
-
-           }
-       }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+//    {
+//        Log.e("req",""+requestCode+permissions[0]);
+//       switch (requestCode)
+//       {
+//           case 123:
+//            {
+//               if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+//                   configureButton();
+//               }
+//           }
+//       }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -679,7 +755,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             switch (requestCode) {
                 case 1: {
 
-                    if (resultCode == RESULT_OK ) {
+                    if (resultCode == RESULT_OK) {
                         File file = new File(mCurrentPhotoPath);
                         Bitmap bitmap = MediaStore.Images.Media
                                 .getBitmap(this.getContentResolver(), Uri.fromFile(file));
@@ -709,7 +785,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
-        Log.e("camera",image.toString());
+        Log.e("camera", image.toString());
         return image;
     }
 
@@ -720,7 +796,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkOthers.setChecked(false);
                 chklocality.setChecked(false);
-                this.tag="Municipality";
+                this.tag = "Municipality";
                 break;
 
             case R.id.trafficPolice:
@@ -729,7 +805,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkOthers.setChecked(false);
                 chklocality.setChecked(false);
-                this.tag="Traffic";
+                this.tag = "Traffic";
 
                 break;
 
@@ -739,7 +815,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkTraffic.setChecked(false);
                 chkOthers.setChecked(false);
                 chklocality.setChecked(false);
-                this.tag="Police";
+                this.tag = "Police";
                 break;
 
             case R.id.others:
@@ -748,7 +824,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkTraffic.setChecked(false);
                 chklocality.setChecked(false);
-                this.tag="Others";
+                this.tag = "Others";
                 break;
 
             case R.id.locality:
@@ -757,39 +833,39 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 chkPolice.setChecked(false);
                 chkTraffic.setChecked(false);
                 chkOthers.setChecked(false);
-                this.tag="Collector";
+                this.tag = "Collector";
 
         }
     }
 
-    public String randomString(int length){
+    public String randomString(int length) {
         StringBuffer randStr = new StringBuffer(length);
         SecureRandom secureRandom = new SecureRandom();
-        for( int i = 0; i < length; i++ )
-            randStr.append( CHAR_LIST.charAt( secureRandom.nextInt(CHAR_LIST.length()) ) );
+        for (int i = 0; i < length; i++)
+            randStr.append(CHAR_LIST.charAt(secureRandom.nextInt(CHAR_LIST.length())));
         return randStr.toString();
     }
 
-    private void getStates(){
-        Query query= FirebaseDatabase.getInstance().getReference().child("States");
-        ValueEventListener valueEventListener=new ValueEventListener() {
+    private void getStates() {
+        Query query = FirebaseDatabase.getInstance().getReference().child("States");
+        ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     state.clear();
                     state.add("Select state");
-                    for (DataSnapshot states:dataSnapshot.getChildren()){
-                        Log.e("states",states.getKey());
+                    for (DataSnapshot states : dataSnapshot.getChildren()) {
+                        Log.e("states", states.getKey());
                         state.add(states.getKey());
                     }
-                    stateAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,state);
+                    stateAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, state);
                     stateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerState.setAdapter(stateAdapter);
 
                     spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            currentState=parent.getSelectedItem().toString();
+                            currentState = parent.getSelectedItem().toString();
                             getDistricts(currentState);
                         }
 
@@ -810,32 +886,32 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void getDistricts(final String currentState) {
-        if (currentState.equalsIgnoreCase("Select state") || currentState.equalsIgnoreCase("All")){
+        if (currentState.equalsIgnoreCase("Select state") || currentState.equalsIgnoreCase("All")) {
             districts.clear();
             constituencies.clear();
         }
-        Query query= FirebaseDatabase.getInstance().getReference().child("States")
+        Query query = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(currentState).child("MLA").child("district");
-        ValueEventListener valueEventListener=new ValueEventListener() {
+        ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     districts.clear();
                     districts.add("Select district");
-                    for (DataSnapshot states:dataSnapshot.getChildren()){
-                        Log.e("states",states.getKey());
+                    for (DataSnapshot states : dataSnapshot.getChildren()) {
+                        Log.e("states", states.getKey());
                         districts.add(states.getKey());
                     }
 
-                    districtAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,districts);
+                    districtAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, districts);
                     districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerDistrict.setAdapter(districtAdapter);
 
                     spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            currentDistrict=parent.getSelectedItem().toString();
-                            getConstituency(currentState,currentDistrict);
+                            currentDistrict = parent.getSelectedItem().toString();
+                            getConstituency(currentState, currentDistrict);
                         }
 
                         @Override
@@ -855,29 +931,29 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void getConstituency(String state, String currentDistrict) {
-        if (currentDistrict.equalsIgnoreCase("Select district") || currentDistrict.equalsIgnoreCase("All") ){
+        if (currentDistrict.equalsIgnoreCase("Select district") || currentDistrict.equalsIgnoreCase("All")) {
             constituencies.clear();
         }
-        Query query= FirebaseDatabase.getInstance().getReference().child("States")
+        Query query = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("MLA").child("district").child(currentDistrict).child("Constituancy");
-        ValueEventListener valueEventListener=new ValueEventListener() {
+        ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     constituencies.clear();
                     constituencies.add("Select constituency");
-                    for (DataSnapshot states:dataSnapshot.getChildren()){
-                        Log.e("states",states.getKey());
+                    for (DataSnapshot states : dataSnapshot.getChildren()) {
+                        Log.e("states", states.getKey());
                         constituencies.add(states.getKey());
                     }
-                    constituencyAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,constituencies);
+                    constituencyAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, constituencies);
                     constituencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerConstituency.setAdapter(constituencyAdapter);
 
                     spinnerConstituency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            currentConstituency=adapterView.getSelectedItem().toString();
+                            currentConstituency = adapterView.getSelectedItem().toString();
                         }
 
                         @Override
@@ -895,8 +971,6 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         };
         query.addValueEventListener(valueEventListener);
     }
-
-
 
 }
 //firebase key
