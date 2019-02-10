@@ -4,6 +4,7 @@ package shamgar.org.peoplesfeedback.Fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -35,6 +36,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.xw.repo.BubbleSeekBar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +71,7 @@ public class Home extends Fragment {
     static boolean top = true;
     private List<String> list5 = new ArrayList<>();
     LinearLayoutManager layoutManager;
-    private SeekBar seekBar;
+    private BubbleSeekBar seekBar;
     private Switch switch1;
     private TextView displayLocationRange,set_DisTance_Range,locRanTxt;
     private String switchStatus;
@@ -576,6 +578,10 @@ public class Home extends Fragment {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if(dy > 0) //check for scroll down
                 {
+//                    set_DisTance_Range.setVisibility(View.GONE);
+//                    displayLocationRange.setVisibility(View.GONE);
+//                    seekBar.setVisibility(View.GONE);
+
                     visibleItemCount = layoutManager.getChildCount();
                     totalItemCount = layoutManager.getItemCount();
                     pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
@@ -653,6 +659,7 @@ public class Home extends Fragment {
     private void checkinSwtichStatus()
     {
 
+        locRanTxt.setTextColor(getResources().getColor(R.color.colorAccent));
         seekBar.setEnabled(false);
         switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
@@ -662,40 +669,40 @@ public class Home extends Fragment {
                 // true if the switch is in the On position
                 if (isChecked==true)
                 {
-                    switch1.setText("Off");
+                    locRanTxt.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                     set_DisTance_Range.setVisibility(View.VISIBLE);
                     displayLocationRange.setVisibility(View.VISIBLE);
                     seekBar.setVisibility(View.VISIBLE);
                     seekBar.setEnabled(true);
-                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    seekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
                         @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-                        {
+                        public void onProgressChanged(int progress, float progressFloat) {
                             seekbarPosition =seekBar.getProgress();
                             displayLocationRange.setText("Location Range "+String.valueOf(seekbarPosition)+" Km");
                             gettingNearbyPosts(seekbarPosition);
                             locRanTxt.setText(String.valueOf(seekbarPosition)+" Km");
                         }
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar)
-                        {
 
-                        }
                         @Override
-                        public void onStopTrackingTouch(SeekBar seekBar)
-                        {
+                        public void getProgressOnActionUp(int progress, float progressFloat) {
                             set_DisTance_Range.setVisibility(View.GONE);
                             displayLocationRange.setVisibility(View.GONE);
                             seekBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void getProgressOnFinally(int progress, float progressFloat) {
+
                         }
                     });
                 }
                 else
                 {
                     locRanTxt.setText("0 Km");
+                    locRanTxt.setTextColor(getResources().getColor(R.color.colorAccent));
                     switchStatus = switch1.getTextOff().toString();
                     seekBar.setEnabled(false);
-                    switch1.setText("On");
+
                     set_DisTance_Range.setVisibility(View.GONE);
                     displayLocationRange.setVisibility(View.GONE);
                     seekBar.setVisibility(View.GONE);
@@ -714,10 +721,10 @@ public class Home extends Fragment {
             temp=5;
         else if (seekbarPosition>5 && seekbarPosition<10)
             temp=10;
-        else if(seekbarPosition>10 && seekbarPosition<15)
-            temp=15;
-        else
+        else if(seekbarPosition>10 && seekbarPosition<20)
             temp=20;
+        else
+            temp=30;
 
 
         final int finalTemp = temp;

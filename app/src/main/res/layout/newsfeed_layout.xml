@@ -103,7 +103,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/postmlaImage"
-        android:layout_marginTop="@dimen/margin_two"
+        android:layout_toEndOf="@+id/postTagname"
+        android:layout_marginTop="@dimen/five_dp"
         android:text="@string/timestamp"
         android:textSize="10sp"
         android:layout_marginStart="@dimen/dimen_15"
@@ -113,9 +114,9 @@
         android:id="@+id/postTagname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/posttimestamp"
+        android:layout_below="@id/postmlaImage"
         android:text="@string/tag_name"
-        android:textSize="12sp"
+        android:textSize="14sp"
         android:layout_marginTop="@dimen/margin_two"
         android:textColor="@color/colorPrimaryDark"
         android:layout_marginStart="@dimen/dimen_15"
@@ -126,28 +127,29 @@
         android:id="@+id/postImageDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/postTagname"
-        android:layout_toEndOf="@+id/posttimestamp"
+        android:layout_below="@+id/postTagname"
         android:text="@string/tag_description"
         android:textColor="@color/black"
-        android:textSize="10sp" />
+        android:textSize="14sp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/dimen_15"/>
 
     <ImageView
         android:id="@+id/userpost"
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:scaleType="centerCrop"
-        android:layout_below="@id/postTagname"
+        android:layout_below="@id/postImageDescription"
         android:adjustViewBounds="true"
-        android:layout_marginTop="@dimen/five_dp" />
+        android:layout_marginTop="10dp" />
 
     <LinearLayout
         android:id="@+id/locationLL"
         android:layout_alignBottom="@+id/userpost"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="55dp"
         android:orientation="horizontal"
-        android:background="#8000">
+        android:background="#9000">
 
         <ImageView
             android:id="@+id/locationicon"
@@ -163,6 +165,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="@string/location"
+            android:textSize="13dp"
             android:textColor="@color/white"
             android:layout_marginEnd="@dimen/dimen_15"
             android:layout_marginStart="@dimen/five_dp"/>

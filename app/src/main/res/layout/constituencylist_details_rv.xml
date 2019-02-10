@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="8dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="2dp"
     android:layout_marginStart="@dimen/five_dp"
     android:layout_marginEnd="@dimen/five_dp"
     android:layout_marginTop="10dp">
@@ -15,8 +15,9 @@
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/constituency_mla_image"
-            android:layout_width="90dp"
-            android:layout_height="90dp" />
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"/>
 
         <LinearLayout
             android:id="@+id/mlaBioData"
@@ -31,7 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="G.S.N.Raju"
-                android:textSize="16sp"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_marginStart="@dimen/five_dp"/>
 
@@ -51,9 +53,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="gajuwaka"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
                     android:paddingStart="@dimen/five_dp"
-                    android:textSize="14sp"/>
+                    android:textSize="12sp"/>
 
             </LinearLayout>
 
@@ -61,18 +64,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-               android:layout_marginStart="@dimen/five_dp">
+                android:layout_marginTop="5dp">
 
-                <TextView
+                <RatingBar
+                    android:id="@+id/constituency_rating"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="rating:"
-                    android:textSize="10sp"/>
+                    android:layout_height="13dp"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:numStars="5"
+                    android:progressTint="@color/colorPrimaryDark"
+                    android:layout_marginStart="5dp"
+                    android:isIndicator="true"
+                    android:layout_gravity="center"/>
                 <TextView
                     android:id="@+id/txt_MlaRating_In_ConstituencyList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="75%"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
                     android:paddingStart="@dimen/five_dp"
                     android:textSize="14sp"/>
@@ -81,31 +90,14 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/five_dp"
-            android:orientation="vertical">
-
-            <com.mikhaellopez.circularimageview.CircularImageView
-                android:id="@+id/mla_party_img"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"/>
-            <TextView
-                android:id="@+id/txt_folloe_mla"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:text="Follow"
-                android:paddingStart="@dimen/dimen_15"
-                android:paddingEnd="@dimen/dimen_15"
-                android:background="@drawable/stroke_background"
-                android:textColor="@color/colorPrimaryDark"/>
-
-        </LinearLayout>
-
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/mla_party_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="70dp"
+            android:layout_marginEnd="5dp"
+           android:layout_toRightOf="@+id/mlaBioData"/>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

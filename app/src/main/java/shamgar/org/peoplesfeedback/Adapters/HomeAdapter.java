@@ -100,7 +100,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         final News news = newsListR.get(position);
         holder.username.setText(news.getName());
         holder.mlaconstituency.setText(news.getConstituancy());
-        holder.postTagname.setText(news.getTag());
+        holder.postTagname.setText("@"+news.getTag());
         holder.postImageDescription.setText(news.getDescription());
         holder.num_likes.setText(String.valueOf(news.getLikes()));
         holder.num_shares.setText(String.valueOf(news.getShares()));

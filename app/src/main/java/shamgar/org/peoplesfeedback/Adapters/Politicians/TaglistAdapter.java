@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,14 +39,15 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaglistViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final TaglistViewHolder holder, final int position) {
 
         final GovAgency govAgency = govAgencies.get(position);
 
         holder.district_name_in_tag_list.setText(govAgency.getDistrictName());
-        holder.municipality_tag_tag_list.setText(govAgency.getGovAgencyName());
-        holder.tag_rating_in_tag_list.setText("Rating: "+String.valueOf(govAgency.getRating())+"%");
+        holder.municipality_tag_tag_list.setText("@"+govAgency.getGovAgencyName());
+        holder.tag_rating_in_tag_list.setText(String.valueOf(govAgency.getRating()));
         holder.votes_for_tag_in_tag_List.setText("Votes: "+String.valueOf(govAgency.getVotes()));
+        holder.tag_rating.setRating(govAgency.getRating()*5/100);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +69,7 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
     public class TaglistViewHolder extends RecyclerView.ViewHolder
     {
         public TextView district_name_in_tag_list,municipality_tag_tag_list,tag_rating_in_tag_list,votes_for_tag_in_tag_List;
+        private RatingBar tag_rating;
 
         public TaglistViewHolder(View itemView) {
             super(itemView);
@@ -75,6 +78,7 @@ public class TaglistAdapter extends RecyclerView.Adapter<TaglistAdapter.TaglistV
             municipality_tag_tag_list=itemView.findViewById(R.id.municipality_tag_tag_list);
             tag_rating_in_tag_list=itemView.findViewById(R.id.tag_rating_in_tag_list);
             votes_for_tag_in_tag_List=itemView.findViewById(R.id.votes_for_tag_in_tag_List);
+            tag_rating=itemView.findViewById(R.id.tag_rating);
         }
     }
 }

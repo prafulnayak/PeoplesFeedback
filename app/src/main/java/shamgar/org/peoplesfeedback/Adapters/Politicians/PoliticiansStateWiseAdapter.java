@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -43,8 +44,9 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
         final StateCm details = stateList.get(position);
         holder.stateName.setText(details.getStateName());
         holder.cmName.setText(details.getCM());
-        holder.rating.setText(String.valueOf(details.getRating()));
-        holder.votes.setText(String.valueOf(details.getVotes()));
+        holder.rating.setText(String.valueOf(details.getRating())+"%");
+        holder.votes.setText(String.valueOf("Votes : "+details.getVotes()));
+        holder.ratingBar.setRating(details.getRating()*5/100);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +68,7 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
     {
         private ImageView politicianImage, stateImage;
         private TextView stateName,cmName,rating,votes;
+        private RatingBar ratingBar;
 
         public PoliticiansViewHolder(View itemView) {
             super(itemView);
@@ -76,6 +79,7 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
             stateName = itemView.findViewById(R.id.txtStateName);
             cmName = itemView.findViewById(R.id.txtmlaName);
             rating = itemView.findViewById(R.id.txtMlaRating);
+            ratingBar = itemView.findViewById(R.id.rating);
             votes = itemView.findViewById(R.id.txtMlaVotes);
         }
     }

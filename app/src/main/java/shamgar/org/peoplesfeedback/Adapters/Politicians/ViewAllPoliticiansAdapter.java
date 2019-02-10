@@ -56,7 +56,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
 
         holder.district_name_in_view_all_rv.setText(districtList.get(position));
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.viewAllImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

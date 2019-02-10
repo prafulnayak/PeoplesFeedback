@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Model.MLAModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.UI.Profile_mla_Activity;
@@ -50,6 +52,7 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
         holder.constituency_mla_name.setText(mlaModel.getMla_name());
         holder.txtMlaConstituency.setText(mlaModel.getConstituancyName());
         holder.txt_MlaRating_In_ConstituencyList.setText(String.valueOf(mlaModel.getRating())+"%");
+        holder.constituency_rating.setRating(mlaModel.getRating()*5/100);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +82,8 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
     {
         private TextView constituency_mla_name,txtMlaConstituency,txt_MlaRating_In_ConstituencyList;
         private ImageView constituency_mla_image;
+        private CircleImageView mla_party_img;
+        private RatingBar constituency_rating;
 
 
         public ConstituencyViewHolder(View itemView) {
@@ -87,7 +92,9 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
             constituency_mla_image=itemView.findViewById(R.id.constituency_mla_image);
             constituency_mla_name=itemView.findViewById(R.id.constituency_mla_name);
             txtMlaConstituency=itemView.findViewById(R.id.txtMlaConstituency);
+            mla_party_img=itemView.findViewById(R.id.mla_party_img);
             txt_MlaRating_In_ConstituencyList=itemView.findViewById(R.id.txt_MlaRating_In_ConstituencyList);
+            constituency_rating=itemView.findViewById(R.id.constituency_rating);
         }
     }
 }
