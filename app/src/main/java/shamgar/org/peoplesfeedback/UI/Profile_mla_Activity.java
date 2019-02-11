@@ -1,9 +1,11 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.provider.ContactsContract;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,10 +16,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -26,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.xw.repo.BubbleSeekBar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
@@ -41,11 +48,15 @@ import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 public class Profile_mla_Activity extends AppCompatActivity {
     private String mlaName,mlaConstituency,tagRating,state,district;
 
-    private TextView mlanametxt,txtmlaConstituency,followersForMlaCount,mlaRatingPercentage,overallVotesMla,overallRatingMla;
+    private TextView mlanametxt,txtmlaConstituency,followersForMlaCount,mlaRatingPercentage,overallVotesMla,overallRatingMla,mlaPartyName;
     private Button mlaFollowButton;
-    private SeekBar mlaRatingSeekbar;
+    private BubbleSeekBar mlaRatingSeekbar;
     private ImageView mla_gridViewImage;
     private RecyclerView profile_mla_gridImages_rv;
+    private RatingBar mlaProfile_rating;
+    private CircleImageView mlaProfileImage;
+    private ImageView listViewImagesMLa;
+    private NestedScrollView scrollViewMLa;
 
     private SharedPreferenceConfig sharedPreferenceConfig;
     private ArrayList<String> images;
@@ -78,9 +89,15 @@ public class Profile_mla_Activity extends AppCompatActivity {
         overallVotesMla=findViewById(R.id.overallVotesMla);
         mla_gridViewImage = findViewById(R.id.mla_grid_image);
         profile_mla_gridImages_rv=findViewById(R.id.profile_mla_gridImages_rv);
+        mlaProfile_rating=findViewById(R.id.mlaProfile_rating);
+        mlaProfileImage=findViewById(R.id.mlaProfileImage);
+        mlaPartyName=findViewById(R.id.mlaPartyName);
+        listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
+        scrollViewMLa=findViewById(R.id.scrollViewMLa);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setTitle("");
 
         mlaName=getIntent().getExtras().getString("mlaName");
         mlaConstituency=getIntent().getExtras().getString("mlaConstituency");
@@ -90,7 +107,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
         txtmlaConstituency.setText(mlaConstituency);
         mlanametxt.setText(mlaName);
 
+        scrollViewMLa.setNestedScrollingEnabled(false);
+        scrollViewMLa.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                mlaRatingSeekbar.correctOffsetWhenContainerOnScrolling();
+            }
+        });
 
+
+        gettingMLAImage();
         //checking user is following or not
         Query postQuery =  FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName).child("Followers")
@@ -100,6 +126,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("following")){
                     mlaFollowButton.setText("following");
+                    mlaFollowButton.setTextColor(Color.parseColor("#000000"));
                 }else {
                     mlaFollowButton.setText("follow");
                 }
@@ -121,7 +148,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                   String rating=dataSnapshot.child("rating").getValue().toString();
                   String Votes=dataSnapshot.child("votes").getValue().toString();
-
+                    mlaProfile_rating.setRating(Integer.parseInt(rating)*5/100);
                   overallRatingMla.setText(rating+"%");
                   overallVotesMla.setText("Total Votes: "+Votes);
                 }else {
@@ -172,18 +199,15 @@ public class Profile_mla_Activity extends AppCompatActivity {
         numofFol.addValueEventListener(valueEventListener1);
 
         //implementing voting functionality
-        mlaRatingSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mlaRatingSeekbar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(int progress, float progressFloat) {
                 tagRating=String.valueOf(progress);
                 mlaRatingPercentage.setText("Rating Percentage "+tagRating+"%");
             }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void getProgressOnActionUp(int progress, float progressFloat) {
                 Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Profile_mla_Activity.this);
                 builder.setCancelable(false);
@@ -207,17 +231,32 @@ public class Profile_mla_Activity extends AppCompatActivity {
                         })
                         .show();
             }
+
+            @Override
+            public void getProgressOnFinally(int progress, float progressFloat) {
+
+            }
         });
+
 
         //getting images from fire base
         mla_gridViewImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
+                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
                 adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
                 StaggeredGridLayoutManager staggeredGridLayoutManager=new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
                 profile_mla_gridImages_rv.setLayoutManager(staggeredGridLayoutManager);
                 profile_mla_gridImages_rv.setAdapter(adapter);
                 profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
+            }
+        });
+        listViewImagesMLa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
+                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
             }
         });
 
@@ -228,11 +267,13 @@ public class Profile_mla_Activity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName).child("Followers")
                 .child(sharedPreferenceConfig.readPhoneNo().substring(3))
+                .child("following")
                 .setValue("1")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
+                            mlaFollowButton.setTextColor(Color.parseColor("#000000"));
                             Toast.makeText(getApplicationContext(),"following",Toast.LENGTH_SHORT).show();
                         }
                         else {
@@ -240,6 +281,38 @@ public class Profile_mla_Activity extends AppCompatActivity {
                         }
                     }
                 });
+
+    }
+
+    private  void gettingMLAImage(){
+        //getting num of followers
+        Query numofFol =  FirebaseDatabase.getInstance().getReference().child("Politicians")
+                .child(mlaName);
+        ValueEventListener valueEventListener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    String mlaUrl= dataSnapshot.child("image_url").getValue().toString();
+                    String mlaParty= dataSnapshot.child("party").getValue().toString();
+                    mlaPartyName.setText(mlaParty);
+                     Toast.makeText(getApplicationContext(),mlaUrl,Toast.LENGTH_SHORT).show();
+                    Glide.with(getApplicationContext())
+                            .load(mlaUrl)
+                            .error(R.drawable.ic_account_circle_black)
+                            // read original from cache (if present) otherwise download it and decode it
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                            .into(mlaProfileImage);
+
+                }else {
+                    Toast.makeText(getApplicationContext(),mlaName+"  mla Image not found ",Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        numofFol.addValueEventListener(valueEventListener1);
+
 
     }
 

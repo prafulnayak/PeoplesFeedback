@@ -72,7 +72,7 @@
                     android:layout_height="13dp"
                     style="?android:attr/ratingBarStyleSmall"
                     android:numStars="5"
-                    android:progressTint="@color/colorPrimaryDark"
+                    android:progressTint="@color/pink2"
                     android:layout_marginStart="5dp"
                     android:isIndicator="true"
                     android:layout_gravity="center"/>

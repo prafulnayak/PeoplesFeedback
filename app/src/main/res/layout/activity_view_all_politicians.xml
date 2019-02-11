@@ -7,37 +7,71 @@
     android:layout_height="match_parent"
     tools:context=".UI.ViewAllPoliticiansActivity">
 
-    <LinearLayout
-        android:id="@+id/listLL"
-        android:orientation="horizontal"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/inner1Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white"
+        app:titleTextAppearance="@color/black">
+
+        <TextView
+            android:id="@+id/pol_inner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:text="Peoples Feedback"/>
+
+
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/listTabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="2">
-        <Button
-            android:id="@+id/gettingMlaList"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
-            android:textSize="20sp"
-            android:text="Mla list"
-            android:textColor="@color/white"/>
-        <Button
-            android:id="@+id/gettingMPList"
-            android:background="@color/white"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:textColor="@color/black"
-            android:text="MP list"
-            android:textSize="20sp"/>
-    </LinearLayout>
+        android:background="@color/white"
+        app:tabIndicatorColor="@color/pink2"
+        android:layout_below="@+id/inner1Toolbar"
+        style="@style/TabLayoutTextStyle"/>
+
+    <!--<TableLayout-->
+        <!--android:id="@+id/listLL"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:weightSum="2">-->
+        <!--<TableRow>-->
+            <!--<Button-->
+                <!--android:id="@+id/gettingMlaList"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:layout_weight="1"-->
+               <!--android:background="@color/white"-->
+                <!--android:textSize="20sp"-->
+                <!--android:text="Mla list"-->
+                <!--android:textColor="@color/colorPrimaryDark"/>-->
+            <!--<Button-->
+                <!--android:id="@+id/gettingMPList"-->
+                <!--android:background="@color/white"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:layout_weight="1"-->
+                <!--android:textColor="@color/colorPrimaryDark"-->
+                <!--android:text="MP list"-->
+                <!--android:textSize="20sp"/>-->
+        <!--</TableRow>-->
+
+
+    <!--</TableLayout>-->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/viewAllRcyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/listLL">
+        android:layout_below="@+id/listTabs">
 
     </android.support.v7.widget.RecyclerView>
 

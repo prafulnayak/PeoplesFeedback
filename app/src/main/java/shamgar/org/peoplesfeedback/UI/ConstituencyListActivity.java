@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -29,6 +31,8 @@ import static android.widget.LinearLayout.VERTICAL;
 public class ConstituencyListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private VerticalPoliticianAdapter adapter;
+    private  Toolbar innerToolbar;
+    private TextView pol_title;
 
     private ArrayList<PartyStateMla> stateMajorParty = new ArrayList<>();
     private ArrayList<PartyStateMla> stateMajorPartyHead = new ArrayList<>();
@@ -45,11 +49,16 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
         String state = getIntent().getStringExtra("state");
         sharedPreferenceConfig = new SharedPreferenceConfig(this);
+        recyclerView=(RecyclerView)findViewById(R.id.vertical_politicians_sub_list);
+        innerToolbar=(Toolbar)findViewById(R.id.innerToolbar);
+        pol_title=findViewById(R.id.pol_title);
 
+        setSupportActionBar(innerToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
+        pol_title.setText(state);
 
-        recyclerView=(RecyclerView)findViewById(R.id.vertical_politicians_sub_list);
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(),VERTICAL);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());

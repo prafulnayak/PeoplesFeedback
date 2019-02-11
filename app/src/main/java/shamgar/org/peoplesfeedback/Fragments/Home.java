@@ -659,7 +659,7 @@ public class Home extends Fragment {
     private void checkinSwtichStatus()
     {
 
-        locRanTxt.setTextColor(getResources().getColor(R.color.colorAccent));
+        locRanTxt.setTextColor(getResources().getColor(R.color.gray));
         seekBar.setEnabled(false);
         switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
@@ -669,7 +669,7 @@ public class Home extends Fragment {
                 // true if the switch is in the On position
                 if (isChecked==true)
                 {
-                    locRanTxt.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                    locRanTxt.setTextColor(getResources().getColor(R.color.pink2));
                     set_DisTance_Range.setVisibility(View.VISIBLE);
                     displayLocationRange.setVisibility(View.VISIBLE);
                     seekBar.setVisibility(View.VISIBLE);
@@ -699,7 +699,7 @@ public class Home extends Fragment {
                 else
                 {
                     locRanTxt.setText("0 Km");
-                    locRanTxt.setTextColor(getResources().getColor(R.color.colorAccent));
+                    locRanTxt.setTextColor(getResources().getColor(R.color.gray));
                     switchStatus = switch1.getTextOff().toString();
                     seekBar.setEnabled(false);
 

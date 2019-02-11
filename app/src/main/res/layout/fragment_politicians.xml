@@ -11,12 +11,12 @@
         android:id="@+id/politianCadrview"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="4dp"
         app:cardElevation="3dp"
         android:background="@color/white"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="@dimen/five_dp"
-        android:layout_marginTop="@dimen/five_dp">
+        android:layout_marginTop="10dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         <View
             android:layout_width="5dp"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryDark">
+            android:background="@color/pink">
         </View>
         <ImageView
             android:id="@+id/politicianImage"
@@ -108,8 +108,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#F7F7F7"
-        android:layout_below="@+id/politianCadrview"
-        android:layout_marginTop="10dp">
+        android:layout_below="@+id/politianCadrview">
     </android.support.v7.widget.RecyclerView>
 
 

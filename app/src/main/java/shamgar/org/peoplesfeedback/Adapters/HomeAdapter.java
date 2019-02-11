@@ -128,7 +128,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userpostimage);
 
-        holder.imglike.setOnClickListener(new View.OnClickListener() {
+        holder.imglikes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 statusLike=true;
@@ -200,11 +200,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             {
                 if (dataSnapshot.hasChild(sharedPreference.readPhoneNo().substring(3)))
                 {
-                    holder.imglike.setText(getEmojiByUnicode(0x270A));
+                    holder.imglikes.setImageResource(R.drawable.ic_like_enble_2);
                 }
                 else
                 {
-                    holder.imglike.setText(getEmojiByUnicode(0x1F44D));
+                    holder.imglikes.setImageResource(R.drawable.ic_like_dis_2);
                 }
             }
 
@@ -250,9 +250,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         private TextView username,mlaname,mlaconstituency,posttimestamp,postTagname,postImageDescription;
         private TextView postmlarating_perce,postlocation,num_views,num_likes,num_shares;
         private ImageView userpostimage;
-        private ImageButton imgview,imgshare,postsubmenuOptions;
+        private ImageButton imgview,imgshare,postsubmenuOptions,imglikes;
         CircularImageView userimage, mlaimage;
-        TextView imglike;
 
 
         public RecyclerViewHolder(View itemView) {
@@ -272,7 +271,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             num_likes=itemView.findViewById(R.id.num_likes);
             num_shares=itemView.findViewById(R.id.num_shares);
             userpostimage=itemView.findViewById(R.id.userpost);
-            imglike=itemView.findViewById(R.id.imglikes);
+            imglikes=itemView.findViewById(R.id.imglikes);
             imgshare=itemView.findViewById(R.id.imgshares);
             imgview=itemView.findViewById(R.id.imgViews);
             postsubmenuOptions=itemView.findViewById(R.id.postsubmenuOptions);

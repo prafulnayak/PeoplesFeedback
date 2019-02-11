@@ -28,20 +28,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/pink2"
         android:gravity="center"
         android:padding="@dimen/five_dp"
         android:textColor="@color/white"
         android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/txt_mla_rating_in_hori_rv"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rating:"
-            android:padding="5dp"
-            android:background="@color/white"
-            android:textColor="@color/colorPrimaryDark" />
+            android:orientation="horizontal">
+
+            <RatingBar
+                android:id="@+id/pol_rating"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:progressTint="@color/pink2" />
+
+            <TextView
+                android:id="@+id/txt_mla_rating_in_hori_rv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:gravity="center"
+                android:layout_marginTop="2dp"
+                android:background="@color/white"
+                android:textColor="@color/pink" />
+
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

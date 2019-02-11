@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -95,15 +96,61 @@ public class HomeScreenActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
 
         imagesList=new ArrayList<>();
-        imagesList.add(R.drawable.ic_home_white_24dp);
-        imagesList.add(R.drawable.ic_people_black_24dp);
-        imagesList.add(R.drawable.ic_chat_black_24dp);
-        imagesList.add(R.drawable.ic_notifications_white_24dp);
+        imagesList.add(R.drawable.ic_home_disable);
+        imagesList.add(R.drawable.ic_politician_dis);
+        imagesList.add(R.drawable.ic_chat_dis);
+        imagesList.add(R.drawable.ic_award_dis);
 
 
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
+
+        TabLayout.Tab tab=tabLayout.getTabAt(0);
+        tab.select();
+        tabLayout.getTabAt(0).setIcon(getResources().getDrawable(R.drawable.ic_home_enbl));
+        tabLayout.setTabTextColors(Color.parseColor("#727272"), Color.parseColor("#c2185b"));
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition()==0){
+                    tabLayout.getTabAt(0).setIcon(getResources().getDrawable(R.drawable.ic_home_enbl));
+                    tabLayout.getTabAt(1).setIcon(imagesList.get(1));
+                    tabLayout.getTabAt(2).setIcon(imagesList.get(2));
+                    tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+                }
+                if (tab.getPosition()==1){
+                    tabLayout.getTabAt(1).setIcon(getResources().getDrawable(R.drawable.ic_politician_enbl));
+                    tabLayout.getTabAt(0).setIcon(imagesList.get(0));
+                    tabLayout.getTabAt(2).setIcon(imagesList.get(2));
+                    tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+                }
+                if (tab.getPosition()==2){
+                    tabLayout.getTabAt(2).setIcon(getResources().getDrawable(R.drawable.ic_chat_enable));
+                    tabLayout.getTabAt(1).setIcon(imagesList.get(1));
+                    tabLayout.getTabAt(0).setIcon(imagesList.get(0));
+                    tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+                }
+                if (tab.getPosition()==3){
+                    tabLayout.getTabAt(3).setIcon(getResources().getDrawable(R.drawable.ic_award_enb));
+                    tabLayout.getTabAt(1).setIcon(imagesList.get(1));
+                    tabLayout.getTabAt(2).setIcon(imagesList.get(2));
+                    tabLayout.getTabAt(0).setIcon(imagesList.get(0));
+                }
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
 
     }

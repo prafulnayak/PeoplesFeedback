@@ -6,10 +6,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UI.ConstituencyListActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/innerToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        app:theme="@style/ToolbarColoredBackArrow"
+        app:titleTextColor="@color/white"
+        app:titleTextAppearance="@color/black">
+
+        <TextView
+            android:id="@+id/pol_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:text="Peoples Feedback"/>
+
+
+    </android.support.v7.widget.Toolbar>
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/vertical_politicians_sub_list"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:layout_below="@+id/innerToolbar"/>
 
 </RelativeLayout>

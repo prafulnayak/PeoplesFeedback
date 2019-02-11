@@ -65,10 +65,12 @@
         <activity android:name=".UI.CameraActivity" />
         <activity
             android:name=".UI.ConstituencyListActivity"
-            android:parentActivityName=".UI.MainActivity" />
+            android:parentActivityName=".UI.MainActivity"
+            android:theme="@style/AppTheme1"/>
         <activity
             android:name=".UI.ViewAllPoliticiansActivity"
-            android:parentActivityName=".UI.MainActivity" />
+            android:parentActivityName=".UI.MainActivity"
+            android:theme="@style/AppTheme1"/>
         <activity android:name=".UI.ContactsActivity"
             android:parentActivityName=".UI.MainActivity"/>
         <activity android:name=".UI.ChatActivity"
@@ -81,7 +83,8 @@
             android:parentActivityName=".UI.MainActivity" />
         <activity android:name=".UI.Entry" />
         <activity android:name=".UI.Profile_mla_Activity"
-            android:parentActivityName=".UI.MainActivity"></activity>
+            android:parentActivityName=".UI.MainActivity"
+            android:theme="@style/AppTheme1"></activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

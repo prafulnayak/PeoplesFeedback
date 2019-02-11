@@ -10,9 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Feedback on politicians"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textColor="@color/black"
-        android:layout_margin="@dimen/dimen_15"/>
+        android:layout_margin="18dp"/>
     <Button
         android:id="@+id/politicians_view_all"
         android:layout_alignParentEnd="true"
@@ -20,7 +20,7 @@
         android:layout_height="30dp"
         android:layout_margin="@dimen/dimen_15"
         android:textSize="12dp"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/pink2"
         android:text="View All"
         android:background="@drawable/white_round_background"
         android:textAllCaps="false"/>

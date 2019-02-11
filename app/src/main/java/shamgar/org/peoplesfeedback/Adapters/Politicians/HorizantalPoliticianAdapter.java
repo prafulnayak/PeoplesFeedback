@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class HorizantalPoliticianAdapter extends RecyclerView.Adapter<Horizantal
 
         final PartyStateMla partyStateMla = partyStateMlas.get(position);
         holder.name.setText(partyStateMla.getName());
+        holder.pol_rating.setRating(90);
 
     }
 
@@ -63,11 +65,13 @@ public class HorizantalPoliticianAdapter extends RecyclerView.Adapter<Horizantal
         private ImageView polImageView;
         private TextView name;
         private TextView rating;
+        private RatingBar pol_rating;
         public HorizantalViewHolder(View itemView) {
             super(itemView);
             polImageView = itemView.findViewById(R.id.mla_img_in_hori_rv);
             name = itemView.findViewById(R.id.txt_mla_name_in_hori_rv);
             rating = itemView.findViewById(R.id.txt_mla_rating_in_hori_rv);
+            pol_rating = itemView.findViewById(R.id.pol_rating);
 
         }
     }
