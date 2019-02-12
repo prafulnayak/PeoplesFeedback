@@ -4,6 +4,9 @@ import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -162,6 +165,42 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             public void onClick(View v) {
                 statusShare=true;
                 if (statusShare) {
+
+                    if(!news.getImageUrl().isEmpty() && news.getImageUrl() != null){
+                        Bitmap bitmap = getBitmapFromView(holder.userpostimage);
+                        try {
+                            File file = new File(ctx.getExternalCacheDir(),"logicchip.png");
+                            FileOutputStream fOut = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                            fOut.flush();
+                            fOut.close();
+                            file.setReadable(true, false);
+                            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
+                            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                            intent.setType("image/png");
+                            ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Intent shareIntent = new Intent();
+//                        shareIntent.setAction(Intent.ACTION_SEND);
+//
+//                        //Add text and then Image URI
+//                        shareIntent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+"\n"+news.getImageUrl() + "\n");
+//                        shareIntent.setType("text/plain");
+//
+//
+//                        try {
+//                            ctx.startActivity(shareIntent);
+//                        } catch (android.content.ActivityNotFoundException ex) {
+//
+//                            Toast.makeText(ctx, "Whatsapp have not been installed.", Toast.LENGTH_SHORT).show();
+//                        }
+                    }else {
+                        Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
+                    }
                     Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     dbRefShare.child(news.getPostId()).child("Share").push().setValue(sharedPreference.readPhoneNo());
                     statusShare=false;
@@ -190,6 +229,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.postlocation.setText(address);
 
 
+    }
+
+    private Bitmap getBitmapFromView(ImageView view) {
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) {
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        }   else{
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        }
+        view.draw(canvas);
+        return returnedBitmap;
     }
 
     public void setLikeButton(final String post_key, final RecyclerViewHolder holder)
