@@ -174,12 +174,20 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
                             fOut.flush();
                             fOut.close();
-                            file.setReadable(true, false);
+
+
+//                            file.setReadable(true, false);
                             final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                            Uri apkURI = FileProvider.getUriForFile(
+                                    ctx,
+                                    ctx.getApplicationContext()
+                                            .getPackageName() + ".provider", file);
+                            intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
-                            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-                            intent.setType("image/png");
+                            intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+//                            intent.setType("image/png");
                             ctx.startActivity(Intent.createChooser(intent, "Share image via"));
                         } catch (Exception e) {
                             e.printStackTrace();
