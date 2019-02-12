@@ -648,9 +648,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "shamgar.org.peoplesfeedback.fileprovider",
-                        photoFile);
+//                Uri photoURI = FileProvider.getUriForFile(this,
+//                        "shamgar.org.peoplesfeedback.fileprovider",
+//                        photoFile);
+                Uri photoURI = FileProvider.getUriForFile(
+                        this,
+                        this.getApplicationContext()
+                                .getPackageName() + ".provider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 Log.e("uri", photoURI.toString());
