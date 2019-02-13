@@ -150,6 +150,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         mlalist.add("select constituency");
         mAuth = FirebaseAuth.getInstance();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setTitle("Take Live photo");
+
 
         sharedPreference = new SharedPreferenceConfig(this);
         cameraImage = findViewById(R.id.camera_imageView);
@@ -1140,7 +1144,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                                             }
                                         }
                                     });
-                            return;
+                            return ;
                         }
                     }
 

@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -92,7 +94,12 @@ public class ChatActivity extends AppCompatActivity {
         userLastSeen=(TextView)findViewById(R.id.lastSeenChatActivity);
         userImage=(CircleImageView) findViewById(R.id.chat_profile_image);
         userEmail.setText(messageReceiverName);
-        Picasso.get().load(messageImage).placeholder(R.drawable.profile).into(userImage);
+        Glide.with(this)
+                .load(messageImage)
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(userImage);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 

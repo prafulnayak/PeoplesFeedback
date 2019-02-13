@@ -47,7 +47,8 @@
 
         <activity
             android:name=".UI.PhoneActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme1"/>
         <activity
             android:name=".UI.HomeScreenActivity"
             android:screenOrientation="portrait"
@@ -63,7 +64,9 @@
         <!-- android:resource="@xml/provider_paths" /> -->
         <!-- </provider> -->
 
-        <activity android:name=".UI.CameraActivity" />
+        <activity android:name=".UI.CameraActivity"
+            android:theme="@style/AppTheme2"
+            android:parentActivityName=".UI.MainActivity"/>
         <activity
             android:name=".UI.ConstituencyListActivity"
             android:parentActivityName=".UI.MainActivity"
@@ -75,7 +78,8 @@
         <activity android:name=".UI.ContactsActivity"
             android:parentActivityName=".UI.MainActivity"/>
         <activity android:name=".UI.ChatActivity"
-            android:parentActivityName=".UI.MainActivity"/>
+            android:parentActivityName=".UI.MainActivity"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".UI.Profile_TagActivity"
             android:parentActivityName=".UI.MainActivity" />

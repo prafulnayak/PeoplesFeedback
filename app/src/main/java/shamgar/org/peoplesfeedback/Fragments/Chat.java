@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -88,22 +90,25 @@ public class Chat extends Fragment {
                     protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Contacts model) {
                         final  String userIds=getRef(position).getKey();
                         Log.e("ids",userIds);
-                        final String[] Image = {"default image"};
                         userRef.orderByChild("phoneno").equalTo(userIds).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
                                     String email=null;
                                     String phoneno=null;
+                                    String Image=null;
                                    
                                     for (DataSnapshot innersnap:dataSnapshot.getChildren()) {
-                                        if (dataSnapshot.hasChild("image")) {
-                                            Image[0] =innersnap.child("image").getValue().toString();
-                                            Picasso.get().load(Image[0]).placeholder(R.drawable.profile).into(holder.profileImage);
-                                        }
+                                        Image =innersnap.child("desc").getValue(String.class);
+                                        Glide.with(getActivity())
+                                                .load(Image)
+                                                .error(R.drawable.ic_account_circle_black)
+                                                // read original from cache (if present) otherwise download it and decode it
+                                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                                .into(holder.profileImage);
 
                                         //have to change email to username
-                                        email = innersnap.child("email").getValue(String.class);
+                                        email = innersnap.child("name").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);
                                         Log.e("email",email);
@@ -124,15 +129,15 @@ public class Chat extends Fragment {
                                             holder.userStatus.setText("offline");
                                         }
 
-
                                         final String finalEmail = email;
+                                        final String finalImage = Image;
                                         holder.itemView.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 Intent chatActivity=new Intent(getContext(), ChatActivity.class);
                                                 chatActivity.putExtra("visit_user_id",userIds);
                                                 chatActivity.putExtra("visit_email_id", finalEmail);
-                                                chatActivity.putExtra("visit_image", Image[0]);
+                                                chatActivity.putExtra("visit_image", finalImage);
                                                 startActivity(chatActivity);
                                             }
                                         });

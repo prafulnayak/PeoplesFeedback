@@ -386,8 +386,6 @@ public class Home extends Fragment {
                         Log.e("Post data snap key",""+likes+share);
                         //  Log.e("Post list ",""+list.get(p));
                     }
-
-
                 }
 
                 @Override

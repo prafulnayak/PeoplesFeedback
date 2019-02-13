@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -41,7 +43,7 @@ import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 public class HomeScreenActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private FrameLayout viewPager;
     private TabsAccessorAdaptor tabsAccessorAdaptor;
     FirebaseAuth mAuth;
     SharedPreferenceConfig sharedPreference;
@@ -81,7 +83,7 @@ public class HomeScreenActivity extends AppCompatActivity {
         usersRef= FirebaseDatabase.getInstance().getReference();
 
         tabLayout= (TabLayout) findViewById(R.id.maintabs);
-        viewPager=(ViewPager)findViewById(R.id.mainviewpager);
+        viewPager=(FrameLayout)findViewById(R.id.mainviewpager);
         toolbar= (Toolbar) findViewById(R.id.toolbar);
         profileImage=  findViewById(R.id.profileImage);
 
@@ -102,12 +104,22 @@ public class HomeScreenActivity extends AppCompatActivity {
         imagesList.add(R.drawable.ic_award_dis);
 
 
-        setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
-        setupTabIcons();
 
+       // tabLayout.setupWithViewPager(viewPager);
+
+
+       TabsAccessorAdaptor adaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
+       tabLayout.setTabsFromPagerAdapter(adaptor);
+        setupTabIcons();
         TabLayout.Tab tab=tabLayout.getTabAt(0);
         tab.select();
+
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Home llf = new Home();
+        ft.replace(R.id.mainviewpager, llf);
+        ft.commit();
+
         tabLayout.getTabAt(0).setIcon(getResources().getDrawable(R.drawable.ic_home_enbl));
         tabLayout.setTabTextColors(Color.parseColor("#727272"), Color.parseColor("#c2185b"));
 
@@ -119,24 +131,47 @@ public class HomeScreenActivity extends AppCompatActivity {
                     tabLayout.getTabAt(1).setIcon(imagesList.get(1));
                     tabLayout.getTabAt(2).setIcon(imagesList.get(2));
                     tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    Home llf = new Home();
+                    ft.replace(R.id.mainviewpager, llf);
+                    ft.commit();
                 }
                 if (tab.getPosition()==1){
                     tabLayout.getTabAt(1).setIcon(getResources().getDrawable(R.drawable.ic_politician_enbl));
                     tabLayout.getTabAt(0).setIcon(imagesList.get(0));
                     tabLayout.getTabAt(2).setIcon(imagesList.get(2));
                     tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    Politicians llf = new Politicians();
+                    ft.replace(R.id.mainviewpager, llf);
+                    ft.commit();
                 }
                 if (tab.getPosition()==2){
                     tabLayout.getTabAt(2).setIcon(getResources().getDrawable(R.drawable.ic_chat_enable));
                     tabLayout.getTabAt(1).setIcon(imagesList.get(1));
                     tabLayout.getTabAt(0).setIcon(imagesList.get(0));
                     tabLayout.getTabAt(3).setIcon(imagesList.get(3));
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    Chat llf = new Chat();
+                    ft.replace(R.id.mainviewpager, llf);
+                    ft.commit();
                 }
                 if (tab.getPosition()==3){
                     tabLayout.getTabAt(3).setIcon(getResources().getDrawable(R.drawable.ic_award_enb));
                     tabLayout.getTabAt(1).setIcon(imagesList.get(1));
                     tabLayout.getTabAt(2).setIcon(imagesList.get(2));
                     tabLayout.getTabAt(0).setIcon(imagesList.get(0));
+
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    Notifications llf = new Notifications();
+                    ft.replace(R.id.mainviewpager, llf);
+                    ft.commit();
                 }
 
             }
