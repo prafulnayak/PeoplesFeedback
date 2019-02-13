@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -160,6 +161,70 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         });
 
         //listener for sharing posts
+        holder.imgsharesWhatapp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                statusShare=true;
+                if (statusShare) {
+
+                    if(!news.getImageUrl().isEmpty() && news.getImageUrl() != null){
+                        Bitmap bitmap = getBitmapFromView(holder.userpostimage);
+                        try {
+                            File file = new File(ctx.getExternalCacheDir(),"logicchip.png");
+                            FileOutputStream fOut = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                            fOut.flush();
+                            fOut.close();
+
+
+//                            file.setReadable(true, false);
+                            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                            Uri apkURI = FileProvider.getUriForFile(
+                                    ctx,
+                                    ctx.getApplicationContext()
+                                            .getPackageName() + ".provider", file);
+                            intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            intent.setPackage("com.whatsapp");
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
+                            intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+//                            intent.setType("image/png");
+                          //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                            ctx.startActivity(intent);
+                        } catch (android.content.ActivityNotFoundException ex) {
+                            Toast.makeText(ctx,"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Intent shareIntent = new Intent();
+//                        shareIntent.setAction(Intent.ACTION_SEND);
+//
+//                        //Add text and then Image URI
+//                        shareIntent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+"\n"+news.getImageUrl() + "\n");
+//                        shareIntent.setType("text/plain");
+//
+//
+//                        try {
+//                            ctx.startActivity(shareIntent);
+//                        } catch (android.content.ActivityNotFoundException ex) {
+//
+//                            Toast.makeText(ctx, "Whatsapp have not been installed.", Toast.LENGTH_SHORT).show();
+//                        }
+                    }else {
+                        Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
+                    }
+                    Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                    dbRefShare.child(news.getPostId()).child("Share").push().setValue(sharedPreference.readPhoneNo());
+                    statusShare=false;
+                }
+
+            }
+        });
+
+        //listener for sharing posts
         holder.imgshare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,8 +253,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                             intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
                             intent.putExtra(Intent.EXTRA_STREAM, apkURI);
 //                            intent.setType("image/png");
-                            ctx.startActivity(Intent.createChooser(intent, "Share image via"));
-                        } catch (Exception e) {
+                            //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                            ctx.startActivity(intent);
+                        } catch (android.content.ActivityNotFoundException ex) {
+                            Toast.makeText(ctx,"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                         Intent shareIntent = new Intent();
@@ -312,7 +382,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         private TextView username,mlaname,mlaconstituency,posttimestamp,postTagname,postImageDescription;
         private TextView postmlarating_perce,postlocation,num_views,num_likes,num_shares;
         private ImageView userpostimage;
-        private ImageButton imgview,imgshare,postsubmenuOptions,imglikes;
+        private ImageButton imgview,imgshare,postsubmenuOptions,imglikes,imgsharesWhatapp;
         CircularImageView userimage, mlaimage;
 
 
@@ -337,6 +407,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             imgshare=itemView.findViewById(R.id.imgshares);
             imgview=itemView.findViewById(R.id.imgViews);
             postsubmenuOptions=itemView.findViewById(R.id.postsubmenuOptions);
+            imgsharesWhatapp=itemView.findViewById(R.id.imgsharesWhatapp);
         }
     }
 

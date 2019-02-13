@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.xw.repo.BubbleSeekBar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import java.util.List;
 
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.ViewAllPoliticiansAdapter;
+import shamgar.org.peoplesfeedback.ConstantName.NamesC;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -42,12 +44,12 @@ import static android.widget.LinearLayout.VERTICAL;
 
 public class Profile_TagActivity extends AppCompatActivity {
 
-    private ImageButton tag_gridViewImages;
+    private ImageButton tag_grid_image,listViewImagesTag;
     private TextView tagName,tagDistrictName,followersForTags,
             followersForTagsCount,tagRatingPercentage
             ,overallVotesTag,overallRatingTag;
     private Button tagFollowButton;
-    private SeekBar profileTagRating;
+    private BubbleSeekBar profileTagRating;
 
     private Tag_Profile_Images_Adapter adapter;
     private RecyclerView recyclerView;
@@ -63,30 +65,26 @@ public class Profile_TagActivity extends AppCompatActivity {
 
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
         images=new ArrayList<>();
-        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
-        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
-        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
-        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
-        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
-        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
-        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
-        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+
         district=getIntent().getExtras().getString("district");
         tag=getIntent().getExtras().getString("tag");
         state=getIntent().getExtras().getString("state");
+        getSupportActionBar().setTitle(tag);
 
-        tag_gridViewImages=(ImageButton)findViewById(R.id.tag_gridViewImages);
+        tag_grid_image=(ImageButton)findViewById(R.id.tag_grid_image);
+        listViewImagesTag=(ImageButton)findViewById(R.id.listViewImagesTag);
         recyclerView=(RecyclerView)findViewById(R.id.profile_tag_gridImages_rv);
         tagDistrictName=(TextView)findViewById(R.id.tagDistrictName);
         tagName=(TextView)findViewById(R.id.tagName);
         tagFollowButton=(Button)findViewById(R.id.tagFollowButton);
         followersForTags=(TextView)findViewById(R.id.followersForTags);
         followersForTagsCount=(TextView)findViewById(R.id.followersForTagsCount);
-        profileTagRating=(SeekBar) findViewById(R.id.profileTagRating);
+        profileTagRating= findViewById(R.id.profileTagRating);
         tagRatingPercentage=(TextView) findViewById(R.id.tagRatingPercentage);
         overallRatingTag=(TextView) findViewById(R.id.overallRatingTag);
         overallVotesTag=(TextView) findViewById(R.id.overallVotesTag);
@@ -172,53 +170,16 @@ public class Profile_TagActivity extends AppCompatActivity {
                 };
         numofFol.addValueEventListener(valueEventListener1);
 
-
-        tag_gridViewImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Query numofFol =  FirebaseDatabase.getInstance().getReference().child("District")
-                        .child(district).child(tag).child("Followers");
-                ValueEventListener valueEventListener1 = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
-                            String numOfFollowers= String.valueOf(dataSnapshot.getChildrenCount());
-                            // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
-                            followersForTagsCount.setText(numOfFollowers);
-                        }else {
-                            Toast.makeText(getApplicationContext()," no followers for "+tag,Toast.LENGTH_SHORT).show();
-                            followersForTagsCount.setText("0");
-                        }
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                };
-                numofFol.addValueEventListener(valueEventListener1);
-
-                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
-                StaggeredGridLayoutManager staggeredGridLayoutManager=new StaggeredGridLayoutManager(2,LinearLayoutManager.VERTICAL);
-                recyclerView.setLayoutManager(staggeredGridLayoutManager);
-                recyclerView.setAdapter(adapter);
-                recyclerView.setNestedScrollingEnabled(false);
-            }
-        });
-
-
         //implementing rating functionality
-        profileTagRating.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        profileTagRating.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(int progress, float progressFloat) {
                 tagRating=String.valueOf(progress);
                 tagRatingPercentage.setText("Rating Percentage "+tagRating+"%");
             }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void getProgressOnActionUp(int progress, float progressFloat) {
                 Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Profile_TagActivity.this);
                 builder.setCancelable(false);
@@ -242,7 +203,78 @@ public class Profile_TagActivity extends AppCompatActivity {
                         })
                         .show();
             }
+
+            @Override
+            public void getProgressOnFinally(int progress, float progressFloat) {
+
+            }
         });
+
+        gettingMlaTagedImages();
+
+        //getting images from fire base
+        tag_grid_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
+                tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
+                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+                recyclerView.setAdapter(adapter);
+                recyclerView.setNestedScrollingEnabled(false);
+            }
+        });
+        listViewImagesTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
+                tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
+            }
+        });
+
+    }
+
+    private void gettingMlaTagedImages()
+    {
+        Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
+                .child(state).child(district).child(tag).child("postID");
+
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    // images.add(dataSnapshot.getKey());
+                    for (DataSnapshot innersnap:dataSnapshot.getChildren()){
+
+                        Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS).child(innersnap.getKey());
+                        ValueEventListener valueEventListener1=new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    images.add(dataSnapshot.child("imageUrl").getValue().toString());
+                                    Log.e("image urls",dataSnapshot.child("imageUrl").getValue().toString());
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        };
+                        query.addValueEventListener(valueEventListener1);
+                    }
+                }else {
+                    Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        taggedImages.addValueEventListener(valueEventListener);
     }
 
 

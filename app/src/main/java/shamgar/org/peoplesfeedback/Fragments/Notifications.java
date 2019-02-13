@@ -103,21 +103,21 @@ public class Notifications extends Fragment  {
                                         String constituency=null;
                                         for (DataSnapshot innershnap:dataSnapshot.getChildren()) {
                                             // people=innner.getValue(People.class);
-                                            email = innershnap.child("email").getValue(String.class);
+                                            email = innershnap.child("name").getValue(String.class);
                                             constituency = innershnap.child("constituancy").getValue(String.class);
                                         }
-                                        holder.userName.setText("Email:"+email+"\nConstituency:"+constituency);
+                                        holder.userName.setText("Name : "+email+"\nConstituency : "+constituency);
                                         holder.userStatus.setText("Wants to connects with you");
                                         Log.i("notification",dataSnapshot.toString());
 
                                         final String finalEmail = email;
-                                        holder.Accept.setText("Respond");
+                                        holder.Accept.setText("Accept Request");
                                         holder.Accept.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 CharSequence options[]=new CharSequence[]{
-                                                                "Accept",
-                                                                "Cancel"
+                                                                "Confirm",
+                                                                "Ignore"
                                                         };
                                                 AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
                                                 builder.setTitle(finalEmail +" Chat Request");
@@ -222,12 +222,11 @@ public class Notifications extends Fragment  {
 
                                         for (DataSnapshot innershnap:dataSnapshot.getChildren()) {
                                               // people=innner.getValue(People.class);
-                                            email = innershnap.child("email").getValue(String.class);
+                                            email = innershnap.child("name").getValue(String.class);
                                             constituency = innershnap.child("constituancy").getValue(String.class);
                                         }
                                         holder.userStatus.setText("Constituency: "+constituency);
                                         holder.userName.setText("you have sent a request to "+email);
-                                        holder.Accept.setBackgroundColor(Color.RED);
                                         holder.Accept.setText("Cancel Request");
                                         holder.Accept.setOnClickListener(new View.OnClickListener() {
                                             @Override

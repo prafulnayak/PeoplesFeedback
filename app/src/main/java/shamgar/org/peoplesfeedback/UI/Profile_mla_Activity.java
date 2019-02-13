@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
+import shamgar.org.peoplesfeedback.ConstantName.NamesC;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -70,15 +72,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
 
         images=new ArrayList<>();
-        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
-        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
-        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
-        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
-        images.add("http://2.bp.blogspot.com/-q2tFyftUy9o/UkPs5Oofa7I/AAAAAAAAAxE/dyQCGMfQ6rg/s1600/full-hd-nature-wallpapers-free-downloads-for-laptop-06.jpg");
-        images.add("https://hdwallpaper20.com/wp-content/uploads/2016/11/wallpaper-of-nature-free-Download1-1.jpg");
-        images.add("https://www.pixelstalk.net/wp-content/uploads/2016/06/HD-images-of-nature-download.jpg");
-        images.add("http://3.bp.blogspot.com/-8Ow2DuXPAQU/UnyVDO5N7eI/AAAAAAAAAGw/dEda6GiX4CE/s1600/Free+Download+Nature+Wallpapers.jpg");
-
         mlanametxt=findViewById(R.id.mlaDistrictName);
         txtmlaConstituency=findViewById(R.id.mlaName);
         mlaFollowButton=findViewById(R.id.mlaFollowButton);
@@ -94,6 +87,8 @@ public class Profile_mla_Activity extends AppCompatActivity {
         mlaPartyName=findViewById(R.id.mlaPartyName);
         listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
         scrollViewMLa=findViewById(R.id.scrollViewMLa);
+
+        getSupportActionBar().setTitle("MLA profile");
 
 //        getSupportActionBar().setDisplayShowHomeEnabled(true);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,6 +112,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
 
         gettingMLAImage();
+        gettingMlaTagedImages();
         //checking user is following or not
         Query postQuery =  FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName).child("Followers")
@@ -246,8 +242,8 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
                 mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
                 adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
-                StaggeredGridLayoutManager staggeredGridLayoutManager=new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
-                profile_mla_gridImages_rv.setLayoutManager(staggeredGridLayoutManager);
+                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+                profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
                 profile_mla_gridImages_rv.setAdapter(adapter);
                 profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
             }
@@ -261,6 +257,48 @@ public class Profile_mla_Activity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void gettingMlaTagedImages()
+    {
+        Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
+                .child(state).child(district).child("constituancy").child(mlaConstituency).child("PostID");
+
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                   // images.add(dataSnapshot.getKey());
+                    for (DataSnapshot innersnap:dataSnapshot.getChildren()){
+
+                        Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS).child(innersnap.getKey());
+                        ValueEventListener valueEventListener1=new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                            images.add(dataSnapshot.child("imageUrl").getValue().toString());
+                                            Log.e("image urls",dataSnapshot.child("imageUrl").getValue().toString());
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        };
+                        query.addValueEventListener(valueEventListener1);
+                    }
+                }else {
+                    Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        taggedImages.addValueEventListener(valueEventListener);
     }
 
     private void following() {

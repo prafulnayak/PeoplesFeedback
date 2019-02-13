@@ -19,7 +19,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="320dp"
-            android:background="@drawable/button_backround">
+            android:background="@color/pink2">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="90dp"
@@ -118,8 +118,8 @@
                 android:id="@+id/mlaimageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                app:srcCompat="@drawable/ic_screen_share_white_24dp"
+                app:srcCompat="@drawable/share_white"
+                android:background="@color/pink2"
                 tools:ignore="VectorDrawableCompat"
                 android:layout_toRightOf="@+id/mlaFollowButton"
                 android:layout_below="@id/layoutMLaParty"
@@ -355,6 +355,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:orientation="vertical"
+            android:background="#DDDCDC"
             android:layout_below="@+id/line2"/>
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

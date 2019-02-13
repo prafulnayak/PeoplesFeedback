@@ -42,6 +42,7 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
     private ViewAllPoliticiansAdapter allPoliticiansAdapter;
     private String state;
     private ArrayList<String> districtList=new ArrayList<>();
+    private ArrayList<String> constituencyCount=new ArrayList<>();
     private ArrayList<String> MPList=new ArrayList<>();
 
     @Override
@@ -146,12 +147,12 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
                         Log.e("districtsList", ""+MPList);
 //                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
-//                    viewAllRecyclerView.setHasFixedSize(true);
-//                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-                        viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
-//                    viewAllRecyclerView.addItemDecoration(decoration);
-                        allPoliticiansAdapter.notifyDataSetChanged();
+//                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
+////                    viewAllRecyclerView.setHasFixedSize(true);
+////                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+//                        viewAllRecyclerView.setAdapter(allPoliticiansAdapter);
+////                    viewAllRecyclerView.addItemDecoration(decoration);
+//                        allPoliticiansAdapter.notifyDataSetChanged();
                     }
 
                 }
@@ -176,17 +177,22 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(districtList.size() == 0){
+
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
 
+                        Log.e("count", String.valueOf(dataSnapshot.child(snapshot.getKey()).child("Constituancy").getChildrenCount()));
                         Log.e("districts", ""+snapshot.getKey());
 
+                        constituencyCount.add(String.valueOf(dataSnapshot.child(snapshot.getKey()).child("Constituancy").getChildrenCount()));
+                        Log.e("constituencyCount", ""+constituencyCount);
+
 //                    if(stateCm.getCM() != null){
-                        districtList.add(snapshot.getKey().toString());
+                        districtList.add(snapshot.getKey());
 //                    }
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
                         Log.e("districtsList", ""+districtList);
 //                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state);
+                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state,constituencyCount);
 //                    viewAllRecyclerView.setHasFixedSize(true);
 //                    viewAllRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
                         viewAllRecyclerView.setAdapter(allPoliticiansAdapter);

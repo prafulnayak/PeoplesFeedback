@@ -176,7 +176,7 @@
         android:layout_height="40dp">
         <ImageButton
             android:id="@+id/imgViews"
-            android:layout_marginTop="10dp"
+           android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dimen_15"
@@ -186,7 +186,7 @@
 
         <ImageButton
             android:id="@+id/imglikes"
-            android:layout_marginTop="10dp"
+           android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_like_dis_2"
@@ -199,10 +199,10 @@
         <ImageButton
             android:id="@+id/imgshares"
             android:layout_width="wrap_content"
-            android:layout_height="15dp"
+            android:layout_height="20dp"
             android:src="@drawable/ic_share"
             android:layout_toEndOf="@+id/num_likes"
-            android:layout_marginTop="15dp"
+            android:layout_centerVertical="true"
             android:layout_marginStart="25dp"
             android:background="@color/white"
             android:alpha="0.7"/>
@@ -236,6 +236,17 @@
            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/five_dp"
             android:layout_toEndOf="@id/imgshares"/>
+
+        <ImageButton
+            android:id="@+id/imgsharesWhatapp"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_whatsapp"
+            android:layout_toRightOf="@+id/num_shares"
+           android:layout_centerVertical="true"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:alpha="0.7"/>
 
 
     </RelativeLayout>

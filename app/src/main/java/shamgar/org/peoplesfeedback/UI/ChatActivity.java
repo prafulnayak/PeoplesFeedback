@@ -81,7 +81,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         preferenceConfig=new SharedPreferenceConfig(this);
-        adapter=new MessagesAdapter(messagesList);
+        adapter=new MessagesAdapter(getApplicationContext(),messagesList,messageImage);
         layoutManager=new LinearLayoutManager(this);
         messagesRecyclerView.setLayoutManager(layoutManager);
         messagesRecyclerView.setAdapter(adapter);

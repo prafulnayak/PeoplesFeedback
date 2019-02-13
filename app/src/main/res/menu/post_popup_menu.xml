@@ -12,10 +12,5 @@
         android:title="spam"
         app:showAsAction="never"
         />
-    <item
-        android:id="@+id/share"
-        android:title="share to whatsapp"
-        app:showAsAction="never"
-        />
 
 </menu>

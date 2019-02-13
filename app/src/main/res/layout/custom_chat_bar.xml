@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary">
+    android:background="@color/pink2">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/chat_profile_image"
@@ -28,7 +28,7 @@
         android:layout_marginEnd="70dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,7 +45,7 @@
         android:layout_marginEnd="70dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

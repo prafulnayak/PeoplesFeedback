@@ -29,6 +29,7 @@ import shamgar.org.peoplesfeedback.R;
 public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPoliticiansAdapter.ViewallViewHolder> {
     Context context;
     ArrayList<String> districtList;
+    ArrayList<String> constList;
 
     ArrayList<GovAgency> govAgencies = new ArrayList<>();
     ArrayList<MLAModel> mlaModels = new ArrayList<>();
@@ -37,10 +38,13 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
     private ConstituencyListDetailsAdapter constituencyListDetailsAdapter;
     private String state;
 
-    public ViewAllPoliticiansAdapter(Context context, ArrayList<String> districtList, String state) {
-        this.context=context;
+
+
+    public ViewAllPoliticiansAdapter(Context applicationContext, ArrayList<String> districtList, String state, ArrayList<String> constituencyCount) {
+        this.context=applicationContext;
         this.districtList=districtList;
         this.state=state;
+        this.constList=constituencyCount;
     }
 
     @NonNull
@@ -56,6 +60,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
     public void onBindViewHolder(@NonNull final ViewallViewHolder holder, final int position) {
 
         holder.district_name_in_view_all_rv.setText(districtList.get(position));
+        holder.num_of_const_in_view_all_rv.setText(constList.get(position));
         holder.district_name_in_view_all_rv.setTextColor(Color.parseColor("#000000"));
 
         holder.viewAllImg.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +83,11 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             govAgencies.clear();
                             mlaModels.clear();
+                            if (!dataSnapshot.exists()){
+                                Log.e("error","no data exists");
+                                return;
+                            }
+
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 if (!snapshot.exists()){
                                     Toast.makeText(context,"data not avaliable",Toast.LENGTH_SHORT).show();
@@ -90,6 +100,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                                     govAgencies.add(govAgency);
                                 }else {
                                     for(DataSnapshot dataSnapshotC : snapshot.getChildren()){
+                                        Log.e("mla count", String.valueOf(dataSnapshotC.getChildrenCount()));
                                         MLAModel mlaModel = dataSnapshotC.getValue(MLAModel.class);
                                         Log.e("mla con",dataSnapshotC.getKey()+mlaModel.getMla_name()+mlaModel.getRating()+mlaModel.getMla_image()+mlaModel.getVotes());
 
@@ -180,11 +191,15 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             govAgencies.clear();
                             mlaModels.clear();
+                            if (!dataSnapshot.exists()){
+                                return;
+                            }
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 if (!snapshot.exists()){
                                     Toast.makeText(context,"data not avaliable",Toast.LENGTH_SHORT).show();
                                     return;
                                 }
+
                                 if (!snapshot.getKey().equals("Constituancy")){
                                     GovAgency govAgency = snapshot.getValue(GovAgency.class);
                                     govAgency.setGovAgencyName(snapshot.getKey());
@@ -192,6 +207,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
                                     govAgencies.add(govAgency);
                                 }else {
                                     for(DataSnapshot dataSnapshotC : snapshot.getChildren()){
+
                                         MLAModel mlaModel = dataSnapshotC.getValue(MLAModel.class);
                                         Log.e("mla con",dataSnapshotC.getKey()+mlaModel.getMla_name()+mlaModel.getRating()+mlaModel.getMla_image()+mlaModel.getVotes());
 
@@ -273,7 +289,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
     {
         private RecyclerView taglistRecyclerView,constituencyRecyclerview;
         private ImageButton viewAllImg;
-        private TextView district_name_in_view_all_rv;
+        private TextView district_name_in_view_all_rv,num_of_const_in_view_all_rv;
 
         public ViewallViewHolder(View itemView) {
             super(itemView);
@@ -281,6 +297,7 @@ public class ViewAllPoliticiansAdapter extends RecyclerView.Adapter<ViewAllPolit
             constituencyRecyclerview=itemView.findViewById(R.id.constituencyListdetials);
             viewAllImg=itemView.findViewById(R.id.viewAllImg);
             district_name_in_view_all_rv=itemView.findViewById(R.id.district_name_in_view_all_rv);
+            num_of_const_in_view_all_rv=itemView.findViewById(R.id.num_of_const_in_view_all_rv);
         }
 
 

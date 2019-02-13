@@ -14,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,18 +75,18 @@ public class ContactsActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot dataSnapshot)
                             {
                                 if (dataSnapshot.exists()){
-
-
-
                                     String email=null;
                                     String phoneno=null;
                                     String Image=null;
                                     for (DataSnapshot innersnap:dataSnapshot.getChildren()) {
-                                        if (dataSnapshot.hasChild("image")) {
-                                            Image=innersnap.child("image").getValue().toString();
-                                            Picasso.get().load(Image).placeholder(R.drawable.profile).into(holder.profileImage);
-                                        }
-                                        email = innersnap.child("email").getValue(String.class);
+                                        Image =innersnap.child("desc").getValue(String.class);
+                                        Glide.with(getApplicationContext())
+                                                .load(Image)
+                                                .error(R.drawable.ic_account_circle_black)
+                                                // read original from cache (if present) otherwise download it and decode it
+                                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                                .into(holder.profileImage);
+                                        email = innersnap.child("name").getValue(String.class);
                                         phoneno=innersnap.child("phoneno").getValue(String.class);
                                         holder.userName.setText(email);
                                         holder.userStatus.setText(phoneno);

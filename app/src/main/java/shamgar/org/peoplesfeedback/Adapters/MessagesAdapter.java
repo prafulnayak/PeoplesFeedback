@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.Adapters;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,9 +32,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     private List<Messages> userMessagesList;
     private FirebaseAuth mAuth;
     private DatabaseReference usersRef;
+    private String image;
+    private Context context;
 
-    public MessagesAdapter(List<Messages> userMessagesList) {
+    public MessagesAdapter(Context applicationContext, List<Messages> userMessagesList, String messageImage) {
         this.userMessagesList = userMessagesList;
+        this.image=messageImage;
+        this.context=applicationContext;
     }
 
     @NonNull
@@ -50,6 +57,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     public void onBindViewHolder(@NonNull final MessagesViewHolder holder, int position) {
 
         String messageSenderId=mAuth.getCurrentUser().getPhoneNumber();
+        Glide.with(context)
+                .load(image)
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.receiverProfileImage);
         Messages messages=userMessagesList.get(position);
 
         String fromUserId=messages.getFrom();
@@ -82,7 +95,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 holder.sendMessagesText.setVisibility(View.VISIBLE);
                 holder.sender_messages_time.setVisibility(View.VISIBLE);
                 holder.sendMessagesText.setBackgroundResource(R.drawable.sender_messages_layout);
-                holder.sendMessagesText.setTextColor(Color.BLACK);
+                holder.sendMessagesText.setTextColor(Color.WHITE);
                 holder.sendMessagesText.setText(messages.getMessage());
                 holder.sender_messages_time.setText(time);
             }

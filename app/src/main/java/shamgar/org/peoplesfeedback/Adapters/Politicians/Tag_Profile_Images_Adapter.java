@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 
@@ -36,8 +37,12 @@ public class Tag_Profile_Images_Adapter extends RecyclerView.Adapter<Tag_Profile
     @Override
     public void onBindViewHolder(@NonNull TagViewHolder holder, int position) {
 
-        
-        Glide.with(context).load(images.get(position)).placeholder(R.drawable.profile).into(holder.imagesFromFirebase);
+
+        Glide.with(context)
+                .load(images.get(position))
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.imagesFromFirebase);
     }
 
     @Override

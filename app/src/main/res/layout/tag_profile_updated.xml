@@ -15,7 +15,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="@drawable/button_backround">
+            android:background="@color/pink2">
 
             <TextView
                 android:id="@+id/tagDistrictName"
@@ -58,12 +58,11 @@
                 android:textAllCaps="false"
                 android:layout_below="@id/tagName"/>
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                app:srcCompat="@drawable/ic_screen_share_white_24dp"
+                app:srcCompat="@drawable/share_white"
                 tools:ignore="VectorDrawableCompat"
                 android:layout_toRightOf="@+id/tagFollowButton"
                 android:layout_below="@id/tagName"
@@ -202,19 +201,30 @@
         android:layout_marginTop="15dp"
         android:text="Your Rating"
        android:layout_below="@+id/cardView"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/pink2"
         android:textSize="16sp"/>
-    <SeekBar
+    <com.xw.repo.BubbleSeekBar
         android:id="@+id/profileTagRating"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="8dp"
-        android:max="100"
-        android:progress="3"
+        android:layout_marginBottom="8dp"
+        app:bsb_bubble_color="@color/pink"
+        app:bsb_bubble_text_color="@color/white"
+        app:bsb_track_color="#A7A2A2"
+        app:bsb_second_track_color="@color/pink"
+        app:bsb_max="100"
+        app:bsb_min="0"
+        app:bsb_progress="0"
+        app:bsb_section_count="5"
+        app:bsb_section_text_position="bottom_sides"
+        app:bsb_show_progress_in_float="false"
+        app:bsb_show_section_mark="true"
+        app:bsb_show_section_text="true"
+        app:bsb_show_thumb_text="true"
        android:layout_below="@+id/textView8"/>
 
     <TextView
@@ -227,9 +237,18 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="rating percentage"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/pink2"
         android:textSize="16sp"
         android:layout_below="@id/profileTagRating"/>
+
+    <TableRow
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/tagRatingPercentage"
+        android:background="#95989A">
+
+    </TableRow>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -239,10 +258,10 @@
         android:layout_marginStart="8dp"
         android:orientation="horizontal"
         android:weightSum="2"
-        android:layout_below="@+id/tagRatingPercentage">
+        android:layout_below="@+id/line1">
 
         <ImageButton
-            android:id="@+id/tag_gridViewImages"
+            android:id="@+id/tag_grid_image"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
@@ -255,25 +274,23 @@
             android:background="#9b9a9a"/>
 
         <ImageButton
+            android:id="@+id/listViewImagesTag"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:background="@color/white"
-            android:src="@drawable/ic_view_list_black_24dp" />
+            android:src="@drawable/ic_view_list_gray_24dp" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/view"
+    <TableRow
+        android:id="@+id/line2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#9b9a9a"
-      android:layout_above="@+id/linearLayout" />
-    <View
-        android:id="@+id/view2"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#9b9a9a"
-        android:layout_below="@+id/linearLayout" />
+        android:layout_below="@id/linearLayout"
+        android:background="#95989A">
+
+    </TableRow>
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/profile_tag_gridImages_rv"
@@ -283,6 +300,6 @@
         android:layout_marginStart="8dp"
         android:orientation="vertical"
         android:layout_marginTop="8dp"
-        android:layout_below="@+id/view2"/>
+        android:layout_below="@+id/linearLayout"/>
 </RelativeLayout>
 </ScrollView>
