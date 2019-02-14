@@ -238,7 +238,7 @@
             android:layout_toEndOf="@id/imgshares"/>
 
         <ImageButton
-            android:id="@+id/imgsharesWhatapp"
+            android:id="@+id/imgshares_Whatapp"
             android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:src="@drawable/ic_whatsapp"

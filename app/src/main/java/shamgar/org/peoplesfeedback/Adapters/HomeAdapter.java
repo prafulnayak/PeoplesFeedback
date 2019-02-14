@@ -407,7 +407,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             imgshare=itemView.findViewById(R.id.imgshares);
             imgview=itemView.findViewById(R.id.imgViews);
             postsubmenuOptions=itemView.findViewById(R.id.postsubmenuOptions);
-            imgsharesWhatapp=itemView.findViewById(R.id.imgsharesWhatapp);
+            imgsharesWhatapp=itemView.findViewById(R.id.imgshares_Whatapp);
         }
     }
 

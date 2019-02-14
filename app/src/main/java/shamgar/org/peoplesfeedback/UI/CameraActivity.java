@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
@@ -81,7 +82,8 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
 
-public class CameraActivity extends AppCompatActivity implements View.OnClickListener,GoogleApiClient.ConnectionCallbacks,
+public class CameraActivity extends AppCompatActivity implements
+        View.OnClickListener,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
 //    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 123;
@@ -134,10 +136,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     Location mLocation;
     TextView latLng;
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private LocationRequest mLocationRequest;
+
     private long UPDATE_INTERVAL = 15000;  /* 15 secs */
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
 
@@ -146,14 +150,20 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayList permissions = new ArrayList();
 
     private final static int ALL_PERMISSIONS_RESULT = 101;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
 
-
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         mlalist.add("select constituency");
         mAuth = FirebaseAuth.getInstance();
@@ -1044,12 +1054,15 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     public void onLocationChanged(Location location) {
         if(location!=null)
            // Toast.makeText(getApplicationContext(),"Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude(),Toast.LENGTH_LONG).show();
-            Log.e("location","Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude());
+            Log.e("location aaaa","Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude());
+        Toast.makeText(this, "changed: "+location.getLatitude(), Toast.LENGTH_SHORT).show();
+        mLocation = location;
     }
 
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -1105,8 +1118,20 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(getApplicationContext(), "Enable Permissions", Toast.LENGTH_LONG).show();
         }
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if(location != null){
+                    mLocation = location;
+                    Toast.makeText(getApplicationContext(), "location"+mLocation.getLatitude(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
+
+//        LocationServices.FusedLocationApi.requestLocationUpdates(
+//                mGoogleApiClient, mLocationRequest, this);
 
 
     }
