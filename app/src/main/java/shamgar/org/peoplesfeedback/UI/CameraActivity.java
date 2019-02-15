@@ -2,6 +2,7 @@ package shamgar.org.peoplesfeedback.UI;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -34,6 +35,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -130,7 +132,7 @@ public class CameraActivity extends AppCompatActivity implements
     private ArrayList<String> constituencies = new ArrayList<>();
     private String currentState, currentDistrict, currentConstituency;
 
-    private Button dialogConfirm;
+    private Button dialogConfirm,dialogBtnCancel;
     private String mCurrentPhotoPath;
 
 
@@ -152,6 +154,8 @@ public class CameraActivity extends AppCompatActivity implements
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private FusedLocationProviderClient fusedLocationProviderClient;
 
+    private ProgressDialog loadingbar;
+
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
@@ -164,6 +168,12 @@ public class CameraActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        loadingbar=new ProgressDialog(this);
+        loadingbar.setTitle("Fetching current location with constituency location");
+        loadingbar.setMessage("please wait...");
+        loadingbar.setCanceledOnTouchOutside(false);
+
 
         mlalist.add("select constituency");
         mAuth = FirebaseAuth.getInstance();
@@ -196,7 +206,6 @@ public class CameraActivity extends AppCompatActivity implements
 
         //checking self permissions
 
-
             dispatchTakePictureIntent();
 
         permissions.add(ACCESS_FINE_LOCATION);
@@ -210,8 +219,6 @@ public class CameraActivity extends AppCompatActivity implements
             if (permissionsToRequest.size() > 0)
                 requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
         }
-
-
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -311,6 +318,7 @@ public class CameraActivity extends AppCompatActivity implements
                 //check weather image is blank or not
                 //check Edit text is blank or not
                 if (mLocation != null) {
+                    loadingbar.show();
                     latitude = mLocation.getLatitude();
                     logntude = mLocation.getLongitude();
                     checkOwnConstituancyOrNot(latitude, logntude);
@@ -347,20 +355,28 @@ public class CameraActivity extends AppCompatActivity implements
                         int distance = (int) (dist / 1000);
 
                         if (distance <= 33) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
+                            loadingbar.dismiss();
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
                             builder.setTitle("You are out of registered constituency, please select below");
+                            builder.setCancelable(false);
                             View mView = getLayoutInflater().inflate(R.layout.custom_dialog, null);
 
                             spinnerState = mView.findViewById(R.id.spinnerGetStates);
                             spinnerDistrict = mView.findViewById(R.id.spinnerGetDistricts);
                             spinnerConstituency = mView.findViewById(R.id.spinnerGetConstituencies);
+                            dialogBtnCancel = mView.findViewById(R.id.dialogBtnCancel);
 
                             dialogConfirm = mView.findViewById(R.id.dialogBtnConfirm);
+                            builder.setView(mView);
+                            final AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                            alertDialog.setCancelable(false);
                             dialogConfirm.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     if (currentConstituency != "Select constituency" && currentDistrict != "Select district" && currentState != "Select state") {
-                                        Toast.makeText(getApplicationContext(), "post into desired constituency", Toast.LENGTH_LONG).show();
+                                        alertDialog.setCancelable(true);
+                                        alertDialog.dismiss();
                                         pushImageToFirebase(1);
                                     } else {
                                         Toast.makeText(getApplicationContext(), "please select fields", Toast.LENGTH_LONG).show();
@@ -368,15 +384,23 @@ public class CameraActivity extends AppCompatActivity implements
                                     }
                                 }
                             });
+                            dialogBtnCancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                   alertDialog.setCancelable(true);
+                                   alertDialog.dismiss();
+                                }
+                            });
                             getStates();
-                            builder.setView(mView);
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
+
+
+
 
                             //open dailogbox
                             // select constituancy
                             Log.e("distance greater then 5", "" + distance);
                         } else {
+                            loadingbar.dismiss();
                             pushImageToFirebase(0);
                             Log.e("distance less then 5", "" + distance);
                         }
@@ -387,11 +411,17 @@ public class CameraActivity extends AppCompatActivity implements
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
+                        loadingbar.dismiss();
                     }
                 });
     }
 
     private void pushImageToFirebase(final int i) {
+
+        loadingbar.setTitle("Uploading your post");
+        loadingbar.setMessage("please wait...");
+        loadingbar.setCanceledOnTouchOutside(false);
+        loadingbar.show();
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -415,6 +445,7 @@ public class CameraActivity extends AppCompatActivity implements
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
+                loadingbar.dismiss();
                 // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -490,6 +521,7 @@ public class CameraActivity extends AppCompatActivity implements
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                loadingbar.dismiss();
 
             }
         });
@@ -505,6 +537,9 @@ public class CameraActivity extends AppCompatActivity implements
 
                     postIntoUserAccount(postKey);
                     postIntoConstituancyAndTaggedArea(postKey, i);
+                }
+                else {
+                    loadingbar.dismiss();
                 }
             }
         });
@@ -528,8 +563,14 @@ public class CameraActivity extends AppCompatActivity implements
                     .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
-                    postInTagArea(postKey, i);
+                    if (task.isSuccessful()){
+                        Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
+                        postInTagArea(postKey, i);
+                    }
+                    else {
+                        loadingbar.dismiss();
+                    }
+
                 }
             });
         } else if (i == 1) {
@@ -543,8 +584,14 @@ public class CameraActivity extends AppCompatActivity implements
                     .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
-                    postInTagArea(postKey, i);
+                    if (task.isSuccessful()){
+                        Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
+                        postInTagArea(postKey, i);
+                    }
+                    else {
+                        loadingbar.dismiss();
+                    }
+
                 }
             });
         }
@@ -563,8 +610,15 @@ public class CameraActivity extends AppCompatActivity implements
                     .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
-                    finish();
+                    if (task.isSuccessful()){
+                        Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
+                        loadingbar.dismiss();
+                        finish();
+                    }
+                    else {
+                       loadingbar.dismiss();
+                    }
+
                 }
             });
         } else if (i == 1) {
@@ -577,8 +631,14 @@ public class CameraActivity extends AppCompatActivity implements
                     .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
-                    finish();
+                    if (task.isSuccessful()){
+                        Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
+                        loadingbar.dismiss();
+                        finish();
+                    }
+                    else {
+                        loadingbar.dismiss();
+                    }
                 }
             });
         }
@@ -594,6 +654,8 @@ public class CameraActivity extends AppCompatActivity implements
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful())
                     Toast.makeText(CameraActivity.this, "success on people post", Toast.LENGTH_SHORT).show();
+                else
+                    loadingbar.dismiss();
             }
         });
     }

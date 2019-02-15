@@ -36,6 +36,8 @@ import java.util.List;
 
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.ViewAllPoliticiansAdapter;
+import shamgar.org.peoplesfeedback.Adapters.ProfileImagesInListviewAdapter;
+import shamgar.org.peoplesfeedback.Adapters.TagListViewImagesAdapter;
 import shamgar.org.peoplesfeedback.ConstantName.NamesC;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
@@ -56,7 +58,19 @@ public class Profile_TagActivity extends AppCompatActivity {
     private String district,tag,tagRating,state;
     private SharedPreferenceConfig sharedPreferenceConfig;
 
+
+    private TagListViewImagesAdapter tag_profile_images_adapter;
     private ArrayList<String> images;
+    private ArrayList<String> postedOn;
+    private ArrayList<String> lat;
+    private ArrayList<String> lon;
+    private ArrayList<String> tagId;
+    private ArrayList<String> desc;
+    private ArrayList<String> user;
+    private ArrayList<String> keys;
+    private ArrayList<String> districts;
+    private ArrayList<String> constituency;
+    private ArrayList<String> states;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +79,19 @@ public class Profile_TagActivity extends AppCompatActivity {
 
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
         images=new ArrayList<>();
+        postedOn=new ArrayList<>();
+        lat=new ArrayList<>();
+        lon=new ArrayList<>();
+        tagId=new ArrayList<>();
+        desc=new ArrayList<>();
+        user=new ArrayList<>();
+        keys=new ArrayList<>();
+        districts=new ArrayList<>();
+        constituency=new ArrayList<>();
+        states=new ArrayList<>();
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
         district=getIntent().getExtras().getString("district");
         tag=getIntent().getExtras().getString("tag");
@@ -101,7 +123,6 @@ public class Profile_TagActivity extends AppCompatActivity {
                    }else {
                        tagFollowButton.setText("follow");
                    }
-
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -230,6 +251,12 @@ public class Profile_TagActivity extends AppCompatActivity {
             public void onClick(View view) {
                 listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
                 tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
+
+                tag_profile_images_adapter=new TagListViewImagesAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,desc,user,keys,districts,constituency,states);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                recyclerView.setAdapter(tag_profile_images_adapter);
+                tag_profile_images_adapter.notifyDataSetChanged();
+                recyclerView.setNestedScrollingEnabled(false);
             }
         });
 
@@ -252,8 +279,18 @@ public class Profile_TagActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()){
+                                    keys.add(dataSnapshot.getKey());
                                     images.add(dataSnapshot.child("imageUrl").getValue().toString());
-                                    Log.e("image urls",dataSnapshot.child("imageUrl").getValue().toString());
+                                    postedOn.add(dataSnapshot.child("postedOn").getValue().toString());
+                                    lat.add(dataSnapshot.child("latitude").getValue().toString());
+                                    lon.add(dataSnapshot.child("longitude").getValue().toString());
+                                    tagId.add(dataSnapshot.child("tagId").getValue().toString());
+                                    desc.add(dataSnapshot.child("description").getValue().toString());
+                                    user.add(dataSnapshot.child("user").getValue().toString());
+                                    states.add(dataSnapshot.child("state").getValue().toString());
+                                    constituency.add(dataSnapshot.child("constituancy").getValue().toString());
+                                    districts.add(dataSnapshot.child("district").getValue().toString());
+                                    Log.e("image urls",dataSnapshot.child("user").getValue().toString());
                                 }
                             }
 

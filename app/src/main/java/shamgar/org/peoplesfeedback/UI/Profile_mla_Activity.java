@@ -43,6 +43,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
+import shamgar.org.peoplesfeedback.Adapters.ProfileImagesInListviewAdapter;
 import shamgar.org.peoplesfeedback.ConstantName.NamesC;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
@@ -62,7 +63,15 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private SharedPreferenceConfig sharedPreferenceConfig;
     private ArrayList<String> images;
+    private ArrayList<String> postedOn;
+    private ArrayList<String> lat;
+    private ArrayList<String> lon;
+    private ArrayList<String> tagId;
+    private ArrayList<String> desc;
+    private ArrayList<String> user;
+    private ArrayList<String> keys;
     private Tag_Profile_Images_Adapter adapter;
+    private ProfileImagesInListviewAdapter imagesInListviewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +81,15 @@ public class Profile_mla_Activity extends AppCompatActivity {
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
 
         images=new ArrayList<>();
+        postedOn=new ArrayList<>();
+        lat=new ArrayList<>();
+        lon=new ArrayList<>();
+        tagId=new ArrayList<>();
+        desc=new ArrayList<>();
+        user=new ArrayList<>();
+        keys=new ArrayList<>();
+
+
         mlanametxt=findViewById(R.id.mlaDistrictName);
         txtmlaConstituency=findViewById(R.id.mlaName);
         mlaFollowButton=findViewById(R.id.mlaFollowButton);
@@ -136,7 +154,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
         postQuery.addValueEventListener(valueEventListener);
 
         //getting overall rating and votes
-        Query postQuery1 =  FirebaseDatabase.getInstance().getReference().child("States")
+        final Query postQuery1 =  FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("MLA").child("district").child(district).child("Constituancy").child(mlaConstituency);
         ValueEventListener valueEventListener2 = new ValueEventListener() {
             @Override
@@ -245,6 +263,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
                 profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
                 profile_mla_gridImages_rv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
                 profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
             }
         });
@@ -253,6 +272,12 @@ public class Profile_mla_Activity extends AppCompatActivity {
             public void onClick(View view) {
                 listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
                 mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
+
+                imagesInListviewAdapter=new ProfileImagesInListviewAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,user,desc,mlaName,mlaConstituency,keys);
+                profile_mla_gridImages_rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                profile_mla_gridImages_rv.setAdapter(imagesInListviewAdapter);
+                imagesInListviewAdapter.notifyDataSetChanged();
+                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
             }
         });
 
@@ -276,8 +301,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()){
+
+                                            keys.add(dataSnapshot.getKey());
                                             images.add(dataSnapshot.child("imageUrl").getValue().toString());
-                                            Log.e("image urls",dataSnapshot.child("imageUrl").getValue().toString());
+                                            postedOn.add(dataSnapshot.child("postedOn").getValue().toString());
+                                            lat.add(dataSnapshot.child("latitude").getValue().toString());
+                                            lon.add(dataSnapshot.child("longitude").getValue().toString());
+                                            tagId.add(dataSnapshot.child("tagId").getValue().toString());
+                                            desc.add(dataSnapshot.child("description").getValue().toString());
+                                            user.add(dataSnapshot.child("user").getValue().toString());
+
                                 }
                             }
 

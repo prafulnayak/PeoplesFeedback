@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginBottom="4dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/postuserImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="@dimen/five_dp" />
+
+    <TextView
+        android:id="@+id/postusername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/user_name"
+        android:textSize="14sp"
+        android:layout_toEndOf="@+id/postuserImage"
+        android:layout_marginTop="18dp"
+        android:layout_marginStart="@dimen/five_dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
+
+    <ImageButton
+        android:id="@+id/postsubmenuOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="@dimen/five_dp"
+        android:background="@color/white"/>
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/postmlaImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/postuserImage"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="@dimen/five_dp"/>
+    <TextView
+        android:id="@+id/postmlaname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mla_name"
+        android:textSize="14sp"
+        android:layout_below="@id/postuserImage"
+        android:layout_toEndOf="@id/postmlaImage"
+        android:padding="2sp"
+        android:layout_marginStart="@dimen/five_dp"
+        android:textColor="@color/pink"
+        android:textStyle="bold"/>
+
+
+    <TextView
+        android:id="@+id/postmla_consti"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/constituency_name"
+        android:textSize="11sp"
+        android:layout_below="@id/postmlaname"
+        android:layout_toEndOf="@id/postmlaImage"
+        android:padding="2sp"
+        android:textColor="@color/black"
+        android:layout_marginStart="@dimen/five_dp"
+        tools:ignore="SmallSp" />
+
+    <TextView
+        android:id="@+id/posttimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/postmlaImage"
+        android:layout_toEndOf="@+id/postTagname"
+        android:layout_marginTop="@dimen/five_dp"
+        android:text="@string/timestamp"
+        android:textSize="10sp"
+        android:layout_marginStart="@dimen/dimen_15"
+        tools:ignore="SmallSp"/>
+
+    <TextView
+        android:id="@+id/postTagname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/postmlaImage"
+        android:text="@string/tag_name"
+        android:textSize="14sp"
+        android:layout_marginTop="@dimen/margin_two"
+        android:textColor="@color/pink"
+        android:layout_marginStart="@dimen/dimen_15"
+        android:textStyle="bold"/>
+
+
+    <TextView
+        android:id="@+id/postImageDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/postTagname"
+        android:text="@string/tag_description"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="@dimen/dimen_15"/>
+
+    <ImageView
+        android:id="@+id/userpost"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:scaleType="centerCrop"
+        android:layout_below="@id/postImageDescription"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:id="@+id/locationLL"
+        android:layout_alignBottom="@+id/userpost"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:background="#9000">
+
+        <ImageView
+            android:id="@+id/locationicon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_location_on_black_24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dimen_15" />
+
+        <TextView
+            android:id="@+id/postlocation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/location"
+            android:textSize="13dp"
+            android:textColor="@color/white"
+            android:layout_marginEnd="@dimen/dimen_15"
+            android:layout_marginStart="@dimen/five_dp"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/llshares"
+        android:layout_below="@+id/userpost"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+        <ImageButton
+            android:id="@+id/imgViews"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_15"
+            android:background="@color/white"
+            android:alpha="0.7"
+            android:src="@drawable/ic_eye"/>
+
+        <ImageButton
+            android:id="@+id/imglikes"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_like_dis_2"
+            android:layout_toEndOf="@id/num_views"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:alpha="0.7"/>
+
+
+        <ImageButton
+            android:id="@+id/imgshares"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_share"
+            android:layout_toEndOf="@+id/num_likes"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:alpha="0.7"/>
+
+        <TextView
+            android:id="@+id/num_views"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="14dp"
+            android:layout_toEndOf="@id/imgViews"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/five_dp"/>
+        <TextView
+            android:id="@+id/num_likes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="14dp"
+            android:layout_marginStart="@dimen/five_dp"
+            android:layout_toEndOf="@id/imglikes"
+            android:layout_centerVertical="true"
+            />
+        <TextView
+            android:id="@+id/num_shares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:layout_marginTop="@dimen/five_dp"
+            android:textSize="14dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/five_dp"
+            android:layout_toEndOf="@id/imgshares"/>
+
+
+
+    </RelativeLayout>
+</RelativeLayout>

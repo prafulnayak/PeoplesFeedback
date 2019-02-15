@@ -351,11 +351,7 @@
             android:id="@+id/profile_mla_gridImages_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:orientation="vertical"
-            android:background="#DDDCDC"
             android:layout_below="@+id/line2"/>
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>
