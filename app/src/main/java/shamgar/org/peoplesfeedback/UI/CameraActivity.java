@@ -1,10 +1,14 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,7 +23,9 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -42,11 +48,19 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,6 +74,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,12 +87,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import shamgar.org.peoplesfeedback.BuildConfig;
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.Model.UserAddress;
 import shamgar.org.peoplesfeedback.R;
@@ -85,10 +107,10 @@ import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
 
 public class CameraActivity extends AppCompatActivity implements
-        View.OnClickListener,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        View.OnClickListener {
 
-//    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 123;
+    private static final String TAG_CAM = CameraActivity.class.getSimpleName();
+    //    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 123;
 //
 //    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private ImageView cameraImage;
@@ -139,7 +161,7 @@ public class CameraActivity extends AppCompatActivity implements
     Location mLocation;
     TextView latLng;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+//    private LocationRequest mLocationRequest;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
@@ -156,10 +178,38 @@ public class CameraActivity extends AppCompatActivity implements
 
     private ProgressDialog loadingbar;
 
+    // location last updated time
+    private String mLastUpdateTime;
+
+    // location updates interval - 10sec
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    // fastest updates interval - 5 sec
+    // location updates will be received if another app is requesting the locations
+    // than your app can handle
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
+
+    private static final int REQUEST_CHECK_SETTINGS = 100;
+
+    // bunch of location related apis
+    private FusedLocationProviderClient mFusedLocationClient;
+    private SettingsClient mSettingsClient;
+    private LocationRequest mLocationRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
+    private LocationCallback mLocationCallback;
+    private Location mCurrentLocation;
+
+    // boolean flag to toggle the ui
+    private Boolean mRequestingLocationUpdates;
+
+
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+
         super.onStop();
+
+        mRequestingLocationUpdates = false;
+        stopLocationUpdates();
 
     }
 
@@ -167,7 +217,12 @@ public class CameraActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        init();
+        // restore the values from saved instance state
+        restoreValuesFromBundle(savedInstanceState);
+        startUpdates();
+
 
         loadingbar=new ProgressDialog(this);
         loadingbar.setTitle("Fetching current location with constituency location");
@@ -208,24 +263,182 @@ public class CameraActivity extends AppCompatActivity implements
 
             dispatchTakePictureIntent();
 
-        permissions.add(ACCESS_FINE_LOCATION);
-        permissions.add(ACCESS_COARSE_LOCATION);
+//        permissions.add(ACCESS_FINE_LOCATION);
+//        permissions.add(ACCESS_COARSE_LOCATION);
 
-        permissionsToRequest = findUnAskedPermissions(permissions);
+//        permissionsToRequest = findUnAskedPermissions(permissions);
         //get the permissions we have asked for before but are not granted..
         //we will store this in a global list to access later.
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (permissionsToRequest.size() > 0)
-                requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (permissionsToRequest.size() > 0)
+//                requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+//        }
+
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(LocationServices.API)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .build();
+
+
+    }
+
+    private void startUpdates() {
+        // Requesting ACCESS_FINE_LOCATION using Dexter library
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        mRequestingLocationUpdates = true;
+                        startLocationUpdates();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        if (response.isPermanentlyDenied()) {
+                            // open device settings when the permission is
+                            // denied permanently
+                            openSettings();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                        token.continuePermissionRequest();
+                    }
+                }).check();
+    }
+
+    private void openSettings() {
+        Intent intent = new Intent();
+        intent.setAction(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package",
+                BuildConfig.APPLICATION_ID, null);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private void restoreValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("is_requesting_updates")) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean("is_requesting_updates");
+            }
+
+            if (savedInstanceState.containsKey("last_known_location")) {
+                mCurrentLocation = savedInstanceState.getParcelable("last_known_location");
+            }
+
+            if (savedInstanceState.containsKey("last_updated_on")) {
+                mLastUpdateTime = savedInstanceState.getString("last_updated_on");
+            }
         }
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+        updateLocationUI();
+    }
 
+    private void init() {
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mSettingsClient = LocationServices.getSettingsClient(this);
+
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                // location is received
+                mCurrentLocation = locationResult.getLastLocation();
+                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+
+                updateLocationUI();
+            }
+        };
+
+        mRequestingLocationUpdates = false;
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    private void updateLocationUI() {
+        if (mCurrentLocation != null) {
+            mLocation = mCurrentLocation;
+
+
+
+            // location last updated time
+            Log.e("Last updated on: ", ""+ mLastUpdateTime);
+        }
+    }
+
+    /**
+     * Starting location updates
+     * Check whether location settings are satisfied and then
+     * location updates will be requested
+     */
+    private void startLocationUpdates() {
+        mSettingsClient
+                .checkLocationSettings(mLocationSettingsRequest)
+                .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                        Log.i(TAG_CAM, "All location settings are satisfied.");
+
+                        Toast.makeText(getApplicationContext(), "Started location updates!", Toast.LENGTH_SHORT).show();
+
+                        //noinspection MissingPermission
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                                mLocationCallback, Looper.myLooper());
+
+                        updateLocationUI();
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        int statusCode = ((ApiException) e).getStatusCode();
+                        switch (statusCode) {
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                Log.i(TAG_CAM, "Location settings are not satisfied. Attempting to upgrade " +
+                                        "location settings ");
+                                try {
+                                    // Show the dialog by calling startResolutionForResult(), and check the
+                                    // result in onActivityResult().
+                                    ResolvableApiException rae = (ResolvableApiException) e;
+                                    rae.startResolutionForResult(CameraActivity.this, REQUEST_CHECK_SETTINGS);
+                                } catch (IntentSender.SendIntentException sie) {
+                                    Log.i(TAG_CAM, "PendingIntent unable to execute request.");
+                                }
+                                break;
+                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                String errorMessage = "Location settings are inadequate, and cannot be " +
+                                        "fixed here. Fix in Settings.";
+                                Log.e(TAG_CAM, errorMessage);
+
+                                Toast.makeText(CameraActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        }
+
+                        updateLocationUI();
+                    }
+                });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("is_requesting_updates", mRequestingLocationUpdates);
+        outState.putParcelable("last_known_location", mCurrentLocation);
+        outState.putString("last_updated_on", mLastUpdateTime);
 
     }
 
@@ -246,16 +459,6 @@ public class CameraActivity extends AppCompatActivity implements
         super.onStart();
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (!checkPlayServices()) {
-            //latLng.setText("Please install Google Play services.");
-            Toast.makeText(getApplicationContext(),"Please install Google Play services. ",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -317,11 +520,12 @@ public class CameraActivity extends AppCompatActivity implements
             case R.id.submit:
                 //check weather image is blank or not
                 //check Edit text is blank or not
-                if (mLocation != null) {
+                if (mCurrentLocation != null) {
                     loadingbar.show();
-                    latitude = mLocation.getLatitude();
-                    logntude = mLocation.getLongitude();
+                    latitude = mCurrentLocation.getLatitude();
+                    logntude = mCurrentLocation.getLongitude();
                     checkOwnConstituancyOrNot(latitude, logntude);
+                    Toast.makeText(this, "Location Find Success", Toast.LENGTH_SHORT).show();
 
                 } else {
                     Toast.makeText(this, "Location ON Issue", Toast.LENGTH_SHORT).show();
@@ -893,7 +1097,7 @@ public class CameraActivity extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
         try {
             switch (requestCode) {
-                case 1: {
+                case REQUEST_IMAGE_CAPTURE:
 
                     if (resultCode == RESULT_OK) {
                         File file = new File(mCurrentPhotoPath);
@@ -904,12 +1108,26 @@ public class CameraActivity extends AppCompatActivity implements
                         }
                     }
                     break;
-                }
+
+                // Check for the integer request code originally supplied to startResolutionForResult().
+                case REQUEST_CHECK_SETTINGS:
+                    switch (resultCode) {
+                        case Activity.RESULT_OK:
+                            Log.e(TAG_CAM, "User agreed to make required location settings changes.");
+                            // Nothing to do. startLocationupdates() gets called in onResume again.
+                            break;
+                        case Activity.RESULT_CANCELED:
+                            Log.e(TAG_CAM, "User chose not to make required location settings changes.");
+                            mRequestingLocationUpdates = false;
+                            break;
+                    }
+                    break;
             }
 
         } catch (Exception error) {
             error.printStackTrace();
         }
+
     }
 
     private File createImageFile() throws IOException {
@@ -1112,49 +1330,49 @@ public class CameraActivity extends AppCompatActivity implements
         query.addValueEventListener(valueEventListener);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        if(location!=null)
-           // Toast.makeText(getApplicationContext(),"Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude(),Toast.LENGTH_LONG).show();
-            Log.e("location aaaa","Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude());
-        Toast.makeText(this, "changed: "+location.getLatitude(), Toast.LENGTH_SHORT).show();
-        mLocation = location;
-    }
+//    @Override
+//    public void onLocationChanged(Location location) {
+//        if(location!=null)
+//           // Toast.makeText(getApplicationContext(),"Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude(),Toast.LENGTH_LONG).show();
+//            Log.e("location aaaa","Latitude : "+location.getLatitude()+" , Longitude : "+location.getLongitude());
+//        Toast.makeText(this, "changed: "+location.getLatitude(), Toast.LENGTH_SHORT).show();
+//        mLocation = location;
+//    }
 
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
+//    @Override
+//    public void onConnected(@Nullable Bundle bundle) {
+//
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
+//        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//
+//
+//        if(mLocation!=null)
+//        {
+//            Log.e("location","Latitude : "+mLocation.getLatitude()+" , Longitude : "+mLocation.getLongitude());
+//        }
+//
+//        startLocationUpdates();
+//    }
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-
-        if(mLocation!=null)
-        {
-            Log.e("location","Latitude : "+mLocation.getLatitude()+" , Longitude : "+mLocation.getLongitude());
-        }
-
-        startLocationUpdates();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+//    @Override
+//    public void onConnectionSuspended(int i) {
+//
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+//
+//    }
 
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -1171,24 +1389,24 @@ public class CameraActivity extends AppCompatActivity implements
         return true;
     }
 
-    protected void startLocationUpdates() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getApplicationContext(), "Enable Permissions", Toast.LENGTH_LONG).show();
-        }
-
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if(location != null){
-                    mLocation = location;
-                    Toast.makeText(getApplicationContext(), "location"+mLocation.getLatitude(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+//    protected void startLocationUpdates() {
+//        mLocationRequest = new LocationRequest();
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        mLocationRequest.setInterval(UPDATE_INTERVAL);
+//        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            Toast.makeText(getApplicationContext(), "Enable Permissions", Toast.LENGTH_LONG).show();
+//        }
+//
+//        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+//            @Override
+//            public void onSuccess(Location location) {
+//                if(location != null){
+//                    mLocation = location;
+//                    Toast.makeText(getApplicationContext(), "location"+mLocation.getLatitude(), Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
 
 
 
@@ -1196,7 +1414,7 @@ public class CameraActivity extends AppCompatActivity implements
 //                mGoogleApiClient, mLocationRequest, this);
 
 
-    }
+//    }
 
     private boolean hasPermission(Object permission) {
         if (canMakeSmores()) {
@@ -1266,10 +1484,61 @@ public class CameraActivity extends AppCompatActivity implements
     }
     public void stopLocationUpdates()
     {
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi
-                    .removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
+        // Removing location updates
+        mFusedLocationClient
+                .removeLocationUpdates(mLocationCallback)
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getApplicationContext(), "Location updates stopped!", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+    }
+
+    public void showLastKnownLocation() {
+        if (mCurrentLocation != null) {
+
+            mLocation = mCurrentLocation;
+            Toast.makeText(getApplicationContext(), "Lat: " + mCurrentLocation.getLatitude()
+                    + ", Lng: " + mCurrentLocation.getLongitude(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Last known location is not available!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Resuming location updates depending on button state and
+        // allowed permissions
+        if (mRequestingLocationUpdates && checkPermissions()) {
+            startLocationUpdates();
+        }else {
+//            startLocationUpdates();
+//            openSettings();
+        }
+//        startLocationUpdates();
+
+        updateLocationUI();
+    }
+
+    private boolean checkPermissions() {
+        int permissionState = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mRequestingLocationUpdates) {
+            // pausing location updates
+            stopLocationUpdates();
         }
     }
 

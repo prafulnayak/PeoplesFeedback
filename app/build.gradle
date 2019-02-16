@@ -65,7 +65,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.1'
     implementation 'com.android.volley:volley:1.1.0'
 
-    implementation 'com.google.android.gms:play-services-location:7.0.0'
+    // dexter runtime permissions
+    implementation 'com.karumi:dexter:4.2.0'
 
     implementation 'com.xw.repo:bubbleseekbar:3.5-lite'
 
