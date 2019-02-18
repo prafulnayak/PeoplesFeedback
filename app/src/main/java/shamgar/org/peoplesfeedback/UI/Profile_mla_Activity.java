@@ -63,13 +63,13 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private SharedPreferenceConfig sharedPreferenceConfig;
     private ArrayList<String> images;
-    private ArrayList<String> postedOn;
-    private ArrayList<String> lat;
-    private ArrayList<String> lon;
-    private ArrayList<String> tagId;
-    private ArrayList<String> desc;
-    private ArrayList<String> user;
-    private ArrayList<String> keys;
+//    private ArrayList<String> postedOn;
+//    private ArrayList<String> lat;
+//    private ArrayList<String> lon;
+//    private ArrayList<String> tagId;
+//    private ArrayList<String> desc;
+//    private ArrayList<String> user;
+      private ArrayList<String> keys;
     private Tag_Profile_Images_Adapter adapter;
     private ProfileImagesInListviewAdapter imagesInListviewAdapter;
 
@@ -81,12 +81,12 @@ public class Profile_mla_Activity extends AppCompatActivity {
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
 
         images=new ArrayList<>();
-        postedOn=new ArrayList<>();
-        lat=new ArrayList<>();
-        lon=new ArrayList<>();
-        tagId=new ArrayList<>();
-        desc=new ArrayList<>();
-        user=new ArrayList<>();
+//        postedOn=new ArrayList<>();
+//        lat=new ArrayList<>();
+//        lon=new ArrayList<>();
+//        tagId=new ArrayList<>();
+//        desc=new ArrayList<>();
+//        user=new ArrayList<>();
         keys=new ArrayList<>();
 
 
@@ -98,12 +98,12 @@ public class Profile_mla_Activity extends AppCompatActivity {
         mlaRatingPercentage=findViewById(R.id.mlaRatingPercentage);
         overallRatingMla=findViewById(R.id.overallRatingMla);
         overallVotesMla=findViewById(R.id.overallVotesMla);
-        mla_gridViewImage = findViewById(R.id.mla_grid_image);
+        //mla_gridViewImage = findViewById(R.id.mla_grid_image);
         profile_mla_gridImages_rv=findViewById(R.id.profile_mla_gridImages_rv);
         mlaProfile_rating=findViewById(R.id.mlaProfile_rating);
         mlaProfileImage=findViewById(R.id.mlaProfileImage);
         mlaPartyName=findViewById(R.id.mlaPartyName);
-        listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
+      //  listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
         scrollViewMLa=findViewById(R.id.scrollViewMLa);
 
         getSupportActionBar().setTitle("MLA profile");
@@ -130,7 +130,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
 
         gettingMLAImage();
-        gettingMlaTagedImages();
+        gettingMlaTagedImagesKeys();
         //checking user is following or not
         Query postQuery =  FirebaseDatabase.getInstance().getReference().child("Politicians")
                 .child(mlaName).child("Followers")
@@ -254,38 +254,39 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
 
         //getting images from fire base
-        mla_gridViewImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
-                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
-                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
-                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
-                profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
-                profile_mla_gridImages_rv.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
-            }
-        });
-        listViewImagesMLa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
-                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
-
-                imagesInListviewAdapter=new ProfileImagesInListviewAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,user,desc,mlaName,mlaConstituency,keys);
-                profile_mla_gridImages_rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                profile_mla_gridImages_rv.setAdapter(imagesInListviewAdapter);
-                imagesInListviewAdapter.notifyDataSetChanged();
-                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
-            }
-        });
+//        mla_gridViewImage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
+//                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
+//                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+//                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+//                profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+//                profile_mla_gridImages_rv.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
+//                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
+//            }
+//        });
+//        listViewImagesMLa.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
+//                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
+//
+//                imagesInListviewAdapter=new ProfileImagesInListviewAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,user,desc,mlaName,mlaConstituency,keys);
+//                profile_mla_gridImages_rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//                profile_mla_gridImages_rv.setAdapter(imagesInListviewAdapter);
+//                imagesInListviewAdapter.notifyDataSetChanged();
+//                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
+//            }
+//        });
 
 
     }
 
-    private void gettingMlaTagedImages()
+    private void gettingMlaTagedImagesKeys()
     {
+        keys.clear();
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
                 .child(state).child(district).child("constituancy").child(mlaConstituency).child("PostID");
 
@@ -295,32 +296,10 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                    // images.add(dataSnapshot.getKey());
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
-
-                        Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS).child(innersnap.getKey());
-                        ValueEventListener valueEventListener1=new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()){
-
-                                            keys.add(dataSnapshot.getKey());
-                                            images.add(dataSnapshot.child("imageUrl").getValue().toString());
-                                            postedOn.add(dataSnapshot.child("postedOn").getValue().toString());
-                                            lat.add(dataSnapshot.child("latitude").getValue().toString());
-                                            lon.add(dataSnapshot.child("longitude").getValue().toString());
-                                            tagId.add(dataSnapshot.child("tagId").getValue().toString());
-                                            desc.add(dataSnapshot.child("description").getValue().toString());
-                                            user.add(dataSnapshot.child("user").getValue().toString());
-
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        };
-                        query.addValueEventListener(valueEventListener1);
+                        keys.add(innersnap.getKey());
                     }
+                    Log.e("keys",keys.toString());
+                    gettingImageUrls(keys);
                 }else {
                     Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
                 }
@@ -332,6 +311,36 @@ public class Profile_mla_Activity extends AppCompatActivity {
             }
         };
         taggedImages.addValueEventListener(valueEventListener);
+    }
+
+    private void gettingImageUrls(final ArrayList<String> keys) {
+
+        images.clear();
+        Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS);
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for (int i=0;i<keys.size();i++){
+                       // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                        images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                    }
+                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+                profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+                profile_mla_gridImages_rv.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
     }
 
     private void following() {

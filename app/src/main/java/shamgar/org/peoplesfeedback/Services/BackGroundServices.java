@@ -29,7 +29,6 @@ public class BackGroundServices extends JobService implements NamesC {
 
     private DatabaseReference dbRefLike;
 
-
     NotificationManager mNotifyManager;
     // Notification channel ID.
     private static final String PRIMARY_CHANNEL_ID =

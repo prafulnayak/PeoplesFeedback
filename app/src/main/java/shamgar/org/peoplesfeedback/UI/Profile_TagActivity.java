@@ -61,16 +61,16 @@ public class Profile_TagActivity extends AppCompatActivity {
 
     private TagListViewImagesAdapter tag_profile_images_adapter;
     private ArrayList<String> images;
-    private ArrayList<String> postedOn;
-    private ArrayList<String> lat;
-    private ArrayList<String> lon;
-    private ArrayList<String> tagId;
-    private ArrayList<String> desc;
-    private ArrayList<String> user;
+//    private ArrayList<String> postedOn;
+//    private ArrayList<String> lat;
+//    private ArrayList<String> lon;
+//    private ArrayList<String> tagId;
+//    private ArrayList<String> desc;
+//    private ArrayList<String> user;
     private ArrayList<String> keys;
-    private ArrayList<String> districts;
-    private ArrayList<String> constituency;
-    private ArrayList<String> states;
+//    private ArrayList<String> districts;
+//    private ArrayList<String> constituency;
+//    private ArrayList<String> states;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +79,16 @@ public class Profile_TagActivity extends AppCompatActivity {
 
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
         images=new ArrayList<>();
-        postedOn=new ArrayList<>();
-        lat=new ArrayList<>();
-        lon=new ArrayList<>();
-        tagId=new ArrayList<>();
-        desc=new ArrayList<>();
-        user=new ArrayList<>();
+//        postedOn=new ArrayList<>();
+//        lat=new ArrayList<>();
+//        lon=new ArrayList<>();
+//        tagId=new ArrayList<>();
+//        desc=new ArrayList<>();
+//        user=new ArrayList<>();
         keys=new ArrayList<>();
-        districts=new ArrayList<>();
-        constituency=new ArrayList<>();
-        states=new ArrayList<>();
+//        districts=new ArrayList<>();
+//        constituency=new ArrayList<>();
+//        states=new ArrayList<>();
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -98,8 +98,8 @@ public class Profile_TagActivity extends AppCompatActivity {
         state=getIntent().getExtras().getString("state");
         getSupportActionBar().setTitle(tag);
 
-        tag_grid_image=(ImageButton)findViewById(R.id.tag_grid_image);
-        listViewImagesTag=(ImageButton)findViewById(R.id.listViewImagesTag);
+//        tag_grid_image=(ImageButton)findViewById(R.id.tag_grid_image);
+//        listViewImagesTag=(ImageButton)findViewById(R.id.listViewImagesTag);
         recyclerView=(RecyclerView)findViewById(R.id.profile_tag_gridImages_rv);
         tagDistrictName=(TextView)findViewById(R.id.tagDistrictName);
         tagName=(TextView)findViewById(R.id.tagName);
@@ -234,36 +234,37 @@ public class Profile_TagActivity extends AppCompatActivity {
         gettingMlaTagedImages();
 
         //getting images from fire base
-        tag_grid_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
-                tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
-                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
-                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
-                recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
-                recyclerView.setAdapter(adapter);
-                recyclerView.setNestedScrollingEnabled(false);
-            }
-        });
-        listViewImagesTag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
-                tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
-
-                tag_profile_images_adapter=new TagListViewImagesAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,desc,user,keys,districts,constituency,states);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                recyclerView.setAdapter(tag_profile_images_adapter);
-                tag_profile_images_adapter.notifyDataSetChanged();
-                recyclerView.setNestedScrollingEnabled(false);
-            }
-        });
+//        tag_grid_image.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
+//                tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
+//                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+//                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+//                recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+//                recyclerView.setAdapter(adapter);
+//                recyclerView.setNestedScrollingEnabled(false);
+//            }
+//        });
+//        listViewImagesTag.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                listViewImagesTag.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
+//                tag_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
+//
+//                tag_profile_images_adapter=new TagListViewImagesAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,desc,user,keys,districts,constituency,states);
+//                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//                recyclerView.setAdapter(tag_profile_images_adapter);
+//                tag_profile_images_adapter.notifyDataSetChanged();
+//                recyclerView.setNestedScrollingEnabled(false);
+//            }
+//        });
 
     }
 
     private void gettingMlaTagedImages()
     {
+        keys.clear();
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
                 .child(state).child(district).child(tag).child("postID");
 
@@ -273,34 +274,10 @@ public class Profile_TagActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     // images.add(dataSnapshot.getKey());
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
-
-                        Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS).child(innersnap.getKey());
-                        ValueEventListener valueEventListener1=new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()){
-                                    keys.add(dataSnapshot.getKey());
-                                    images.add(dataSnapshot.child("imageUrl").getValue().toString());
-                                    postedOn.add(dataSnapshot.child("postedOn").getValue().toString());
-                                    lat.add(dataSnapshot.child("latitude").getValue().toString());
-                                    lon.add(dataSnapshot.child("longitude").getValue().toString());
-                                    tagId.add(dataSnapshot.child("tagId").getValue().toString());
-                                    desc.add(dataSnapshot.child("description").getValue().toString());
-                                    user.add(dataSnapshot.child("user").getValue().toString());
-                                    states.add(dataSnapshot.child("state").getValue().toString());
-                                    constituency.add(dataSnapshot.child("constituancy").getValue().toString());
-                                    districts.add(dataSnapshot.child("district").getValue().toString());
-                                    Log.e("image urls",dataSnapshot.child("user").getValue().toString());
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        };
-                        query.addValueEventListener(valueEventListener1);
+                        keys.add(innersnap.getKey());
                     }
+                    gettingImageUrls(keys);
+
                 }else {
                     Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
                 }
@@ -312,6 +289,35 @@ public class Profile_TagActivity extends AppCompatActivity {
             }
         };
         taggedImages.addValueEventListener(valueEventListener);
+    }
+
+    private void gettingImageUrls(final ArrayList<String> keys) {
+
+        images.clear();
+        Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS);
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    for (int i=0;i<keys.size();i++){
+                        // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                        images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                    }
+                    adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+//                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+                recyclerView.setAdapter(adapter);
+                recyclerView.setNestedScrollingEnabled(false);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
     }
 
 

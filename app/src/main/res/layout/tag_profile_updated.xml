@@ -250,43 +250,54 @@
 
     </TableRow>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <TextView
+        android:id="@+id/textview123"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:layout_below="@+id/line1">
+        android:text="Tagged Images"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:layout_below="@+id/line1"
+        android:layout_margin="10dp"/>
 
-        <ImageButton
-            android:id="@+id/tag_grid_image"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:src="@drawable/ic_view_quilt_primary_24dp" />
-        <View
-            android:id="@+id/viewll"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#9b9a9a"/>
+    <!--<LinearLayout-->
+        <!--android:id="@+id/linearLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="2"-->
+        <!--android:layout_below="@+id/line1">-->
 
-        <ImageButton
-            android:id="@+id/listViewImagesTag"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:src="@drawable/ic_view_list_gray_24dp" />
-    </LinearLayout>
+        <!--<ImageButton-->
+            <!--android:id="@+id/tag_grid_image"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@color/white"-->
+            <!--android:src="@drawable/ic_view_quilt_primary_24dp" />-->
+        <!--<View-->
+            <!--android:id="@+id/viewll"-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="#9b9a9a"/>-->
+
+        <!--<ImageButton-->
+            <!--android:id="@+id/listViewImagesTag"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@color/white"-->
+            <!--android:src="@drawable/ic_view_list_gray_24dp" />-->
+    <!--</LinearLayout>-->
 
     <TableRow
         android:id="@+id/line2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/linearLayout"
+        android:layout_below="@id/textview123"
         android:background="#95989A">
 
     </TableRow>
@@ -297,6 +308,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@+id/linearLayout"/>
+        android:layout_below="@+id/line2"/>
 </RelativeLayout>
 </ScrollView>

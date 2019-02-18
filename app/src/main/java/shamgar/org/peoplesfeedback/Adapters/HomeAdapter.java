@@ -1,5 +1,6 @@
 package shamgar.org.peoplesfeedback.Adapters;
 
+import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ActivityNotFoundException;
@@ -67,6 +68,7 @@ import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.SpamModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Services.BackGroundServices;
+import shamgar.org.peoplesfeedback.UI.User_profile_Activity;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
@@ -143,6 +145,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userimage);
+        holder.userimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent profile=new Intent(ctx, User_profile_Activity.class);
+                profile.putExtra("mobile","+919666235167");
+                ctx.startActivity(profile);
+            }
+        });
         Glide.with(ctx)
                 .load(news.getImageUrl())
                 .error(R.drawable.ic_image_black)

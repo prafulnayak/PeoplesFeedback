@@ -315,6 +315,7 @@ public class HomeScreenActivity extends AppCompatActivity {
         }
         if (item.getItemId()==R.id.profile){
             Intent user_profile=new Intent(HomeScreenActivity.this,User_profile_Activity.class);
+            user_profile.putExtra("mobile",sharedPreference.readPhoneNo());
             startActivity(user_profile);
 
         }
