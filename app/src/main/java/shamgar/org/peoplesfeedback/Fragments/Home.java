@@ -1,15 +1,22 @@
 package shamgar.org.peoplesfeedback.Fragments;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +40,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -46,21 +54,26 @@ import shamgar.org.peoplesfeedback.Adapters.HomeAdapter;
 import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.Posts;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.Services.BackGroundServices;
 import shamgar.org.peoplesfeedback.UI.CameraActivity;
 import shamgar.org.peoplesfeedback.UI.HomeScreenActivity;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
+import static android.content.Context.JOB_SCHEDULER_SERVICE;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.CONSTITUANCY;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.INDIA;
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.Likes;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.POSTIDCON;
 import static shamgar.org.peoplesfeedback.ConstantName.NamesC.POSTS;
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.Share;
+import static shamgar.org.peoplesfeedback.ConstantName.NamesC.viewC;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class Home extends Fragment {
 
-
+    private static int jobId = 1;
     FloatingActionButton floatingActionButton;
     private RecyclerView recyclerView;
     private SharedPreferenceConfig sharedPreference;
@@ -85,6 +98,8 @@ public class Home extends Fragment {
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
+    private JobScheduler jobScheduler;
+
 
     public Home() {
         // Required empty public constructor
@@ -100,6 +115,10 @@ public class Home extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
         Log.i("Home", " onCreateView");
         Toast.makeText(getActivity(), "onCreateView" + newsList.size(), Toast.LENGTH_LONG).show();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            jobScheduler = (JobScheduler) getActivity().getSystemService(JOB_SCHEDULER_SERVICE);
+        }
 
         return view;
 
@@ -285,16 +304,21 @@ public class Home extends Fragment {
 
     private void postViewsCount(String key) {
         String postKey = FirebaseDatabase.getInstance().getReference().push().getKey();
-        FirebaseDatabase.getInstance().getReference().child("Posts")
-                .child(key)
-                .child("View")
-                .child(postKey).setValue(sharedPreference.readPhoneNo())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Log.e("View ","posted");
-                    }
-                });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            scheduleJob(key,sharedPreference.readPhoneNo(),viewC);
+        }else {
+            FirebaseDatabase.getInstance().getReference().child("Posts")
+                    .child(key)
+                    .child("View")
+                    .child(postKey).setValue(sharedPreference.readPhoneNo())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.e("View ","posted");
+                        }
+                    });
+        }
+
     }
 
     private void getNewsKeyFromConstituancy() {
@@ -369,7 +393,7 @@ public class Home extends Fragment {
     {
         for (int i=0;i<list5.size();i++){
             FirebaseDatabase.getInstance().getReference().child(POSTS)
-                    .child(list5.get(i)).addValueEventListener(new ValueEventListener() {
+                    .child(list5.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
@@ -377,6 +401,7 @@ public class Home extends Fragment {
                     if (dataSnapshot.exists())
                     {
                         Posts posts = dataSnapshot.getValue(Posts.class);
+
                         int likes =Integer.parseInt(String.valueOf(dataSnapshot.child("Likes").getChildrenCount()));
                         int share = Integer.parseInt(String.valueOf(dataSnapshot.child("Share").getChildrenCount()));
                         int viewCount = Integer.parseInt(String.valueOf(dataSnapshot.child("View").getChildrenCount()));
@@ -395,6 +420,66 @@ public class Home extends Fragment {
             });
         }
         list5.clear();
+
+    }
+
+
+    private void setClickListnerFromFirebase(final News news) {
+
+        DatabaseReference dbRefLike = FirebaseDatabase.getInstance().getReference().child("Posts");
+
+        dbRefLike.child(news.getPostId()).child(Likes).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e("child count like",""+dataSnapshot.getChildrenCount());
+                int likes = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                if(news.getLikes() < likes){
+                    news.setLikes(likes);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        dbRefLike.child(news.getPostId()).child(Share).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e("child count share",""+dataSnapshot.getChildrenCount());
+
+                int shares = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                if(news.getShares() < shares){
+                    news.setShares(shares);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        dbRefLike.child(news.getPostId()).child(viewC).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e("child count view",""+dataSnapshot.getChildrenCount());
+
+                int views = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
+                if(news.getViews() < views){
+                    news.setViews(views);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -426,6 +511,8 @@ public class Home extends Fragment {
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
                 posts.getTagId(),viewCount,likes,share,posts.getPostedOn(),1,posts.getUser());
+
+
 
         getUserUrl(news,key,top,posts.getState(),posts.getDistrict(),posts.getConstituancy());
 
@@ -545,6 +632,7 @@ public class Home extends Fragment {
 //                recyclerView.setLayoutManager(layoutManager);
 //                adapter = new HomeAdapter(newsList, getActivity());
 //                recyclerView.setAdapter(adapter);
+            setClickListnerFromFirebase(news);
             adapter.notifyDataSetChanged();
 //                recyclerView.smoothScrollToPosition(0);
         }
@@ -627,6 +715,29 @@ public class Home extends Fragment {
     public void onStop() {
         super.onStop();
         Log.i("Home", " onStop");
+//        scheduleJob();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void scheduleJob(String postId, String phoneNo, String typePost) {
+        ComponentName serviceName = new ComponentName(getActivity().getPackageName(),
+                BackGroundServices.class.getName());
+
+        PersistableBundle bundle = new PersistableBundle();
+        bundle.putString("postId",postId);
+        bundle.putString("phoneNo", phoneNo);
+        bundle.putString("typePost",typePost);
+        jobId++;
+        JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setExtras(bundle);
+//                .setRequiresDeviceIdle(false)
+//                .setRequiresCharging(true);
+
+        JobInfo myJobInfo = builder.build();
+        jobScheduler.schedule(myJobInfo);
+//        Toast.makeText(getActivity(), R.string.job_scheduled, Toast.LENGTH_SHORT)
+//                .show();
     }
 
     @Override

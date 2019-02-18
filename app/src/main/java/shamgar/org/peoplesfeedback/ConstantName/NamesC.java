@@ -13,4 +13,9 @@ public interface NamesC {
     String INDIA ="india";
     String POSTS ="Posts";
     String POSTIDCON = "PostID";
+
+    String Likes = "Likes";
+    String Share = "Share";
+    String viewC = "View";
+    String spam = "Spam";
 }

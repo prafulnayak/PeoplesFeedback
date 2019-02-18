@@ -43,6 +43,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC27sp8GLFxSEDk8IAgEcB4pnf02Sq5LeA" />
 
+        <service android:name=".Services.BackGroundServices"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
         <activity
             android:name=".UI.PhoneActivity"
             android:screenOrientation="portrait"

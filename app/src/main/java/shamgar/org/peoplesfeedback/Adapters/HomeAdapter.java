@@ -1,5 +1,9 @@
 package shamgar.org.peoplesfeedback.Adapters;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
@@ -12,13 +16,16 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.CircularProgressDrawable;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,12 +62,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.PriorityQueue;
 
+import shamgar.org.peoplesfeedback.ConstantName.NamesC;
 import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.SpamModel;
 import shamgar.org.peoplesfeedback.R;
+import shamgar.org.peoplesfeedback.Services.BackGroundServices;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHolder> {
+import static android.content.Context.JOB_SCHEDULER_SERVICE;
+
+public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHolder> implements NamesC {
 
     private Context ctx;
     ArrayList<News> newsListR;
@@ -77,10 +88,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     private boolean requestStatus = false;
     private Menu menu;
 
+    private JobScheduler jobScheduler;
+
     public HomeAdapter(ArrayList<News> newsList, Context newsFragment)
     {
         this.newsListR = newsList;
         this.ctx = newsFragment;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            jobScheduler = (JobScheduler) ctx.getSystemService(JOB_SCHEDULER_SERVICE);
+        }
     }
     @NonNull
     @Override
@@ -100,7 +116,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerViewHolder holder, int position) {
-
+        boolean liked = true;
         final News news = newsListR.get(position);
         holder.username.setText(news.getName());
         holder.mlaconstituency.setText(news.getConstituancy());
@@ -108,7 +124,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.postImageDescription.setText(news.getDescription());
         holder.num_likes.setText(String.valueOf(news.getLikes()));
         holder.num_shares.setText(String.valueOf(news.getShares()));
-        setLikeButton(news.getPostId(),holder);
+//        holder.imglikes.setEnabled(true);
+        setLikeButton(news,holder);
+//        setClickListnerFromFirebase(news,position);
         holder.posttimestamp.setText(news.getPostedDate());
         holder.num_views.setText(String.valueOf(news.getViews()));
         holder.mlaname.setText(news.getMla()+" (MLA)");;
@@ -132,16 +150,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userpostimage);
 
-        holder.imglikes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                statusLike=true;
-                if (statusLike) {
-                    dbRefLike.child(news.getPostId()).child("Likes").child(sharedPreference.readPhoneNo().substring(3)).setValue("1");
-                    statusLike = false;
-                }
-            }
-        });
+
 
         //creating popup menu for the post
         holder.postsubmenuOptions.setOnClickListener(new View.OnClickListener() {
@@ -178,7 +187,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
 
 //                            file.setReadable(true, false);
-                            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                            final Intent intent = new Intent(Intent.ACTION_SEND);
                             Uri apkURI = FileProvider.getUriForFile(
                                     ctx,
                                     ctx.getApplicationContext()
@@ -192,7 +201,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 //                            intent.setType("image/png");
                           //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
                             ctx.startActivity(intent);
-                        } catch (android.content.ActivityNotFoundException ex) {
+                            news.setShares(news.getShares()+1);
+                            notifyDataSetChanged();
+                        } catch (ActivityNotFoundException ex) {
                             Toast.makeText(ctx,"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
@@ -217,7 +228,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
                     Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
-                    dbRefShare.child(news.getPostId()).child("Share").push().setValue(sharedPreference.readPhoneNo());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
+                    }else {
+                        dbRefShare.child(news.getPostId()).child(Share).push().setValue(sharedPreference.readPhoneNo());
+                    }
+
                     statusShare=false;
                 }
 
@@ -255,6 +271,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 //                            intent.setType("image/png");
                             //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
                             ctx.startActivity(intent);
+
+                            news.setShares(news.getShares()+1);
+                            notifyDataSetChanged();
+
                         } catch (android.content.ActivityNotFoundException ex) {
                             Toast.makeText(ctx,"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
                         } catch (FileNotFoundException e) {
@@ -280,7 +300,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
                     Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
-                    dbRefShare.child(news.getPostId()).child("Share").push().setValue(sharedPreference.readPhoneNo());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
+                    }else {
+                        dbRefShare.child(news.getPostId()).child(Share).push().setValue(sharedPreference.readPhoneNo());
+                    }
                     statusShare=false;
                 }
 
@@ -309,6 +333,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
     }
 
+
+
     private Bitmap getBitmapFromView(ImageView view) {
         Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(returnedBitmap);
@@ -324,9 +350,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         return returnedBitmap;
     }
 
-    public void setLikeButton(final String post_key, final RecyclerViewHolder holder)
+    public void setLikeButton(final News news, final RecyclerViewHolder holder)
     {
-        dbRefLike.child(post_key).child("Likes").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRefLike.child(news.getPostId()).child("Likes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
@@ -337,6 +363,23 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 else
                 {
                     holder.imglikes.setImageResource(R.drawable.ic_like_dis_2);
+                    holder.imglikes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                holder.imglikes.setImageResource(R.drawable.ic_like_enble_2);
+                                holder.imglikes.setEnabled(false);
+                                news.setLikes(news.getLikes()+1);
+                                notifyDataSetChanged();
+                                scheduleJob(news.getPostId(),sharedPreference.readPhoneNo().substring(3),"Likes");
+                            }else {
+                                dbRefLike.child(news.getPostId()).child("Likes").child(sharedPreference.readPhoneNo().substring(3)).setValue("1");
+                            }
+
+
+
+                        }
+                    });
                 }
             }
 
@@ -346,6 +389,29 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         });
 
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void scheduleJob(String postId, String phoneNo, String typePost) {
+        ComponentName serviceName = new ComponentName(ctx.getPackageName(),
+                BackGroundServices.class.getName());
+
+        PersistableBundle bundle = new PersistableBundle();
+        bundle.putString("postId",postId);
+        bundle.putString("phoneNo", phoneNo);
+        bundle.putString("typePost",typePost);
+
+        JobInfo.Builder builder = new JobInfo.Builder(1, serviceName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setExtras(bundle);
+//                .setRequiresDeviceIdle(false)
+//                .setRequiresCharging(true);
+
+        JobInfo myJobInfo = builder.build();
+        jobScheduler.schedule(myJobInfo);
+//        Toast.makeText(ctx, R.string.job_scheduled, Toast.LENGTH_SHORT)
+//                .show();
+    }
+
     public String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));
     }
@@ -356,16 +422,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             public boolean onMenuItemClick(MenuItem item) {
                 Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
                // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
-                dbRefLike.child(postId).child("Spam")
-                        .child(sharedPreference.readPhoneNo().substring(3))
-                        .setValue(1).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
-                            Toast.makeText(ctx,"Spammed the post ",Toast.LENGTH_SHORT).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    scheduleJob(postId,sharedPreference.readPhoneNo().substring(3),"Spam");
+                }else {
+                    dbRefLike.child(postId).child("Spam")
+                            .child(sharedPreference.readPhoneNo().substring(3))
+                            .setValue(1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                Toast.makeText(ctx,"Spammed the post ",Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+
                 return true;
             }
         });
