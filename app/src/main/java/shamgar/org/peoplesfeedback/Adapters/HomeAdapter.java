@@ -148,8 +148,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.userimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.e("user num",news.getPostedBy());
                 Intent profile=new Intent(ctx, User_profile_Activity.class);
-                profile.putExtra("mobile","+919666235167");
+                profile.putExtra("mobile",news.getPostedBy());
                 ctx.startActivity(profile);
             }
         });

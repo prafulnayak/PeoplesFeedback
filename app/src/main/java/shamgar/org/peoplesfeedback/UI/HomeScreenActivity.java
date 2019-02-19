@@ -16,6 +16,7 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -93,6 +94,14 @@ public class HomeScreenActivity extends AppCompatActivity {
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(profileImage);
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent user_profile=new Intent(HomeScreenActivity.this,User_profile_Activity.class);
+                user_profile.putExtra("mobile",sharedPreference.readPhoneNo());
+                startActivity(user_profile);
+            }
+        });
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
