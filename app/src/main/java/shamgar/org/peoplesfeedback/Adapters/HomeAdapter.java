@@ -74,7 +74,7 @@ import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHolder> implements NamesC {
-
+    static int jobId = 0;
     private Context ctx;
     ArrayList<News> newsListR;
     private boolean  statusLike=false;
@@ -409,8 +409,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         bundle.putString("postId",postId);
         bundle.putString("phoneNo", phoneNo);
         bundle.putString("typePost",typePost);
-
-        JobInfo.Builder builder = new JobInfo.Builder(1, serviceName)
+        jobId++;
+        JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setExtras(bundle);
 //                .setRequiresDeviceIdle(false)
@@ -420,6 +420,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         jobScheduler.schedule(myJobInfo);
 //        Toast.makeText(ctx, R.string.job_scheduled, Toast.LENGTH_SHORT)
 //                .show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void cancelJob(){
+        if (jobScheduler!=null){
+            jobScheduler.cancelAll();
+            jobScheduler = null;
+            Toast.makeText(ctx, "Jobs cancelled", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String getEmojiByUnicode(int unicode){
