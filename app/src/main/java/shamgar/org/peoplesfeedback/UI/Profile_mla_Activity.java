@@ -202,7 +202,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
                     followersForMlaCount.setText(numOfFollowers);
                 }else {
-                    Toast.makeText(getApplicationContext()," no followers for "+mlaName,Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext()," no followers for "+mlaName,Toast.LENGTH_SHORT).show();
                     followersForMlaCount.setText("0");
                 }
             }
@@ -222,7 +222,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-                Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Profile_mla_Activity.this);
                 builder.setCancelable(false);
                 builder.setTitle("Your Rating is "+tagRating+"%")
@@ -298,7 +298,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
                     }
-                    Log.e("keys",keys.toString());
+                  //  Log.e("keys",keys.toString());
                     gettingImageUrls(keys);
                 }else {
                     Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
@@ -375,7 +375,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     String mlaUrl= dataSnapshot.child("image_url").getValue().toString();
                     String mlaParty= dataSnapshot.child("party").getValue().toString();
                     mlaPartyName.setText(mlaParty);
-                     Toast.makeText(getApplicationContext(),mlaUrl,Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getApplicationContext(),mlaUrl,Toast.LENGTH_SHORT).show();
                     Glide.with(getApplicationContext())
                             .load(mlaUrl)
                             .error(R.drawable.ic_account_circle_black)
@@ -431,16 +431,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     int total = 0;
                     ArrayList<String> keysLists = new ArrayList<>();
                     for (DataSnapshot keys:dataSnapshot.getChildren()){
-                        Log.e("keys",keys.getKey());
+                       // Log.e("keys",keys.getKey());
                         for (DataSnapshot innerChildren: keys.getChildren()){
-                            Log.e("keys",innerChildren.getValue().toString());
+                          //  Log.e("keys",innerChildren.getValue().toString());
                             keysLists.add(innerChildren.getValue().toString());
                             total = total+Integer.parseInt(innerChildren.getValue().toString());
-                            Log.e("total", String.valueOf(total));
+                          //  Log.e("total", String.valueOf(total));
                         }
                     }
                     float average= (float) (total/keysLists.size());
-                    Log.e("average", String.valueOf(average));
+                   // Log.e("average", String.valueOf(average));
                     //posting average to respective tag
                     tagAverage(average,keysLists.size());
                 }else {
@@ -463,7 +463,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
+              //  Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
             }
         });
 //                .child("rating")

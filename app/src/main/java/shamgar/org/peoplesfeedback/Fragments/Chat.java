@@ -89,7 +89,7 @@ public class Chat extends Fragment {
                     @Override
                     protected void onBindViewHolder(@NonNull final ChatViewHolder holder, int position, @NonNull Contacts model) {
                         final  String userIds=getRef(position).getKey();
-                        Log.e("ids",userIds);
+                      //  Log.e("ids",userIds);
                         userRef.orderByChild("phoneno").equalTo(userIds).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {

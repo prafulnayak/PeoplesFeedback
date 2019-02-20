@@ -175,7 +175,7 @@
         android:onClick="chechedTag"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="others"
+        android:text="My World"
         android:textColor="#fff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

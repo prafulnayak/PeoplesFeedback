@@ -113,8 +113,8 @@ public class Home extends Fragment {
         // Inflate the layout for this fragment
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
-        Log.i("Home", " onCreateView");
-        Toast.makeText(getActivity(), "onCreateView" + newsList.size(), Toast.LENGTH_LONG).show();
+       // Log.i("Home", " onCreateView");
+       // Toast.makeText(getActivity(), "onCreateView" + newsList.size(), Toast.LENGTH_LONG).show();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             jobScheduler = (JobScheduler) getActivity().getSystemService(JOB_SCHEDULER_SERVICE);
@@ -132,7 +132,7 @@ public class Home extends Fragment {
 //        getNewsDetailsFromPost();
 //        new AsyncTaskForNews().execute();
 //        new AsyncTaskForNews().execute();
-        Log.i("Home", " onCreate");
+      //  Log.i("Home", " onCreate");
 //        Toast.makeText(getActivity(), "onCreate" + newsList.size(), Toast.LENGTH_LONG).show();
     }
 
@@ -148,7 +148,7 @@ public class Home extends Fragment {
         displayLocationRange = view.findViewById(R.id.displayLocationRange);
         locRanTxt = view.findViewById(R.id.locRanTxt);
 
-        Log.i("Home", " onViewCreated");
+     //   Log.i("Home", " onViewCreated");
 //        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
 
 //        recyclerView = view.findViewById(R.id.home_rv);
@@ -193,8 +193,8 @@ public class Home extends Fragment {
                     lastKey = dataSnapshot.getKey();
                     list.add(0,dataSnapshot.getKey());
                     getNewsDetailsFromPost(true);
-                    Log.e("log: ","key in: "+dataSnapshot.getKey());
-                    Log.e("log: ","key in s: "+s);
+                  //  Log.e("log: ","key in: "+dataSnapshot.getKey());
+                  //  Log.e("log: ","key in s: "+s);
                 }
 //                if(list5.size() == 5){
 //                    lastKey = list5.get(0);
@@ -248,15 +248,15 @@ public class Home extends Fragment {
                     list5.add(dataSnapshot.getKey());
                     //post view count
                     postViewsCount(dataSnapshot.getKey());
-                    Log.e("log: ","key in: "+dataSnapshot.getKey());
-                    Log.e("log: ","key in s: "+s);
+                   // Log.e("log: ","key in: "+dataSnapshot.getKey());
+                   // Log.e("log: ","key in s: "+s);
                 }
                 if(list5.size() == 5){
                     lastKey = list5.get(0);
                     Collections.reverse(list5);
                     list.addAll(list5);
-                    Log.e("log: ","last key: "+dataSnapshot.getKey());
-                    Log.e("log: ","key in: "+list.get(list.size()-5));
+                  //  Log.e("log: ","last key: "+dataSnapshot.getKey());
+                  //  Log.e("log: ","key in: "+list.get(list.size()-5));
 //                    getMorePosts();
 //                    list5.clear();
                     getNewsDetailsFromPost(false);
@@ -266,7 +266,7 @@ public class Home extends Fragment {
                     lastKey = list5.get(0);
                     Collections.reverse(list5);
                     list.addAll(list5);
-                    Log.e("log: ","last key: "+dataSnapshot.getKey());
+                  //  Log.e("log: ","last key: "+dataSnapshot.getKey());
 //                    Log.e("log: ","key in: "+list.get(list.size()-5));
 //                    getMorePosts();
 //                    list5.clear();
@@ -333,8 +333,8 @@ public class Home extends Fragment {
                 if(!list.contains(dataSnapshot.getKey())){
                     list.add(dataSnapshot.getKey());
 
-                    Log.e("log: ","key in: "+dataSnapshot.getKey());
-                    Log.e("log: ","key in s: "+s);
+                  //  Log.e("log: ","key in: "+dataSnapshot.getKey());
+                   // Log.e("log: ","key in s: "+s);
                 }
 
 
@@ -343,8 +343,8 @@ public class Home extends Fragment {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                Log.e("log: ","changed key: "+dataSnapshot.getKey());
-                Log.e("log: ","changed key s: "+s);
+              //  Log.e("log: ","changed key: "+dataSnapshot.getKey());
+              //  Log.e("log: ","changed key s: "+s);
 
             }
 
@@ -397,7 +397,7 @@ public class Home extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    Log.e("Post",""+dataSnapshot);
+                   // Log.e("Post",""+dataSnapshot);
                     if (dataSnapshot.exists())
                     {
                         Posts posts = dataSnapshot.getValue(Posts.class);
@@ -408,7 +408,7 @@ public class Home extends Fragment {
 //                        getUserPhotoUrl(posts,dataSnapshot.getKey(), likes,share,viewCount,top);
                         addOrUpdateNewsList(posts,dataSnapshot.getKey(), likes,share,viewCount,top);
                         //  Log.e("Post",""+posts.getImageUrl());
-                        Log.e("Post data snap key",""+likes+share);
+                     //   Log.e("Post data snap key",""+likes+share);
                         //  Log.e("Post list ",""+list.get(p));
                     }
                 }
@@ -431,7 +431,7 @@ public class Home extends Fragment {
         dbRefLike.child(news.getPostId()).child(Likes).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e("child count like",""+dataSnapshot.getChildrenCount());
+              //  Log.e("child count like",""+dataSnapshot.getChildrenCount());
                 int likes = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
                 if(news.getLikes() < likes){
                     news.setLikes(likes);
@@ -448,7 +448,7 @@ public class Home extends Fragment {
         dbRefLike.child(news.getPostId()).child(Share).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e("child count share",""+dataSnapshot.getChildrenCount());
+              //  Log.e("child count share",""+dataSnapshot.getChildrenCount());
 
                 int shares = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
                 if(news.getShares() < shares){
@@ -466,7 +466,7 @@ public class Home extends Fragment {
         dbRefLike.child(news.getPostId()).child(viewC).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e("child count view",""+dataSnapshot.getChildrenCount());
+              //  Log.e("child count view",""+dataSnapshot.getChildrenCount());
 
                 int views = Integer.parseInt(String.valueOf(dataSnapshot.getChildrenCount()));
                 if(news.getViews() < views){
@@ -516,7 +516,7 @@ public class Home extends Fragment {
 
         getUserUrl(news,key,top,posts.getState(),posts.getDistrict(),posts.getConstituancy());
 
-        Log.e("on Update","hhhhhh");
+      //  Log.e("on Update","hhhhhh");
 //        if(newsList.size()>0){
 
 
@@ -576,7 +576,7 @@ public class Home extends Fragment {
                     try{
                         rating = dataSnapshot.child("rating").getValue(long.class);
                         news.setVotePercentage(String.valueOf(rating));
-                        Log.e("rating",""+rating);
+                       // Log.e("rating",""+rating);
                     }catch (NullPointerException e){
 
                     }
@@ -613,7 +613,7 @@ public class Home extends Fragment {
         Boolean isNewNews = true;
         for(int i=0;i<newsList.size();i++){
             if(newsList.get(i).getPostId().equals(key)){
-                Log.e("Postaaa",""+newsList.get(i).getPostId()+""+key);
+               // Log.e("Postaaa",""+newsList.get(i).getPostId()+""+key);
                 updateNewsListItem(i,news);
                 isNewNews = false;
             }
@@ -677,8 +677,8 @@ public class Home extends Fragment {
                         if ( (visibleItemCount + pastVisiblesItems) >= totalItemCount)
                         {
                             loading = false;
-                            Log.v("...", "Last Item Wow !");
-                            Toast.makeText(getActivity(),"Loging More..",Toast.LENGTH_SHORT).show();
+                           // Log.v("...", "Last Item Wow !");
+                            //Toast.makeText(getActivity(),"Loging More..",Toast.LENGTH_SHORT).show();
 //                            Do pagination.. i.e. fetch new data
                             getMorePosts();
 //                            loading = true;
@@ -689,7 +689,7 @@ public class Home extends Fragment {
             }
         });
         adapter.notifyDataSetChanged();
-        Log.i("Home", " onResume");
+       // Log.i("Home", " onResume");
 //        Toast.makeText(getActivity(), "onResume", Toast.LENGTH_LONG).show();
 
 
@@ -698,7 +698,7 @@ public class Home extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.i("Home", " onStart");
+       // Log.i("Home", " onStart");
 //        Toast.makeText(getActivity(), "onStart", Toast.LENGTH_LONG).show();
 //        new AsyncTaskForNews().execute();
 
@@ -708,13 +708,13 @@ public class Home extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.i("Home", " onPause");
+      //  Log.i("Home", " onPause");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.i("Home", " onStop");
+      //  Log.i("Home", " onStop");
 //        scheduleJob();
     }
 
@@ -743,25 +743,25 @@ public class Home extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.i("Home", " onDestroyView");
+       // Log.i("Home", " onDestroyView");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i("Home", " onDestroy");
+       // Log.i("Home", " onDestroy");
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.i("Home", " onAttach");
+      //  Log.i("Home", " onAttach");
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.i("Home", " onDetach");
+       // Log.i("Home", " onDetach");
     }
 
 
@@ -875,13 +875,13 @@ public class Home extends Fragment {
                                                     double dist=startPoint.distanceTo(endPoint);
                                                     distance = (int)(dist/1000);
 
-                                                    Log.d("distance", String.valueOf(distance));
+                                                   // Log.d("distance", String.valueOf(distance));
 
                                                     if(finalTemp > distance) {
                                                         if (!nearbyConstuencies.contains(constituences.getKey())) {
                                                             nearbyConstuencies.add(constituences.getKey());
                                                         }
-                                                        Log.e("log: ","constituences in: "+nearbyConstuencies);
+                                                      //  Log.e("log: ","constituences in: "+nearbyConstuencies);
 
                                                         for (int i=0;i<nearbyConstuencies.size();i++) {
 
@@ -898,7 +898,7 @@ public class Home extends Fragment {
                                                                                 if(!list.contains(newlist.getKey())) {
                                                                                     list5.add(newlist.getKey());
 
-                                                                                    Log.e("log: ","key in: "+newlist.getKey());
+                                                                                   // Log.e("log: ","key in: "+newlist.getKey());
 
                                                                                 }
                                                                             }

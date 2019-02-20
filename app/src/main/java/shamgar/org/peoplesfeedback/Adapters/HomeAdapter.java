@@ -148,7 +148,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.userimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("user num",news.getPostedBy());
+              //  Log.e("user num",news.getPostedBy());
                 Intent profile=new Intent(ctx, User_profile_Activity.class);
                 profile.putExtra("mobile",news.getPostedBy());
                 ctx.startActivity(profile);
@@ -238,7 +238,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     }else {
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
                     }else {
@@ -310,7 +310,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     }else {
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
                     }else {
@@ -431,7 +431,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         pm.getMenu().findItem(R.id.spam).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
                // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     scheduleJob(postId,sharedPreference.readPhoneNo().substring(3),"Spam");

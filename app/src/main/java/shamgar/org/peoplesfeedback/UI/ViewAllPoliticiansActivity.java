@@ -63,7 +63,7 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
 
 
 
-        Toast.makeText(getApplicationContext(),"state "+ state,Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getApplicationContext(),"state "+ state,Toast.LENGTH_SHORT).show();
 
 
         viewAllRecyclerView=(RecyclerView)findViewById(R.id.viewAllRcyclerView);
@@ -139,13 +139,13 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
                 if(MPList.size() == 0){
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
 
-                        Log.e("Mps", ""+snapshot.getKey());
+                       // Log.e("Mps", ""+snapshot.getKey());
 
 //                    if(stateCm.getCM() != null){
                         MPList.add(snapshot.getKey().toString());
 //                    }
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
-                        Log.e("districtsList", ""+MPList);
+                      //  Log.e("districtsList", ""+MPList);
 //                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
 //                        allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),MPList,state);
 ////                    viewAllRecyclerView.setHasFixedSize(true);
@@ -180,17 +180,17 @@ public class ViewAllPoliticiansActivity extends AppCompatActivity {
 
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
 
-                        Log.e("count", String.valueOf(dataSnapshot.child(snapshot.getKey()).child("Constituancy").getChildrenCount()));
-                        Log.e("districts", ""+snapshot.getKey());
+                      //  Log.e("count", String.valueOf(dataSnapshot.child(snapshot.getKey()).child("Constituancy").getChildrenCount()));
+                      //  Log.e("districts", ""+snapshot.getKey());
 
                         constituencyCount.add(String.valueOf(dataSnapshot.child(snapshot.getKey()).child("Constituancy").getChildrenCount()));
-                        Log.e("constituencyCount", ""+constituencyCount);
+                       // Log.e("constituencyCount", ""+constituencyCount);
 
 //                    if(stateCm.getCM() != null){
                         districtList.add(snapshot.getKey());
 //                    }
 //                    StateCm stateDetails = new StateCm(snapshot.getKey(),)
-                        Log.e("districtsList", ""+districtList);
+                     //   Log.e("districtsList", ""+districtList);
 //                    DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
                         allPoliticiansAdapter=new ViewAllPoliticiansAdapter(getApplicationContext(),districtList, state,constituencyCount);
 //                    viewAllRecyclerView.setHasFixedSize(true);

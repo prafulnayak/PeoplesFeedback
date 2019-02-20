@@ -392,9 +392,9 @@ public class CameraActivity extends AppCompatActivity implements
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        Log.i(TAG_CAM, "All location settings are satisfied.");
+                       // Log.i(TAG_CAM, "All location settings are satisfied.");
 
-                        Toast.makeText(getApplicationContext(), "Started location updates!", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getApplicationContext(), "Started location updates!", Toast.LENGTH_SHORT).show();
 
                         //noinspection MissingPermission
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -409,21 +409,21 @@ public class CameraActivity extends AppCompatActivity implements
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(TAG_CAM, "Location settings are not satisfied. Attempting to upgrade " +
-                                        "location settings ");
+                              //  Log.i(TAG_CAM, "Location settings are not satisfied. Attempting to upgrade " +
+                                    //    "location settings ");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
                                     // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(CameraActivity.this, REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.i(TAG_CAM, "PendingIntent unable to execute request.");
+                                  //  Log.i(TAG_CAM, "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                                 String errorMessage = "Location settings are inadequate, and cannot be " +
                                         "fixed here. Fix in Settings.";
-                                Log.e(TAG_CAM, errorMessage);
+                              //  Log.e(TAG_CAM, errorMessage);
 
                                 Toast.makeText(CameraActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                         }
@@ -525,7 +525,7 @@ public class CameraActivity extends AppCompatActivity implements
                     latitude = mCurrentLocation.getLatitude();
                     logntude = mCurrentLocation.getLongitude();
                     checkOwnConstituancyOrNot(latitude, logntude);
-                    Toast.makeText(this, "Location Find Success", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(this, "Location Find Success", Toast.LENGTH_SHORT).show();
 
                 } else {
                     Toast.makeText(this, "Location ON Issue", Toast.LENGTH_SHORT).show();
@@ -558,7 +558,7 @@ public class CameraActivity extends AppCompatActivity implements
                         double dist = startPoint.distanceTo(endPoint);
                         int distance = (int) (dist / 1000);
 
-                        if (distance <= 33) {
+                        if (distance >= 33) {
                             loadingbar.dismiss();
                             final AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
                             builder.setTitle("You are out of registered constituency, please select below");
@@ -602,14 +602,14 @@ public class CameraActivity extends AppCompatActivity implements
 
                             //open dailogbox
                             // select constituancy
-                            Log.e("distance greater then 5", "" + distance);
+                           // Log.e("distance greater then 5", "" + distance);
                         } else {
                             loadingbar.dismiss();
                             pushImageToFirebase(0);
-                            Log.e("distance less then 5", "" + distance);
+                          //  Log.e("distance less then 5", "" + distance);
                         }
 
-                        Log.e("laf", "" + lat);
+                       // Log.e("laf", "" + lat);
                     }
 
                     @Override
@@ -737,7 +737,7 @@ public class CameraActivity extends AppCompatActivity implements
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(CameraActivity.this, "Success Post", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(CameraActivity.this, "Success Post", Toast.LENGTH_SHORT).show();
 
                     postIntoUserAccount(postKey);
                     postIntoConstituancyAndTaggedArea(postKey, i);
@@ -768,7 +768,7 @@ public class CameraActivity extends AppCompatActivity implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
                         postInTagArea(postKey, i);
                     }
                     else {
@@ -789,7 +789,7 @@ public class CameraActivity extends AppCompatActivity implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(CameraActivity.this, "posted in state con", Toast.LENGTH_SHORT).show();
                         postInTagArea(postKey, i);
                     }
                     else {
@@ -815,7 +815,7 @@ public class CameraActivity extends AppCompatActivity implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
                         loadingbar.dismiss();
                         finish();
                     }
@@ -836,7 +836,7 @@ public class CameraActivity extends AppCompatActivity implements
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(CameraActivity.this, "posted in tag area", Toast.LENGTH_SHORT).show();
                         loadingbar.dismiss();
                         finish();
                     }
@@ -856,8 +856,10 @@ public class CameraActivity extends AppCompatActivity implements
                 .setValue("1").addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful())
-                    Toast.makeText(CameraActivity.this, "success on people post", Toast.LENGTH_SHORT).show();
+                if (task.isSuccessful()){
+                    // Toast.makeText(CameraActivity.this, "success on people post", Toast.LENGTH_SHORT).show();
+                }
+
                 else
                     loadingbar.dismiss();
             }
@@ -945,7 +947,7 @@ public class CameraActivity extends AppCompatActivity implements
                                 .getPackageName() + ".provider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                Log.e("uri", photoURI.toString());
+               // Log.e("uri", photoURI.toString());
 
             }
         }
@@ -1113,11 +1115,11 @@ public class CameraActivity extends AppCompatActivity implements
                 case REQUEST_CHECK_SETTINGS:
                     switch (resultCode) {
                         case Activity.RESULT_OK:
-                            Log.e(TAG_CAM, "User agreed to make required location settings changes.");
+                           // Log.e(TAG_CAM, "User agreed to make required location settings changes.");
                             // Nothing to do. startLocationupdates() gets called in onResume again.
                             break;
                         case Activity.RESULT_CANCELED:
-                            Log.e(TAG_CAM, "User chose not to make required location settings changes.");
+                           // Log.e(TAG_CAM, "User chose not to make required location settings changes.");
                             mRequestingLocationUpdates = false;
                             break;
                     }
@@ -1143,7 +1145,7 @@ public class CameraActivity extends AppCompatActivity implements
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
-        Log.e("camera", image.toString());
+        //Log.e("camera", image.toString());
         return image;
     }
 
@@ -1182,7 +1184,7 @@ public class CameraActivity extends AppCompatActivity implements
                 chkPolice.setChecked(false);
                 chkTraffic.setChecked(false);
                 chklocality.setChecked(false);
-                this.tag = "Others";
+                this.tag = "My World";
                 break;
 
             case R.id.locality:
@@ -1257,7 +1259,7 @@ public class CameraActivity extends AppCompatActivity implements
                     districts.clear();
                     districts.add("Select district");
                     for (DataSnapshot states : dataSnapshot.getChildren()) {
-                        Log.e("states", states.getKey());
+                      //  Log.e("states", states.getKey());
                         districts.add(states.getKey());
                     }
 
@@ -1301,7 +1303,7 @@ public class CameraActivity extends AppCompatActivity implements
                     constituencies.clear();
                     constituencies.add("Select constituency");
                     for (DataSnapshot states : dataSnapshot.getChildren()) {
-                        Log.e("states", states.getKey());
+                      //  Log.e("states", states.getKey());
                         constituencies.add(states.getKey());
                     }
                     constituencyAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, constituencies);
@@ -1500,8 +1502,8 @@ public class CameraActivity extends AppCompatActivity implements
         if (mCurrentLocation != null) {
 
             mLocation = mCurrentLocation;
-            Toast.makeText(getApplicationContext(), "Lat: " + mCurrentLocation.getLatitude()
-                    + ", Lng: " + mCurrentLocation.getLongitude(), Toast.LENGTH_LONG).show();
+           // Toast.makeText(getApplicationContext(), "Lat: " + mCurrentLocation.getLatitude()
+           //         + ", Lng: " + mCurrentLocation.getLongitude(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), "Last known location is not available!", Toast.LENGTH_SHORT).show();
         }

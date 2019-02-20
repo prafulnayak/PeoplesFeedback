@@ -108,7 +108,7 @@ public class Notifications extends Fragment  {
                                         }
                                         holder.userName.setText("Name : "+email+"\nConstituency : "+constituency);
                                         holder.userStatus.setText("Wants to connects with you");
-                                        Log.i("notification",dataSnapshot.toString());
+                                       // Log.i("notification",dataSnapshot.toString());
 
                                         final String finalEmail = email;
                                         holder.Accept.setText("Accept Request");

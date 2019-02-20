@@ -68,7 +68,7 @@ public class BackGroundServices extends JobService implements NamesC {
                 dbRefLike.child(postId).child(typePost).push().setValue(phoneNo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.e("type post",""+typePost);
+                       // Log.e("type post",""+typePost);
                     }
                 });
             }else {
@@ -78,7 +78,7 @@ public class BackGroundServices extends JobService implements NamesC {
 //                        mNotifyManager.notify(0, builder.build());
 //                        Toast.makeText(BackGroundServices.this, "liked Success", Toast.LENGTH_SHORT).show();
                         jobFinished(jobParameters,false);
-                        Log.e("type post",""+typePost);
+                       // Log.e("type post",""+typePost);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

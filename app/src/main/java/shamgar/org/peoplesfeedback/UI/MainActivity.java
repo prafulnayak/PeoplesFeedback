@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void updateUI(FirebaseUser currentUser) {
         if(currentUser != null){
-            Toast.makeText(this,""+currentUser.getEmail()+" : "+currentUser.getPhoneNumber()+currentUser.getDisplayName(),Toast.LENGTH_SHORT).show();
+         //   Toast.makeText(this,""+currentUser.getEmail()+" : "+currentUser.getPhoneNumber()+currentUser.getDisplayName(),Toast.LENGTH_SHORT).show();
             if(currentUser.getEmail()!=null && !currentUser.getEmail().equals("")){
                 sharedPreferences.writeEmail(currentUser.getEmail());
 //                sharedPreferences.writeName(currentUser.getDisplayName());
@@ -149,12 +149,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 sharedPreferences.writeName(account.getDisplayName());
-                Log.e("display name",sharedPreferences.readName());
+               // Log.e("display name",sharedPreferences.readName());
                 sharedPreferences.writePhotoUrl(account.getPhotoUrl());
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
+              //  Log.w(TAG, "Google sign in failed", e);
                 // ...
             }
         }
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+       // Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -185,13 +185,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (task.isSuccessful()) {
                             loadingbar.dismiss();
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
+                           // Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
                             loadingbar.dismiss();
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                          //  Log.w(TAG, "signInWithCredential:failure", task.getException());
 //                            Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             updateUI(null);
                         }

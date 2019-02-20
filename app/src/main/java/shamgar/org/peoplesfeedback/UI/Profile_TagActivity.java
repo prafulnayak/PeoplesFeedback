@@ -181,7 +181,7 @@ public class Profile_TagActivity extends AppCompatActivity {
                            // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
                             followersForTagsCount.setText(numOfFollowers);
                         }else {
-                            Toast.makeText(getApplicationContext()," no followers for "+tag,Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext()," no followers for "+tag,Toast.LENGTH_SHORT).show();
                             followersForTagsCount.setText("0");
                         }
                     }
@@ -201,7 +201,7 @@ public class Profile_TagActivity extends AppCompatActivity {
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-                Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Profile_TagActivity.this);
                 builder.setCancelable(false);
                 builder.setTitle("Your Rating is "+tagRating+"%")
@@ -279,7 +279,7 @@ public class Profile_TagActivity extends AppCompatActivity {
                     gettingImageUrls(keys);
 
                 }else {
-                    Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -377,16 +377,16 @@ public class Profile_TagActivity extends AppCompatActivity {
                     int total = 0;
                     ArrayList<String> keysLists = new ArrayList<>();
                     for (DataSnapshot keys:dataSnapshot.getChildren()){
-                        Log.e("keys",keys.getKey());
+                       // Log.e("keys",keys.getKey());
                         for (DataSnapshot innerChildren: keys.getChildren()){
-                            Log.e("keys",innerChildren.getValue().toString());
+                          //  Log.e("keys",innerChildren.getValue().toString());
                             keysLists.add(innerChildren.getValue().toString());
                             total = total+Integer.parseInt(innerChildren.getValue().toString());
-                            Log.e("total", String.valueOf(total));
+                           // Log.e("total", String.valueOf(total));
                         }
                     }
                     float average= (float) (total/keysLists.size());
-                    Log.e("average", String.valueOf(average));
+                  //  Log.e("average", String.valueOf(average));
                     //posting average to respective tag
                     tagAverage(average,keysLists.size());
                 }else {
@@ -408,10 +408,10 @@ public class Profile_TagActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"rating updated",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"rating updated",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(getApplicationContext(),"Some error was occurred while updating rating",Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(),"Some error was occurred while updating rating",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -423,10 +423,10 @@ public class Profile_TagActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"votes updated",Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(),"votes updated",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(getApplicationContext(),"Some error was occurred while updating votes",Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(),"Some error was occurred while updating votes",Toast.LENGTH_SHORT).show();
                 }
             }
         });

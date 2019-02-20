@@ -62,7 +62,7 @@ public class User_profile_Activity extends AppCompatActivity {
         mAuth=FirebaseAuth.getInstance();
         UID=mAuth.getCurrentUser().getPhoneNumber();
         mobile=getIntent().getExtras().get("mobile").toString();
-        Log.e("UID",UID);
+       // Log.e("UID",UID);
 
         checkingUserProfile(UID);
 
@@ -123,13 +123,13 @@ public class User_profile_Activity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    Log.e("task","following the user");
+                   // Log.e("task","following the user");
                     FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE).child(mobile.substring(3)).child("followers")
                             .child(UID.substring(3)).setValue(1).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
-                                Log.e("task","followers Updated");
+                               // Log.e("task","followers Updated");
                             }
                         }
                     });
@@ -148,7 +148,7 @@ public class User_profile_Activity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     if(TextUtils.equals(uid,dataSnapshot.child("phoneno").getValue().toString())){
-                        Log.e("note","Hide something");
+                       // Log.e("note","Hide something");
                         current_user_profile_follow_button.setVisibility(View.GONE);
                         current_user_profile_name.setText(config.readName());
                         current_user_profile_location.setText(config.readConstituancy());
@@ -224,7 +224,7 @@ public class User_profile_Activity extends AppCompatActivity {
                     keys.clear();
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
-                        Log.e("keys",keys.toString());
+                       // Log.e("keys",keys.toString());
                     }
                     gettingImageUrls(keys);
 
@@ -250,7 +250,7 @@ public class User_profile_Activity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     images.clear();
                     for (int i=0;i<keys.size();i++){
-                         Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                        // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                     }
                     adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
