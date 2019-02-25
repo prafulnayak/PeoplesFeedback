@@ -47,7 +47,7 @@
                     android:layout_height="80dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="30dp"
-                    android:src="@drawable/profile" />
+                    android:src="@drawable/ic_account_circle_black" />
 
                 <TextView
                     android:id="@+id/userName"
@@ -75,7 +75,7 @@
                         android:id="@+id/imgmale"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/man"
+                        android:src="@drawable/ic_male"
                         android:layout_marginRight="100dp" />
 
 
@@ -83,7 +83,7 @@
                         android:id="@+id/imgfemale"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/user"
+                        android:src="@drawable/ic_female"
                         android:layout_toRightOf="@+id/imgmale"
                         android:layout_marginLeft="25dp" />
 

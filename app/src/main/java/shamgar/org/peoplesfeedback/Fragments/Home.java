@@ -510,7 +510,7 @@ public class Home extends Fragment {
                 Double.parseDouble(posts.getLatitude()),
                 Double.parseDouble(posts.getLongitude()),posts.getAddress(),
                 "mla","malImageUrl","100",
-                posts.getTagId(),viewCount,likes,share,posts.getPostedOn(),1,posts.getUser());
+                posts.getTagId(),viewCount,likes,share,posts.getPostedOn(),1,posts.getUser(),posts.getState(),posts.getDistrict());
 
 
 

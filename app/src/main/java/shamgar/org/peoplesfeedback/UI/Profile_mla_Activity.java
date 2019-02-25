@@ -139,7 +139,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("following")){
-                    mlaFollowButton.setText("following");
+                    mlaFollowButton.setText("unFollow");
                     mlaFollowButton.setTextColor(Color.parseColor("#000000"));
                 }else {
                     mlaFollowButton.setText("follow");
@@ -185,7 +185,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     following();
                 }else
                 {
-                    Toast.makeText(getApplicationContext(),"you are already following "+mlaName,Toast.LENGTH_SHORT).show();
+                    unfollow();
                 }
 
             }
@@ -284,9 +284,28 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     }
 
+    private void unfollow() {
+        FirebaseDatabase.getInstance().getReference().child("Politicians")
+                .child(mlaName).child("Followers")
+                .child(sharedPreferenceConfig.readPhoneNo().substring(3))
+                .removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            mlaFollowButton.setTextColor(Color.parseColor("#000000"));
+                            mlaFollowButton.setText("follow");
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
     private void gettingMlaTagedImagesKeys()
     {
-        keys.clear();
+
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
                 .child(state).child(district).child("constituancy").child(mlaConstituency).child("PostID");
 
@@ -295,6 +314,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                    // images.add(dataSnapshot.getKey());
+                    keys.clear();
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
                     }
@@ -315,12 +335,13 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private void gettingImageUrls(final ArrayList<String> keys) {
 
-        images.clear();
+
         Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS);
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
+                    images.clear();
                     for (int i=0;i<keys.size();i++){
                        // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
@@ -354,7 +375,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
                             mlaFollowButton.setTextColor(Color.parseColor("#000000"));
-                            Toast.makeText(getApplicationContext(),"following",Toast.LENGTH_SHORT).show();
+                            mlaFollowButton.setText("unFollow");
                         }
                         else {
                             Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();

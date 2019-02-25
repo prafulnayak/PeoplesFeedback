@@ -48,6 +48,27 @@
                     android:drawableStart="@drawable/ic_location_on_black_24dp"
                     />
 
+                <ImageView
+                    android:id="@+id/user_profile_chat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_chat_dis"
+                    android:layout_marginTop="40dp"
+                    android:layout_toRightOf="@+id/current_user_profile_location"
+                    android:layout_marginStart="35dp"/>
+                <TextView
+                    android:id="@+id/user_profile_chat_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_profile_chat"
+                    android:layout_marginStart="30dp"
+                    android:text="Chat"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@+id/current_user_profile_location"/>
+
 
             </RelativeLayout>
             <de.hdodenhof.circleimageview.CircleImageView

@@ -328,6 +328,13 @@ public class HomeScreenActivity extends AppCompatActivity {
             startActivity(user_profile);
 
         }
+        if (item.getItemId()==R.id.sign_out){
+            mAuth.signOut();
+            Intent signOut=new Intent(HomeScreenActivity.this,MainActivity.class);
+            startActivity(signOut);
+            finish();
+
+        }
 
         return true;
     }
@@ -408,4 +415,5 @@ public class HomeScreenActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
+
 }

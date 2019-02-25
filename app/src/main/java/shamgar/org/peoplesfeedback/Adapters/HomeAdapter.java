@@ -68,6 +68,7 @@ import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.SpamModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Services.BackGroundServices;
+import shamgar.org.peoplesfeedback.UI.Profile_mla_Activity;
 import shamgar.org.peoplesfeedback.UI.User_profile_Activity;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -131,7 +132,30 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 //        setClickListnerFromFirebase(news,position);
         holder.posttimestamp.setText(news.getPostedDate());
         holder.num_views.setText(String.valueOf(news.getViews()));
-        holder.mlaname.setText(news.getMla()+" (MLA)");;
+        holder.mlaname.setText(news.getMla());
+        holder.mlaname.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mlaProfile=new Intent(ctx, Profile_mla_Activity.class);
+                mlaProfile.putExtra("mlaName",news.getMla());
+                mlaProfile.putExtra("mlaConstituency",news.getConstituancy());
+                mlaProfile.putExtra("state",news.getState());
+                mlaProfile.putExtra("district",news.getDistrict());
+                ctx.startActivity(mlaProfile);
+
+            }
+        });
+        holder.mlaimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mlaProfile=new Intent(ctx, Profile_mla_Activity.class);
+                mlaProfile.putExtra("mlaName",news.getMla());
+                mlaProfile.putExtra("mlaConstituency",news.getConstituancy());
+                mlaProfile.putExtra("state",news.getState());
+                mlaProfile.putExtra("district",news.getDistrict());
+                ctx.startActivity(mlaProfile);
+            }
+        });
         holder.postmlarating_perce.setText(String.valueOf(news.getVotePercentage()+"%"));
         Glide.with(ctx)
                 .load(news.getMlaImageUrl())

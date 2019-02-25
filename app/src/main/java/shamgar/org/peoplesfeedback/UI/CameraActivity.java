@@ -115,7 +115,6 @@ public class CameraActivity extends AppCompatActivity implements
 //    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private ImageView cameraImage;
     private EditText imageDesc;
-    private Spinner editMLatag;
     // private TextView imageLoc;
     private Button submit;
 //    String provider;
@@ -241,7 +240,7 @@ public class CameraActivity extends AppCompatActivity implements
         sharedPreference = new SharedPreferenceConfig(this);
         cameraImage = findViewById(R.id.camera_imageView);
         imageDesc = findViewById(R.id.desc);
-        editMLatag = findViewById(R.id.editMLatag);
+
         submit = findViewById(R.id.submit);
         camera = findViewById(R.id.camera);
 
@@ -251,8 +250,6 @@ public class CameraActivity extends AppCompatActivity implements
         chkOthers = findViewById(R.id.others);
         chklocality = findViewById(R.id.locality);
 
-
-        editMLatag.setVisibility(View.GONE);
         address = new UserAddress();
 
         submit.setOnClickListener(this);
@@ -866,66 +863,66 @@ public class CameraActivity extends AppCompatActivity implements
         });
     }
 
-    private void get_listof_constituency_mla() {
-        Query query = FirebaseDatabase.getInstance().getReference("Politicians")
-                .orderByChild("district")
-                .equalTo(address.getCity());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Toast.makeText(getApplicationContext(),"res"+dataSnapshot,Toast.LENGTH_LONG).show();
-                    for (DataSnapshot mlaname : dataSnapshot.getChildren()) {
-                        mlalist.add(mlaname.child("constituancy").getValue().toString());
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, mlalist);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    editMLatag.setAdapter(adapter);
-                    editMLatag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                            TextView mlaname = (TextView) adapterView.getSelectedView();
-                            constituency = mlaname.getText().toString();
-                            Query query2 = FirebaseDatabase.getInstance().getReference("Politicians")
-                                    .orderByChild("constituancy")
-                                    .equalTo(constituency);
-                            query2.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot mlaid : dataSnapshot.getChildren()) {
-                                        mlaID = mlaid.child("id").getValue().toString();
-                                        MLAname = mlaid.child("name").getValue().toString();
-                                        //Toast.makeText(getApplicationContext(), "mla name"+dataSnapshot, Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "no results", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private void dispatchTakePictureIntent() {
+//    private void get_listof_constituency_mla() {
+//        Query query = FirebaseDatabase.getInstance().getReference("Politicians")
+//                .orderByChild("district")
+//                .equalTo(address.getCity());
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    // Toast.makeText(getApplicationContext(),"res"+dataSnapshot,Toast.LENGTH_LONG).show();
+//                    for (DataSnapshot mlaname : dataSnapshot.getChildren()) {
+//                        mlalist.add(mlaname.child("constituancy").getValue().toString());
+//                    }
+//                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, mlalist);
+//                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                    editMLatag.setAdapter(adapter);
+//                    editMLatag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                        @Override
+//                        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+//                            TextView mlaname = (TextView) adapterView.getSelectedView();
+//                            constituency = mlaname.getText().toString();
+//                            Query query2 = FirebaseDatabase.getInstance().getReference("Politicians")
+//                                    .orderByChild("constituancy")
+//                                    .equalTo(constituency);
+//                            query2.addValueEventListener(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                    for (DataSnapshot mlaid : dataSnapshot.getChildren()) {
+//                                        mlaID = mlaid.child("id").getValue().toString();
+//                                        MLAname = mlaid.child("name").getValue().toString();
+//                                        //Toast.makeText(getApplicationContext(), "mla name"+dataSnapshot, Toast.LENGTH_SHORT).show();
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//                        }
+//
+//                        @Override
+//                        public void onNothingSelected(AdapterView<?> parent) {
+//
+//                        }
+//                    });
+//
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "no results", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//    }
+//
+   private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go

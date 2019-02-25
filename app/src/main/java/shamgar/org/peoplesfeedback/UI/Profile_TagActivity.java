@@ -119,7 +119,7 @@ public class Profile_TagActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                    if (dataSnapshot.hasChild("following")){
-                       tagFollowButton.setText("following");
+                       tagFollowButton.setText("unFollow");
                    }else {
                        tagFollowButton.setText("follow");
                    }
@@ -164,7 +164,7 @@ public class Profile_TagActivity extends AppCompatActivity {
                     following();
                 }else
                 {
-                    Toast.makeText(getApplicationContext(),"you are already following "+tag,Toast.LENGTH_SHORT).show();
+                    unFollow();
                 }
 
             }
@@ -262,9 +262,27 @@ public class Profile_TagActivity extends AppCompatActivity {
 
     }
 
+    private void unFollow() {
+        FirebaseDatabase.getInstance().getReference().child("District")
+                .child(district).child(tag).child("Followers")
+                .child(sharedPreferenceConfig.readPhoneNo().substring(3))
+                .removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            tagFollowButton.setText("follow");
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
     private void gettingMlaTagedImages()
     {
-        keys.clear();
+
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
                 .child(state).child(district).child(tag).child("postID");
 
@@ -273,6 +291,7 @@ public class Profile_TagActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     // images.add(dataSnapshot.getKey());
+                    keys.clear();
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
                     }
@@ -293,12 +312,13 @@ public class Profile_TagActivity extends AppCompatActivity {
 
     private void gettingImageUrls(final ArrayList<String> keys) {
 
-        images.clear();
+
         Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS);
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
+                    images.clear();
                     for (int i=0;i<keys.size();i++){
                         // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
@@ -330,7 +350,7 @@ public class Profile_TagActivity extends AppCompatActivity {
           @Override
           public void onComplete(@NonNull Task<Void> task) {
               if (task.isSuccessful()){
-                  Toast.makeText(getApplicationContext(),"following",Toast.LENGTH_SHORT).show();
+                    tagFollowButton.setText("unFollow");
               }
               else {
                   Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
