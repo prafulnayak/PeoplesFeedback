@@ -33,6 +33,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -200,6 +201,7 @@ public class CameraActivity extends AppCompatActivity implements
 
     // boolean flag to toggle the ui
     private Boolean mRequestingLocationUpdates;
+    private Bitmap bitmap;
 
 
     @Override
@@ -208,7 +210,7 @@ public class CameraActivity extends AppCompatActivity implements
         super.onStop();
 
         mRequestingLocationUpdates = false;
-        stopLocationUpdates();
+//        stopLocationUpdates();
 
     }
 
@@ -370,8 +372,6 @@ public class CameraActivity extends AppCompatActivity implements
         if (mCurrentLocation != null) {
             mLocation = mCurrentLocation;
 
-
-
             // location last updated time
             Log.e("Last updated on: ", ""+ mLastUpdateTime);
         }
@@ -517,6 +517,15 @@ public class CameraActivity extends AppCompatActivity implements
             case R.id.submit:
                 //check weather image is blank or not
                 //check Edit text is blank or not
+
+                if (TextUtils.isEmpty(tag)){
+                    Toast.makeText(getApplicationContext(),"please select tag",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(bitmap==null){
+                    Toast.makeText(getApplicationContext(),"please set image",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (mCurrentLocation != null) {
                     loadingbar.show();
                     latitude = mCurrentLocation.getLatitude();
@@ -1100,7 +1109,7 @@ public class CameraActivity extends AppCompatActivity implements
 
                     if (resultCode == RESULT_OK) {
                         File file = new File(mCurrentPhotoPath);
-                        Bitmap bitmap = MediaStore.Images.Media
+                         bitmap = MediaStore.Images.Media
                                 .getBitmap(this.getContentResolver(), Uri.fromFile(file));
                         if (bitmap != null) {
                             cameraImage.setImageBitmap(bitmap);
@@ -1479,7 +1488,7 @@ public class CameraActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopLocationUpdates();
+       // stopLocationUpdates();
     }
     public void stopLocationUpdates()
     {
@@ -1537,7 +1546,7 @@ public class CameraActivity extends AppCompatActivity implements
 
         if (mRequestingLocationUpdates) {
             // pausing location updates
-            stopLocationUpdates();
+            //stopLocationUpdates();
         }
     }
 

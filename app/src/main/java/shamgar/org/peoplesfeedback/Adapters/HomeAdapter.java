@@ -576,6 +576,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
             pm.getMenu().findItem(R.id.invite).setVisible(false);
         }
 
+
     }
     private void sendchatREquest(final String senderUserId, final PopupMenu pm) {
         chatRequestRef.child(senderUserId).child(receiverUserId)

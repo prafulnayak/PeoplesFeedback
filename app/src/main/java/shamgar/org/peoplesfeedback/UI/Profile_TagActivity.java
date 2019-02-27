@@ -61,16 +61,8 @@ public class Profile_TagActivity extends AppCompatActivity {
 
     private TagListViewImagesAdapter tag_profile_images_adapter;
     private ArrayList<String> images;
-//    private ArrayList<String> postedOn;
-//    private ArrayList<String> lat;
-//    private ArrayList<String> lon;
-//    private ArrayList<String> tagId;
-//    private ArrayList<String> desc;
-//    private ArrayList<String> user;
     private ArrayList<String> keys;
-//    private ArrayList<String> districts;
-//    private ArrayList<String> constituency;
-//    private ArrayList<String> states;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

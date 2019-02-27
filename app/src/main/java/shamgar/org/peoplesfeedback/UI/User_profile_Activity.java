@@ -55,8 +55,8 @@ public class User_profile_Activity extends AppCompatActivity {
 
     private String name,number,image;
 
-    private ArrayList<String> images=new ArrayList<>();
-    private ArrayList<String> keys=new ArrayList<>();
+    private ArrayList<String> images;
+    private ArrayList<String> keys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,9 @@ public class User_profile_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile_);
 
         getSupportActionBar().setTitle("Profile");
+
+        images=new ArrayList<>();
+        keys=new ArrayList<>();
 
         mAuth=FirebaseAuth.getInstance();
         UID=mAuth.getCurrentUser().getPhoneNumber();
@@ -107,15 +110,8 @@ public class User_profile_Activity extends AppCompatActivity {
         user_profile_chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Log.e("name",name);
-//                Log.e("num",number);
-//                Log.e("image",image);
 
-                Intent profile=new Intent(User_profile_Activity.this,ChatActivity.class);
-                profile.putExtra("visit_user_id",number);
-                profile.putExtra("visit_email_id", name);
-                profile.putExtra("visit_image", image);
-                startActivity(profile);
+                checkingContactIsSavedOrNot();
             }
         });
 
@@ -144,6 +140,34 @@ public class User_profile_Activity extends AppCompatActivity {
 //                user_grid_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
 //            }
 //        });
+    }
+
+    private void checkingContactIsSavedOrNot() {
+        Query query=FirebaseDatabase.getInstance().getReference().child("contacts").child(config.readPhoneNo());
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    if (dataSnapshot.hasChild(mobile)){
+                        Intent profile=new Intent(User_profile_Activity.this,ChatActivity.class);
+                        profile.putExtra("visit_user_id",number);
+                        profile.putExtra("visit_email_id", name);
+                        profile.putExtra("visit_image", image);
+                        startActivity(profile);
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(),"You have to send chat request "+name,Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
     }
 
     private void unFollowTheUser() {
@@ -282,7 +306,7 @@ public class User_profile_Activity extends AppCompatActivity {
     private void gettingNUmOfPhotosUpLoaded() {
 
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE)
-                .child(config.readPhoneNo().substring(3)).child("postedPost");
+                .child(mobile.substring(3)).child("postedPost");
 
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override

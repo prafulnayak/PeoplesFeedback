@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,13 +57,13 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
     private static final String TAG = "PhoneActivity";
     private EditText phoneNo;
-    private EditText code;
+    private EditText e_phone_no_otp_verification;
 
-    private RelativeLayout rlgender,rllocation,rlphone;
+    private RelativeLayout rlgender,rllocation,rlphone,rlphoneVerification;
 
     private Button sendVerifyPhoneNo,btnnext,btncontinue;
     private Button verifyCode;
-    private Button reSend;
+    private Button reSend,b_verify_otp;
 
     private CheckBox checkmale,checkfemale;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -136,10 +137,14 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         rllocation = findViewById(R.id.rllocation);
         rlphone = findViewById(R.id.rlphone);
         userName = findViewById(R.id.userName);
+        rlphoneVerification = findViewById(R.id.rlphoneVerification);
+        e_phone_no_otp_verification = findViewById(R.id.e_phone_no_otp_verification);
+        b_verify_otp = findViewById(R.id.b_verify_otp);
 
         sendVerifyPhoneNo.setOnClickListener(this);
         btncontinue.setOnClickListener(this);
         btnnext.setOnClickListener(this);
+        b_verify_otp.setOnClickListener(this);
 
         spinnerState =  findViewById(R.id.spinnerstate);
         spinnerDistrict = findViewById(R.id.spinnerdistrict);
@@ -178,6 +183,8 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
                // Log.w(TAG, "onVerificationFailed", e);
+                Toast.makeText(getApplicationContext(),"verification failed",Toast.LENGTH_SHORT).show();
+
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
@@ -199,6 +206,12 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 //Log.v(TAG, "onCodeSent:" + token);
 
                 // Save verification ID and resending token so we can use them later
+
+//                rlphone.setVisibility(View.GONE);
+//                rlphoneVerification.setVisibility(View.VISIBLE);
+//                sendVerifyPhoneNo.setVisibility(View.GONE);
+//                b_verify_otp.setVisibility(View.VISIBLE);
+
                 mVerificationId = verificationId;
                 mResendToken = token;
                 loadingbar.dismiss();
@@ -478,6 +491,15 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 }
 
                 break;
+
+            case R.id.b_verify_otp:
+                if (TextUtils.isEmpty(e_phone_no_otp_verification.getText().toString())){
+                    Toast.makeText(getApplicationContext(),"enter otp",Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, e_phone_no_otp_verification.getText().toString());
+                         signInWithPhoneAuthCredential(credential);
+                }
 
             case R.id.btnnext:
 

@@ -81,12 +81,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
 
         images=new ArrayList<>();
-//        postedOn=new ArrayList<>();
-//        lat=new ArrayList<>();
-//        lon=new ArrayList<>();
-//        tagId=new ArrayList<>();
-//        desc=new ArrayList<>();
-//        user=new ArrayList<>();
         keys=new ArrayList<>();
 
 
@@ -108,9 +102,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("MLA profile");
 
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setTitle("");
 
         mlaName=getIntent().getExtras().getString("mlaName");
         mlaConstituency=getIntent().getExtras().getString("mlaConstituency");
@@ -334,7 +325,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
     }
 
     private void gettingImageUrls(final ArrayList<String> keys) {
-
 
         Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS);
         ValueEventListener valueEventListener=new ValueEventListener() {

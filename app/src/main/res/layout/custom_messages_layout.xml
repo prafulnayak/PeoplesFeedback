@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/message_profile_image"
@@ -13,12 +14,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.714" />
+        android:layout_marginTop="@dimen/dimen_15"/>
 
     <TextView
         android:id="@+id/receiver_messages"
@@ -27,19 +23,15 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/receiver_message_layout"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
         android:paddingStart="5dp"
+        android:paddingTop="5dp"
         android:paddingEnd="@dimen/dimen_15"
+        android:paddingBottom="5dp"
         android:text="Receiver messages here"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.041"
-        app:layout_constraintStart_toEndOf="@+id/message_profile_image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        android:layout_marginTop="@dimen/dimen_15"
+        android:layout_toRightOf="@+id/message_profile_image"/>
 
     <TextView
         android:id="@+id/sender_messages"
@@ -48,36 +40,29 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/sender_messages_layout"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:paddingEnd="@dimen/dimen_15"
         android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="@dimen/dimen_15"
+        android:paddingBottom="5dp"
         android:text="sender messages"
         android:textColor="@color/white"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.996"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.416" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/dimen_15"/>
 
     <TextView
         android:id="@+id/receiver_messages_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="13dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginStart="4dp"
         android:text="TextView"
         android:textColor="@color/gray"
         android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/receiver_messages"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/receiver_messages"
-        app:layout_constraintTop_toBottomOf="@+id/receiver_messages"
-        app:layout_constraintVertical_bias="0.0" />
+        android:layout_below="@+id/receiver_messages"
+        android:layout_toRightOf="@+id/message_profile_image"/>
 
     <TextView
         android:id="@+id/sender_messages_time"
@@ -87,11 +72,8 @@
         android:text="TextView"
         android:textColor="@color/gray"
         android:textSize="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/sender_messages"
-        app:layout_constraintHorizontal_bias="0.975"
-        app:layout_constraintStart_toStartOf="@+id/sender_messages"
-        app:layout_constraintTop_toBottomOf="@+id/sender_messages"
-        app:layout_constraintVertical_bias="0.0" />
+        android:layout_marginEnd="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/sender_messages"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
