@@ -68,6 +68,7 @@ import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.SpamModel;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Services.BackGroundServices;
+import shamgar.org.peoplesfeedback.UI.Profile_mla_Activity;
 import shamgar.org.peoplesfeedback.UI.User_profile_Activity;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
@@ -131,7 +132,30 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 //        setClickListnerFromFirebase(news,position);
         holder.posttimestamp.setText(news.getPostedDate());
         holder.num_views.setText(String.valueOf(news.getViews()));
-        holder.mlaname.setText(news.getMla()+" (MLA)");;
+        holder.mlaname.setText(news.getMla());
+        holder.mlaname.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mlaProfile=new Intent(ctx, Profile_mla_Activity.class);
+                mlaProfile.putExtra("mlaName",news.getMla());
+                mlaProfile.putExtra("mlaConstituency",news.getConstituancy());
+                mlaProfile.putExtra("state",news.getState());
+                mlaProfile.putExtra("district",news.getDistrict());
+                ctx.startActivity(mlaProfile);
+
+            }
+        });
+        holder.mlaimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mlaProfile=new Intent(ctx, Profile_mla_Activity.class);
+                mlaProfile.putExtra("mlaName",news.getMla());
+                mlaProfile.putExtra("mlaConstituency",news.getConstituancy());
+                mlaProfile.putExtra("state",news.getState());
+                mlaProfile.putExtra("district",news.getDistrict());
+                ctx.startActivity(mlaProfile);
+            }
+        });
         holder.postmlarating_perce.setText(String.valueOf(news.getVotePercentage()+"%"));
         Glide.with(ctx)
                 .load(news.getMlaImageUrl())
@@ -148,8 +172,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.userimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+              //  Log.e("user num",news.getPostedBy());
                 Intent profile=new Intent(ctx, User_profile_Activity.class);
-                profile.putExtra("mobile","+919666235167");
+                profile.putExtra("mobile",news.getPostedBy());
                 ctx.startActivity(profile);
             }
         });
@@ -237,7 +262,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     }else {
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
                     }else {
@@ -309,7 +334,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     }else {
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
                     }else {
@@ -327,18 +352,21 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
         try {
             addresses = geocoder.getFromLocation(news.getLatitude(), news.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+            String knownName = addresses.get(0).getFeatureName();
+
+            holder.postlocation.setText(address);
         } catch (IOException e) {
+            e.printStackTrace();
+        }catch (NullPointerException e){
             e.printStackTrace();
         }
 
-        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-        String city = addresses.get(0).getLocality();
-        String state = addresses.get(0).getAdminArea();
-        String country = addresses.get(0).getCountryName();
-        String postalCode = addresses.get(0).getPostalCode();
-        String knownName = addresses.get(0).getFeatureName();
 
-        holder.postlocation.setText(address);
 
 
     }
@@ -439,7 +467,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         pm.getMenu().findItem(R.id.spam).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
                // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     scheduleJob(postId,sharedPreference.readPhoneNo().substring(3),"Spam");
@@ -559,6 +587,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         else {
             pm.getMenu().findItem(R.id.invite).setVisible(false);
         }
+
 
     }
     private void sendchatREquest(final String senderUserId, final PopupMenu pm) {

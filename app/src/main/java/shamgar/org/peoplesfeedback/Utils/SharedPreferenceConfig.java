@@ -130,4 +130,32 @@ public class SharedPreferenceConfig {
         return name;
     }
 
+    public void setLatitude(String latitude){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(context.getResources().getString(R.string.latitude_preference), latitude);
+        Log.i("SharedPreferanceWrite: ",""+latitude);
+        editor.commit();
+    }
+
+    public String getLatitude(){
+        String name;
+        name = sharedPreferences.getString(context.getResources().getString(R.string.latitude_preference),null);
+        Log.i("SharedPreferanceRead: ",""+name);
+        return name;
+    }
+
+    public void setLongitude(String longitude){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(context.getResources().getString(R.string.longitude_preference), longitude);
+        Log.i("SharedPreferanceWrite: ",""+longitude);
+        editor.commit();
+    }
+
+    public String getLongitude(){
+        String name;
+        name = sharedPreferences.getString(context.getResources().getString(R.string.longitude_preference),null);
+        Log.i("SharedPreferanceRead: ",""+name);
+        return name;
+    }
+
 }

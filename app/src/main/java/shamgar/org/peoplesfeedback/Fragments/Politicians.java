@@ -70,7 +70,7 @@ public class Politicians extends Fragment  {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Object document = dataSnapshot.getValue();
-                        Toast.makeText(getActivity(),"dfsdfgds",Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getActivity(),"dfsdfgds",Toast.LENGTH_LONG).show();
                         System.out.println(document);
                     }
 
@@ -91,10 +91,10 @@ public class Politicians extends Fragment  {
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String s) {
-                Log.e("state", ""+snapshot.getKey());
+              //  Log.e("state", ""+snapshot.getKey());
                 StateCm stateCm = snapshot.getValue(StateCm.class);
 //                    if(stateCm.getCM() != null){
-                Log.e("state cm", ""+stateCm.getCM()+snapshot.getValue().toString());
+              //  Log.e("state cm", ""+stateCm.getCM()+snapshot.getValue().toString());
                 stateCm.setStateName(snapshot.getKey());
 
                 stateList.add(stateCm);
@@ -148,7 +148,7 @@ public class Politicians extends Fragment  {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser)
         {
-            Log.d("Politicians","visible");
+          //  Log.d("Politicians","visible");
         }else{
             // fragment is not visible
         }

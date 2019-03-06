@@ -47,7 +47,7 @@
                     android:layout_height="80dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="30dp"
-                    android:src="@drawable/profile" />
+                    android:src="@drawable/ic_account_circle_black" />
 
                 <TextView
                     android:id="@+id/userName"
@@ -75,7 +75,7 @@
                         android:id="@+id/imgmale"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/man"
+                        android:src="@drawable/ic_male"
                         android:layout_marginRight="100dp" />
 
 
@@ -83,7 +83,7 @@
                         android:id="@+id/imgfemale"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/user"
+                        android:src="@drawable/ic_female"
                         android:layout_toRightOf="@+id/imgmale"
                         android:layout_marginLeft="25dp" />
 
@@ -180,12 +180,39 @@
                         android:id="@+id/e_phone_no_verification"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="40dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="60dp"
                         android:layout_marginBottom="5dp"
                         android:hint="Enter your mobile number"
                         android:paddingLeft="5dp"
+                        android:gravity="center"
+                        android:ems="10"
+                        android:inputType="phone"
+                        android:background="@drawable/stroke_background"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rlphoneVerification"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:layout_marginTop="@dimen/dimen_15"
+                    android:layout_marginBottom="@dimen/dimen_15">
+
+                    <EditText
+                        android:id="@+id/e_phone_no_otp_verification"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="80dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="80dp"
+                        android:layout_marginBottom="5dp"
+                        android:hint="Enter otp"
+                        android:paddingLeft="5dp"
+                        android:gravity="center"
                         android:ems="10"
                         android:inputType="phone"
                         android:background="@drawable/stroke_background"/>
@@ -213,7 +240,8 @@
         android:paddingBottom="@dimen/five_dp"
         android:paddingTop="@dimen/five_dp"
         android:textColor="@color/white"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:textAllCaps="false"/>
 
     <Button
         android:id="@+id/btncontinue"
@@ -227,7 +255,8 @@
         android:text="Continue"
        android:layout_alignParentBottom="true"
         android:textColor="@color/white"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:textAllCaps="false"/>
 
     <Button
         android:id="@+id/b_verify_phone_no"
@@ -241,7 +270,24 @@
         android:text="verify"
         android:layout_alignParentBottom="true"
         android:textColor="@color/white"
+        android:visibility="gone"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/b_verify_otp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/round_background"
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginLeft="100dp"
+        android:text="verify otp"
+        android:textAllCaps="false"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white"
         android:visibility="gone"/>
+
 
 </RelativeLayout>
 

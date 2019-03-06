@@ -144,14 +144,16 @@
         android:id="@+id/locationLL"
         android:layout_alignBottom="@+id/userpost"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#9000">
+        android:background="#9000"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
         <ImageView
             android:id="@+id/locationicon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@drawable/ic_location_on_black_24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/dimen_15" />
@@ -159,7 +161,7 @@
         <TextView
             android:id="@+id/postlocation"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="@string/location"
             android:textSize="13dp"

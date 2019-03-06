@@ -81,12 +81,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
         sharedPreferenceConfig=new SharedPreferenceConfig(this);
 
         images=new ArrayList<>();
-//        postedOn=new ArrayList<>();
-//        lat=new ArrayList<>();
-//        lon=new ArrayList<>();
-//        tagId=new ArrayList<>();
-//        desc=new ArrayList<>();
-//        user=new ArrayList<>();
         keys=new ArrayList<>();
 
 
@@ -108,9 +102,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("MLA profile");
 
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setTitle("");
 
         mlaName=getIntent().getExtras().getString("mlaName");
         mlaConstituency=getIntent().getExtras().getString("mlaConstituency");
@@ -139,7 +130,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("following")){
-                    mlaFollowButton.setText("following");
+                    mlaFollowButton.setText("unFollow");
                     mlaFollowButton.setTextColor(Color.parseColor("#000000"));
                 }else {
                     mlaFollowButton.setText("follow");
@@ -185,7 +176,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     following();
                 }else
                 {
-                    Toast.makeText(getApplicationContext(),"you are already following "+mlaName,Toast.LENGTH_SHORT).show();
+                    unfollow();
                 }
 
             }
@@ -202,7 +193,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
                     followersForMlaCount.setText(numOfFollowers);
                 }else {
-                    Toast.makeText(getApplicationContext()," no followers for "+mlaName,Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext()," no followers for "+mlaName,Toast.LENGTH_SHORT).show();
                     followersForMlaCount.setText("0");
                 }
             }
@@ -222,7 +213,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-                Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Profile_mla_Activity.this);
                 builder.setCancelable(false);
                 builder.setTitle("Your Rating is "+tagRating+"%")
@@ -284,9 +275,28 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     }
 
+    private void unfollow() {
+        FirebaseDatabase.getInstance().getReference().child("Politicians")
+                .child(mlaName).child("Followers")
+                .child(sharedPreferenceConfig.readPhoneNo().substring(3))
+                .removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            mlaFollowButton.setTextColor(Color.parseColor("#000000"));
+                            mlaFollowButton.setText("follow");
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
     private void gettingMlaTagedImagesKeys()
     {
-        keys.clear();
+
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
                 .child(state).child(district).child("constituancy").child(mlaConstituency).child("PostID");
 
@@ -295,10 +305,11 @@ public class Profile_mla_Activity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                    // images.add(dataSnapshot.getKey());
+                    keys.clear();
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
                     }
-                    Log.e("keys",keys.toString());
+                  //  Log.e("keys",keys.toString());
                     gettingImageUrls(keys);
                 }else {
                     Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
@@ -315,12 +326,12 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private void gettingImageUrls(final ArrayList<String> keys) {
 
-        images.clear();
         Query query=FirebaseDatabase.getInstance().getReference().child(NamesC.POSTS);
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
+                    images.clear();
                     for (int i=0;i<keys.size();i++){
                        // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
@@ -354,7 +365,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
                             mlaFollowButton.setTextColor(Color.parseColor("#000000"));
-                            Toast.makeText(getApplicationContext(),"following",Toast.LENGTH_SHORT).show();
+                            mlaFollowButton.setText("unFollow");
                         }
                         else {
                             Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
@@ -375,7 +386,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     String mlaUrl= dataSnapshot.child("image_url").getValue().toString();
                     String mlaParty= dataSnapshot.child("party").getValue().toString();
                     mlaPartyName.setText(mlaParty);
-                     Toast.makeText(getApplicationContext(),mlaUrl,Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getApplicationContext(),mlaUrl,Toast.LENGTH_SHORT).show();
                     Glide.with(getApplicationContext())
                             .load(mlaUrl)
                             .error(R.drawable.ic_account_circle_black)
@@ -431,16 +442,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     int total = 0;
                     ArrayList<String> keysLists = new ArrayList<>();
                     for (DataSnapshot keys:dataSnapshot.getChildren()){
-                        Log.e("keys",keys.getKey());
+                       // Log.e("keys",keys.getKey());
                         for (DataSnapshot innerChildren: keys.getChildren()){
-                            Log.e("keys",innerChildren.getValue().toString());
+                          //  Log.e("keys",innerChildren.getValue().toString());
                             keysLists.add(innerChildren.getValue().toString());
                             total = total+Integer.parseInt(innerChildren.getValue().toString());
-                            Log.e("total", String.valueOf(total));
+                          //  Log.e("total", String.valueOf(total));
                         }
                     }
                     float average= (float) (total/keysLists.size());
-                    Log.e("average", String.valueOf(average));
+                   // Log.e("average", String.valueOf(average));
                     //posting average to respective tag
                     tagAverage(average,keysLists.size());
                 }else {
@@ -463,7 +474,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
+              //  Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
             }
         });
 //                .child("rating")

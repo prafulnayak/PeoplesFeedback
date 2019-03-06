@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -71,6 +72,10 @@ public class ChatActivity extends AppCompatActivity {
         messageReceiverId=getIntent().getExtras().get("visit_user_id").toString();
         messageReceiverName=getIntent().getExtras().get("visit_email_id").toString();
         messageImage=getIntent().getExtras().get("visit_image").toString();
+
+        Log.e("visit_user_id",messageReceiverId);
+        Log.e("visit_email_id",messageReceiverName);
+        Log.e("visit_image",messageImage);
         init();
 
         messageSendButton.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +150,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(),"message sent successfully",Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getApplicationContext(),"message sent successfully",Toast.LENGTH_LONG).show();
                     }
                     else {
                         Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_LONG).show();

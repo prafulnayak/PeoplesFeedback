@@ -64,7 +64,7 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
                 mlaProfile.putExtra("district",district);
                 mlaProfile.putExtra("rating",mlaModel.getRating());
                 mlaProfile.putExtra("votes",mlaModel.getVotes());
-                Toast.makeText(context,"rating "+mlaModel.getVotes(),Toast.LENGTH_SHORT).show();
+               // Toast.makeText(context,"rating "+mlaModel.getVotes(),Toast.LENGTH_SHORT).show();
                 context.startActivity(mlaProfile);
             }
         });

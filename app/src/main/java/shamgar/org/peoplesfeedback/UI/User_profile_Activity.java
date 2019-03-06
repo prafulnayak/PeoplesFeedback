@@ -1,5 +1,6 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.content.Intent;
 import android.provider.Settings;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,9 +50,13 @@ public class User_profile_Activity extends AppCompatActivity {
 
     private String UID,mobile;
     private Button current_user_profile_follow_button;
+    private ImageView user_profile_chat;
+    private TextView user_profile_chat_heading;
 
-    private ArrayList<String> images=new ArrayList<>();
-    private ArrayList<String> keys=new ArrayList<>();
+    private String name,number,image;
+
+    private ArrayList<String> images;
+    private ArrayList<String> keys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +65,13 @@ public class User_profile_Activity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Profile");
 
+        images=new ArrayList<>();
+        keys=new ArrayList<>();
+
         mAuth=FirebaseAuth.getInstance();
         UID=mAuth.getCurrentUser().getPhoneNumber();
         mobile=getIntent().getExtras().get("mobile").toString();
-        Log.e("UID",UID);
+       // Log.e("UID",UID);
 
         checkingUserProfile(UID);
 
@@ -76,6 +85,8 @@ public class User_profile_Activity extends AppCompatActivity {
         current_user_profile_follow_button=findViewById(R.id.current_user_profile_follow_button);
         current_user_profile_num_of_followers=findViewById(R.id.current_user_profile_num_of_followers);
         current_user_profile_num_of_following=findViewById(R.id.current_user_profile_num_of_following);
+        user_profile_chat=findViewById(R.id.user_profile_chat);
+        user_profile_chat_heading=findViewById(R.id.user_profile_chat_heading);
 //        user_grid_image=findViewById(R.id.user_grid_image);
 //        listViewImagesUser=findViewById(R.id.listViewImagesUser);
 
@@ -86,10 +97,25 @@ public class User_profile_Activity extends AppCompatActivity {
         current_user_profile_follow_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                followTheUser();
 
+                if(current_user_profile_follow_button.getText().equals("follow")){
+                    followTheUser();
+                }
+                else {
+                    unFollowTheUser();
+                }
             }
         });
+
+        user_profile_chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                checkingContactIsSavedOrNot();
+            }
+        });
+
+
 
         //click listener for images
 
@@ -116,6 +142,56 @@ public class User_profile_Activity extends AppCompatActivity {
 //        });
     }
 
+    private void checkingContactIsSavedOrNot() {
+        Query query=FirebaseDatabase.getInstance().getReference().child("contacts").child(config.readPhoneNo());
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    if (dataSnapshot.hasChild(mobile)){
+                        Intent profile=new Intent(User_profile_Activity.this,ChatActivity.class);
+                        profile.putExtra("visit_user_id",number);
+                        profile.putExtra("visit_email_id", name);
+                        profile.putExtra("visit_image", image);
+                        startActivity(profile);
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(),"You have to send chat request "+name,Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query.addValueEventListener(valueEventListener);
+    }
+
+    private void unFollowTheUser() {
+        FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE).child(UID.substring(3)).child("following")
+                .child(mobile.substring(3)).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    // Log.e("task","following the user");
+                    FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE).child(mobile.substring(3)).child("followers")
+                            .child(UID.substring(3)).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                current_user_profile_follow_button.setText("follow");
+                                // Log.e("task","followers Updated");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     private void followTheUser() {
 
         FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE).child(UID.substring(3)).child("following")
@@ -123,13 +199,14 @@ public class User_profile_Activity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    Log.e("task","following the user");
+                   // Log.e("task","following the user");
                     FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE).child(mobile.substring(3)).child("followers")
                             .child(UID.substring(3)).setValue(1).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
-                                Log.e("task","followers Updated");
+                                current_user_profile_follow_button.setText("unFollow");
+                               // Log.e("task","followers Updated");
                             }
                         }
                     });
@@ -148,8 +225,10 @@ public class User_profile_Activity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     if(TextUtils.equals(uid,dataSnapshot.child("phoneno").getValue().toString())){
-                        Log.e("note","Hide something");
+                       // Log.e("note","Hide something");
                         current_user_profile_follow_button.setVisibility(View.GONE);
+                        user_profile_chat_heading.setVisibility(View.GONE);
+                        user_profile_chat.setVisibility(View.GONE);
                         current_user_profile_name.setText(config.readName());
                         current_user_profile_location.setText(config.readConstituancy());
 
@@ -164,14 +243,25 @@ public class User_profile_Activity extends AppCompatActivity {
                             String followers= String.valueOf(dataSnapshot.child("followers").getChildrenCount());
                             current_user_profile_num_of_followers.setText(followers);
                         }
+                        else {
+                            current_user_profile_num_of_followers.setText("0");
+                        }
                         if (dataSnapshot.hasChild("following")){
                             String following= String.valueOf(dataSnapshot.child("following").getChildrenCount());
                             current_user_profile_num_of_following.setText(following);
+                        }
+                        else {
+                            current_user_profile_num_of_following.setText("0");
                         }
 
 
                     }
                     else{
+
+                        name=dataSnapshot.child("name").getValue().toString();
+                        number=dataSnapshot.child("phoneno").getValue().toString();
+                        image=dataSnapshot.child("desc").getValue().toString();
+
                         current_user_profile_name.setText(dataSnapshot.child("name").getValue().toString());
                         current_user_profile_location.setText(dataSnapshot.child("constituancy").getValue().toString());
 
@@ -183,16 +273,22 @@ public class User_profile_Activity extends AppCompatActivity {
                                 .into(profile_userImage);
                         if (dataSnapshot.hasChild("followers")) {
                             if (dataSnapshot.child("followers").hasChild(UID.substring(3))){
-                                current_user_profile_follow_button.setText("following");
+                                current_user_profile_follow_button.setText("unFollow");
                             }
                         }
                         if(dataSnapshot.hasChild("followers")){
                             String followers= String.valueOf(dataSnapshot.child("followers").getChildrenCount());
                             current_user_profile_num_of_followers.setText(followers);
                         }
+                        else {
+                            current_user_profile_num_of_followers.setText("0");
+                        }
                         if (dataSnapshot.hasChild("following")){
                             String following= String.valueOf(dataSnapshot.child("following").getChildrenCount());
                             current_user_profile_num_of_following.setText(following);
+                        }
+                        else {
+                            current_user_profile_num_of_following.setText("0");
                         }
                     }
                 }
@@ -209,9 +305,8 @@ public class User_profile_Activity extends AppCompatActivity {
 
     private void gettingNUmOfPhotosUpLoaded() {
 
-
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE)
-                .child(config.readPhoneNo().substring(3)).child("postedPost");
+                .child(mobile.substring(3)).child("postedPost");
 
         ValueEventListener valueEventListener=new ValueEventListener() {
             @Override
@@ -224,7 +319,7 @@ public class User_profile_Activity extends AppCompatActivity {
                     keys.clear();
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
-                        Log.e("keys",keys.toString());
+                       // Log.e("keys",keys.toString());
                     }
                     gettingImageUrls(keys);
 
@@ -250,7 +345,7 @@ public class User_profile_Activity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     images.clear();
                     for (int i=0;i<keys.size();i++){
-                         Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                        // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                     }
                     adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);

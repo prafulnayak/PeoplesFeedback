@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
@@ -62,19 +63,19 @@
                 android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/share_white"
-                tools:ignore="VectorDrawableCompat"
-                android:layout_toRightOf="@+id/tagFollowButton"
                 android:layout_below="@id/tagName"
                 android:layout_marginTop="@dimen/dimen_15"
-                android:layout_marginLeft="30dp"/>
+                android:layout_marginLeft="30dp"
+                android:layout_toRightOf="@+id/tagFollowButton"
+                app:srcCompat="@drawable/share_white"
+                tools:ignore="VectorDrawableCompat" />
 
             <TextView
                 android:id="@+id/followersForTags"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tagName"
-                android:layout_marginTop="10dp"
+                android:layout_below="@id/followersForTagsCount"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="@dimen/dimen_15"
                 android:layout_toLeftOf="@+id/tagFollowButton"
                 android:gravity="center"
@@ -86,10 +87,9 @@
                 android:id="@+id/followersForTagsCount"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/followersForTags"
-                android:layout_marginTop="2dp"
+                android:layout_below="@id/tagName"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="@dimen/dimen_15"
-                android:layout_marginBottom="@dimen/dimen_15"
                 android:layout_toLeftOf="@+id/tagFollowButton"
                 android:gravity="center"
                 android:text="0"
@@ -120,72 +120,75 @@
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 android:text="People rating"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.213"
+                app:layout_constraintHorizontal_bias="0.112"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.135" />
+                app:layout_constraintVertical_bias="0.16" />
 
             <TextView
                 android:id="@+id/overallVotesTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 android:text="Votes:123456"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.194"
+                app:layout_constraintHorizontal_bias="0.141"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.661" />
+                app:layout_constraintVertical_bias="0.854" />
 
             <TextView
                 android:id="@+id/overallRatingTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
                 android:text="75%"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.808"
+                app:layout_constraintHorizontal_bias="0.879"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <ImageView
+            <RatingBar
                 android:id="@+id/imageView2"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="5dp"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:progressTint="@color/pink"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.784"
+                app:layout_constraintHorizontal_bias="0.913"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.566"
-                app:srcCompat="@drawable/rating" />
+                app:layout_constraintVertical_bias="0.769" />
         </android.support.constraint.ConstraintLayout>
 
 

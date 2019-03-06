@@ -24,12 +24,14 @@ public class News {
     private String postedDate;
     private int status;
     private String receiverUserId;
+    private String state;
+    private String district;
 
 
     public News() {
     }
 
-    public News(String postId, String postedBy, String name, String userUrl, String heading, String description, String constituancy, String imageUrl, Double latitude, Double longitude, String address, String mla, String mlaImageUrl, String votePercentage, String tag, int views, int likes, int shares, String postedDate, int status, String receiverUserId) {
+    public News(String postId, String postedBy, String name, String userUrl, String heading, String description, String constituancy, String imageUrl, Double latitude, Double longitude, String address, String mla, String mlaImageUrl, String votePercentage, String tag, int views, int likes, int shares, String postedDate, int status, String receiverUserId, String state, String district) {
         this.postId = postId;
         this.postedBy = postedBy;
         this.name = name;
@@ -51,6 +53,8 @@ public class News {
         this.postedDate = postedDate;
         this.status = status;
         this.receiverUserId = receiverUserId;
+        this.state = state;
+        this.district = district;
     }
 
     public String getName() {
@@ -240,5 +244,23 @@ public class News {
         this.shares = news.shares;
         this.postedDate = news.postedDate;
         this.status = news.status;
+        this.state=news.state;
+        this.district=news.district;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }

@@ -87,7 +87,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
                         stateMajorParty.add(singleSnapParty);
 
                         PartyStateMla singleSnapPartyHead = new PartyStateMla();
-                        Log.e("child",snapshot.getValue().toString());
+                       // Log.e("child",snapshot.getValue().toString());
                         singleSnapPartyHead.setName(snapshot.getValue().toString());
                         singleSnapParty.setHeading("State Party Head");
                         stateMajorPartyHead.add(singleSnapPartyHead);
@@ -126,11 +126,11 @@ public class ConstituencyListActivity extends AppCompatActivity {
                         singleSnapPoliticians.setHeading(sharedPreferenceConfig.readDistrict());
                         singleSnapPoliticians.setName(dataSnapshot.child("mla_name").getValue(String.class));
 
-                        Log.e("pol child",singleSnapPoliticians.getHeading());
-                        Log.e("pol child",dataSnapshot.child("mla_name").getValue(String.class));
+                       // Log.e("pol child",singleSnapPoliticians.getHeading());
+                      //  Log.e("pol child",dataSnapshot.child("mla_name").getValue(String.class));
 
                         districtPoliticians.add(singleSnapPoliticians);
-                        Log.e("con2",dataSnapshot.getKey());
+                      //  Log.e("con2",dataSnapshot.getKey());
 //                    }
                     if(districtPoliticians.size()==1){
                         masterPartyStateMlas.add(districtPoliticians);

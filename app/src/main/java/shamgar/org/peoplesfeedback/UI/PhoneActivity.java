@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,13 +57,13 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
     private static final String TAG = "PhoneActivity";
     private EditText phoneNo;
-    private EditText code;
+    private EditText e_phone_no_otp_verification;
 
-    private RelativeLayout rlgender,rllocation,rlphone;
+    private RelativeLayout rlgender,rllocation,rlphone,rlphoneVerification;
 
     private Button sendVerifyPhoneNo,btnnext,btncontinue;
     private Button verifyCode;
-    private Button reSend;
+    private Button reSend,b_verify_otp;
 
     private CheckBox checkmale,checkfemale;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -102,7 +103,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
     {
         if(currentUser != null)
         {
-            Toast.makeText(this,""+currentUser.getEmail()+" : "+currentUser.getDisplayName(),Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,""+currentUser.getEmail()+" : "+currentUser.getDisplayName(),Toast.LENGTH_SHORT).show();
             sharedPreference.writePhoneNo(currentUser.getPhoneNumber());
            // sharedPreference.writeName(currentUser.getDisplayName());
 
@@ -136,10 +137,14 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
         rllocation = findViewById(R.id.rllocation);
         rlphone = findViewById(R.id.rlphone);
         userName = findViewById(R.id.userName);
+        rlphoneVerification = findViewById(R.id.rlphoneVerification);
+        e_phone_no_otp_verification = findViewById(R.id.e_phone_no_otp_verification);
+        b_verify_otp = findViewById(R.id.b_verify_otp);
 
         sendVerifyPhoneNo.setOnClickListener(this);
         btncontinue.setOnClickListener(this);
         btnnext.setOnClickListener(this);
+        b_verify_otp.setOnClickListener(this);
 
         spinnerState =  findViewById(R.id.spinnerstate);
         spinnerDistrict = findViewById(R.id.spinnerdistrict);
@@ -167,7 +172,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onVerificationCompleted(PhoneAuthCredential credential)
             {
-                Log.d(TAG, "onVerificationCompleted:" + credential);
+               // Log.d(TAG, "onVerificationCompleted:" + credential);
                 String phonenumber= phoneNo.getText().toString();
                 sharedPreference.writePhoneNo(phonenumber);
                signInWithPhoneAuthCredential(credential);
@@ -177,7 +182,9 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             public void onVerificationFailed(FirebaseException e) {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
-                Log.w(TAG, "onVerificationFailed", e);
+               // Log.w(TAG, "onVerificationFailed", e);
+                Toast.makeText(getApplicationContext(),"verification failed",Toast.LENGTH_SHORT).show();
+
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
@@ -195,10 +202,16 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                Log.v(TAG, "onCodeSent:" + verificationId);
-                Log.v(TAG, "onCodeSent:" + token);
+               // Log.v(TAG, "onCodeSent:" + verificationId);
+                //Log.v(TAG, "onCodeSent:" + token);
 
                 // Save verification ID and resending token so we can use them later
+
+//                rlphone.setVisibility(View.GONE);
+//                rlphoneVerification.setVisibility(View.VISIBLE);
+//                sendVerifyPhoneNo.setVisibility(View.GONE);
+//                b_verify_otp.setVisibility(View.VISIBLE);
+
                 mVerificationId = verificationId;
                 mResendToken = token;
                 loadingbar.dismiss();
@@ -221,7 +234,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     state.clear();
                     state.add("Select State");
                     for (DataSnapshot states:dataSnapshot.getChildren()){
-                        Log.e("states",states.getKey());
+                       // Log.e("states",states.getKey());
                         state.add(states.getKey());
                     }
                     stateAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,state);
@@ -261,7 +274,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     districts.clear();
                     districts.add("Select District");
                     for (DataSnapshot states:dataSnapshot.getChildren()){
-                        Log.e("states",states.getKey());
+                       // Log.e("states",states.getKey());
                         districts.add(states.getKey());
                     }
                     districtAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,districts);
@@ -302,7 +315,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                     constituency.clear();
                     constituency.add("Select Constituency");
                     for (DataSnapshot states:dataSnapshot.getChildren()){
-                        Log.e("states",states.getKey());
+                      //  Log.e("states",states.getKey());
                         constituency.add(states.getKey());
                     }
                     constituencyAdapter= new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,constituency);
@@ -353,8 +366,8 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             // Sign in success, update UI with the signed-in user's information
-                                            Log.e(TAG, "signInWithCredential:success");
-                                            Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
+                                          //  Log.e(TAG, "signInWithCredential:success");
+                                          //  Toast.makeText(PhoneActivity.this, "Success",Toast.LENGTH_SHORT).show();
                                             //                            signOut();
                                             FirebaseUser user = task1.getResult().getUser();
 //                            signInWithPhoneAuthCredential(credential);
@@ -368,8 +381,8 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                         else {
                             loadingbar.dismiss();
                                 // Sign in failed, display a message and update the UI
-                                Log.v(TAG, "signInWithCredential:failure", task1.getException());
-                                Toast.makeText(PhoneActivity.this, "Failed",Toast.LENGTH_SHORT).show();
+                               // Log.v(TAG, "signInWithCredential:failure", task1.getException());
+                              //  Toast.makeText(PhoneActivity.this, "Failed",Toast.LENGTH_SHORT).show();
                                 if (task1.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                     // The verification code entered was invalid
                             }
@@ -404,11 +417,11 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild(sharedPreference.readPhoneNo().substring(3))){
-                    Toast.makeText(PhoneActivity.this, "Exist ", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(PhoneActivity.this, "Exist ", Toast.LENGTH_LONG).show();
                     updateExistingUserDetails();
                 }else {
 
-                    Toast.makeText(PhoneActivity.this, "Does not Exist ", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(PhoneActivity.this, "Does not Exist ", Toast.LENGTH_LONG).show();
                     insertNewUserDetails(people);
                 }
             }
@@ -426,9 +439,9 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-                    Toast.makeText(PhoneActivity.this, "login success: "+people.getName(), Toast.LENGTH_LONG).show();
-                }else
-                    Toast.makeText(PhoneActivity.this, "login Fail: "+people.getName(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(PhoneActivity.this, "login success: "+people.getName(), Toast.LENGTH_LONG).show();
+                }
+                   // Toast.makeText(PhoneActivity.this, "login Fail: "+people.getName(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -455,7 +468,7 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(PhoneActivity.this, "Information Updated "+sharedPreference.readName(), Toast.LENGTH_LONG).show();
+              //  Toast.makeText(PhoneActivity.this, "Information Updated "+sharedPreference.readName(), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -478,6 +491,15 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
                 }
 
                 break;
+
+            case R.id.b_verify_otp:
+                if (TextUtils.isEmpty(e_phone_no_otp_verification.getText().toString())){
+                    Toast.makeText(getApplicationContext(),"enter otp",Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, e_phone_no_otp_verification.getText().toString());
+                         signInWithPhoneAuthCredential(credential);
+                }
 
             case R.id.btnnext:
 
