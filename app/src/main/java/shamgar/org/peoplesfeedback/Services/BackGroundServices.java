@@ -9,6 +9,7 @@ import android.app.job.JobService;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -68,7 +69,16 @@ public class BackGroundServices extends JobService implements NamesC {
                 dbRefLike.child(postId).child(typePost).push().setValue(phoneNo).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                       // Log.e("type post",""+typePost);
+
+                        jobFinished(jobParameters,false);
+
+                        // Log.e("type post",""+typePost);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        jobFinished(jobParameters,true);
                     }
                 });
             }else {
@@ -78,7 +88,7 @@ public class BackGroundServices extends JobService implements NamesC {
 //                        mNotifyManager.notify(0, builder.build());
 //                        Toast.makeText(BackGroundServices.this, "liked Success", Toast.LENGTH_SHORT).show();
                         jobFinished(jobParameters,false);
-                       // Log.e("type post",""+typePost);
+                        // Log.e("type post",""+typePost);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -94,6 +104,17 @@ public class BackGroundServices extends JobService implements NamesC {
         }
 
         return true;
+    }
+
+    private void postDelayedMsg(final String typePost) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("type post delayed",""+typePost);
+            }
+        }, 5000);
+
     }
 
     @Override

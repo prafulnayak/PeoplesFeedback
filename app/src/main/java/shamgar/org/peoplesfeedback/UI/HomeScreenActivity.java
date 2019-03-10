@@ -1,8 +1,18 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -22,6 +32,21 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -41,7 +66,7 @@ import shamgar.org.peoplesfeedback.Fragments.Politicians;
 import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
-public class HomeScreenActivity extends AppCompatActivity {
+public class HomeScreenActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private TabLayout tabLayout;
     private FrameLayout viewPager;
@@ -58,13 +83,26 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     private CircleImageView profileImage;
 
+    // location updates interval - 2 min
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5*60*1000;
+
+    // fastest updates interval - 1 min
+    // location updates will be received if another app is requesting the locations
+    // than your app can handle
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 2*60*1000;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest mLocationRequest;
+    private LocationCallback mLocationCallback;
+    SharedPreferenceConfig sharedPreferenceConfig;
+
+    private static double lat, lan;
 
 
     final int[] ICONS = new int[]{
-                    R.drawable.ic_notifications_white_24dp,
-                    R.drawable.ic_people_black_24dp,
-                    R.drawable.ic_home_white_24dp
-            };
+            R.drawable.ic_notifications_white_24dp,
+            R.drawable.ic_people_black_24dp,
+            R.drawable.ic_home_white_24dp
+    };
     private String strhome,pol,chat,notifications;
 
     public HomeScreenActivity() {
@@ -76,6 +114,12 @@ public class HomeScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         sharedPreference = new SharedPreferenceConfig(this);
 
@@ -114,11 +158,11 @@ public class HomeScreenActivity extends AppCompatActivity {
 
 
 
-       // tabLayout.setupWithViewPager(viewPager);
+        // tabLayout.setupWithViewPager(viewPager);
 
 
-       TabsAccessorAdaptor adaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
-       tabLayout.setTabsFromPagerAdapter(adaptor);
+        TabsAccessorAdaptor adaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
+        tabLayout.setTabsFromPagerAdapter(adaptor);
         setupTabIcons();
         TabLayout.Tab tab=tabLayout.getTabAt(0);
         tab.select();
@@ -310,14 +354,14 @@ public class HomeScreenActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-         super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.home_screen_menu_options,menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-         super.onOptionsItemSelected(item);
+        super.onOptionsItemSelected(item);
         if (item.getItemId()==R.id.contacts) {
             Intent contacts=new Intent(HomeScreenActivity.this,ContactsActivity.class);
             startActivity(contacts);
@@ -333,7 +377,6 @@ public class HomeScreenActivity extends AppCompatActivity {
             Intent signOut=new Intent(HomeScreenActivity.this,MainActivity.class);
             startActivity(signOut);
             finish();
-
         }
 
         return true;
@@ -363,6 +406,14 @@ public class HomeScreenActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        sharedPreferenceConfig = new SharedPreferenceConfig(this);
+        checkLocationPermission();
+
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -382,9 +433,25 @@ public class HomeScreenActivity extends AppCompatActivity {
         if (currentUser!=null){
             updateUserStatus("offline");
         }
+        if(mFusedLocationClient != null)
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
 
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -413,6 +480,166 @@ public class HomeScreenActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+    }
+
+    private void checkLocationPermission() {
+        // check permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // reuqest for permission
+            int locationRequestCode = 11;
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    locationRequestCode);
+
+        } else {
+            // already permission granted
+
+            EnableGPSAutoMatically();
+//            startLocationUpdates();
+
+        }
+    }
+
+    private void EnableGPSAutoMatically() {
+        GoogleApiClient googleApiClient = null;
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API).addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this).build();
+            googleApiClient.connect();
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(locationRequest);
+
+            builder.setAlwaysShow(true);
+
+            PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
+                    .checkLocationSettings(googleApiClient, builder.build());
+            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                @Override
+                public void onResult(LocationSettingsResult result) {
+                    final Status status = result.getStatus();
+                    final LocationSettingsStates state = result
+                            .getLocationSettingsStates();
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            //Toast.makeText(HomeScreenActivity.this, "success on", Toast.LENGTH_SHORT).show();
+                            // All location settings are satisfied.
+                            //Schedule the job
+                            startLocationUpdates();
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+
+                            Toast.makeText(HomeScreenActivity.this, "GPS is not on", Toast.LENGTH_SHORT).show();
+                            // Location settings are not satisfied. But could be
+                            // fixed by showing the user
+                            // a dialog.
+                            try {
+                                // Show the dialog by calling
+                                // startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                status.startResolutionForResult(HomeScreenActivity.this, 1000);
+
+                            } catch (IntentSender.SendIntentException e) {
+                                // Ignore the error.
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            Toast.makeText(HomeScreenActivity.this, "Setting change not allowed", Toast.LENGTH_SHORT).show();
+                            // Location settings are not satisfied.
+                            break;
+                    }
+                }
+            });
+        }
+    }
+
+
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case 11:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Location Granted. Schedule the background Job.
+                    startLocationUpdates();
+
+                } else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates(){
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        // Use Location CallBack if fusedLocation returns null
+        // This is required because, fusedLocationProviderClient gives result few time in an hour on devices higher then Nouget
+        // in background
+        mLocationCallback = new LocationCallback(){
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                // location is received
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        lat = location.getLatitude();
+                        lan = location.getLongitude();
+                        sharedPreferenceConfig.setLatitude(String.valueOf(lat));
+                        sharedPreferenceConfig.setLongitude(String.valueOf(lan));
+
+
+                    }else {
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
+
+                    }
+                }
+                // remove once the location received
+                // No need to run it in interval
+
+
+            }
+
+            @Override
+            public void onLocationAvailability(LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+            }
+        };
+
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest,mLocationCallback, Looper.myLooper());
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1000) {
+            if(resultCode == Activity.RESULT_OK){
+                // Once the GPS on again. Schedule the background job
+                startLocationUpdates();
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
         }
     }
 

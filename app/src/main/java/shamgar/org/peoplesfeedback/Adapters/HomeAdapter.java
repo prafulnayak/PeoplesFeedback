@@ -92,6 +92,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     private Menu menu;
 
     private JobScheduler jobScheduler;
+    private String address;
 
     public HomeAdapter(ArrayList<News> newsList, Context newsFragment)
     {
@@ -231,8 +232,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.setPackage("com.whatsapp");
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
-                            intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+                            intent.putExtra(Intent.EXTRA_TEXT, "MLA name : "+news.getMla()+"\nAddress : "+holder.postlocation.getText()+"\n"+news.getDescription()+
+                                    "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");                            intent.putExtra(Intent.EXTRA_STREAM, apkURI);
 //                            intent.setType("image/png");
                           //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
                             ctx.startActivity(intent);
@@ -301,7 +302,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                             intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
+                            intent.putExtra(Intent.EXTRA_TEXT, "MLA name : "+news.getMla()+"\nAddress : "+holder.postlocation.getText()+"\n"+news.getDescription()+
+                                    "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");
                             intent.putExtra(Intent.EXTRA_STREAM, apkURI);
 //                            intent.setType("image/png");
                             //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
@@ -351,19 +353,25 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         geocoder = new Geocoder(ctx, Locale.getDefault());
 
         try {
-            addresses = geocoder.getFromLocation(news.getLatitude(), news.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            addresses = geocoder.getFromLocation(news.getLatitude(), news.getLongitude(), 1);
+            // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+            String knownName = addresses.get(0).getFeatureName();
+
+            holder.postlocation.setText(address);
         } catch (IOException e) {
+
             e.printStackTrace();
+
+        }catch (NullPointerException e){
+
+            e.printStackTrace();
+
         }
-
-        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-        String city = addresses.get(0).getLocality();
-        String state = addresses.get(0).getAdminArea();
-        String country = addresses.get(0).getCountryName();
-        String postalCode = addresses.get(0).getPostalCode();
-        String knownName = addresses.get(0).getFeatureName();
-
-        holder.postlocation.setText(address);
 
 
     }

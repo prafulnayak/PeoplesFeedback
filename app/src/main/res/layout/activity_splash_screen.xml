@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true" />
+    <me.relex.circleindicator.CircleIndicator
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:id="@+id/indicator"
+        app:ci_width="6dp"
+        app:ci_height="6dp"
+        app:ci_drawable="@drawable/circle_indicatior_color"
+        app:ci_drawable_unselected="@drawable/indication_unselected"
+        android:layout_above="@+id/btnGetStarted" />
+    <Button
+        android:id="@+id/btnGetStarted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/pink2"
+        android:textAllCaps="false"
+        android:text="Get Started"
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
+</RelativeLayout>

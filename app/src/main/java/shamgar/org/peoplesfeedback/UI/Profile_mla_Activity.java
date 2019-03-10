@@ -83,7 +83,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
         images=new ArrayList<>();
         keys=new ArrayList<>();
 
-
         mlanametxt=findViewById(R.id.mlaDistrictName);
         txtmlaConstituency=findViewById(R.id.mlaName);
         mlaFollowButton=findViewById(R.id.mlaFollowButton);
@@ -134,6 +133,8 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     mlaFollowButton.setTextColor(Color.parseColor("#000000"));
                 }else {
                     mlaFollowButton.setText("follow");
+                    mlaFollowButton.setTextColor(Color.parseColor("#c2185b"));
+
                 }
 
             }
@@ -284,7 +285,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
-                            mlaFollowButton.setTextColor(Color.parseColor("#000000"));
+                            mlaFollowButton.setTextColor(Color.parseColor("#c2185b"));
                             mlaFollowButton.setText("follow");
                         }
                         else {
@@ -296,7 +297,6 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private void gettingMlaTagedImagesKeys()
     {
-
         Query taggedImages =  FirebaseDatabase.getInstance().getReference().child(NamesC.INDIA)
                 .child(state).child(district).child("constituancy").child(mlaConstituency).child("PostID");
 

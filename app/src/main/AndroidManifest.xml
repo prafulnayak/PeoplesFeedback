@@ -5,15 +5,16 @@
     <permission
         android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -25,8 +26,7 @@
         android:roundIcon="@drawable/ic__pfb_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".UI.MainActivity"
+        <activity android:name=".SplashScreen"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme1">
             <intent-filter>
@@ -34,6 +34,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".UI.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme1">
+
         </activity>
 
         <meta-data
@@ -43,18 +49,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC27sp8GLFxSEDk8IAgEcB4pnf02Sq5LeA" />
 
-        <service android:name=".Services.BackGroundServices"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service
+            android:name=".Services.BackGroundServices"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <activity
             android:name=".UI.PhoneActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme1"/>
+            android:theme="@style/AppTheme1" />
         <activity
             android:name=".UI.HomeScreenActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme1" />
-
-        <!-- <provider -->
+            android:theme="@style/AppTheme1" /> <!-- <provider -->
         <!-- android:name=".RequestProvider.Camera" -->
         <!-- android:authorities="${applicationId}.shamgar.org.peoplesfeedback" -->
         <!-- android:exported="false" -->
@@ -63,44 +69,47 @@
         <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
         <!-- android:resource="@xml/provider_paths" /> -->
         <!-- </provider> -->
-
-        <activity android:name=".UI.CameraActivity"
-            android:theme="@style/AppTheme2"
+        <activity
+            android:name=".UI.CameraActivity"
             android:parentActivityName=".UI.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
         <activity
             android:name=".UI.ConstituencyListActivity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme1"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme1" />
         <activity
             android:name=".UI.ViewAllPoliticiansActivity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme1"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UI.ContactsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".UI.ContactsActivity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme2"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UI.ChatActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
+        <activity
+            android:name=".UI.ChatActivity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme2"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
         <activity
             android:name=".UI.Profile_TagActivity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme2"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
         <activity
             android:name=".UI.User_profile_Activity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme2"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
         <activity android:name=".UI.Entry" />
-        <activity android:name=".UI.Profile_mla_Activity"
+        <activity
+            android:name=".UI.Profile_mla_Activity"
             android:parentActivityName=".UI.MainActivity"
-            android:theme="@style/AppTheme2"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -109,7 +118,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 

@@ -8,10 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="cardViewStyle">@style/CardView</item>
         <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>
-        <item name="android:popupMenuStyle">@style/PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
-        <item name="android:actionBarWidgetTheme">@style/PopupMenuTextView</item>
-        <item name="popupMenuStyle">@style/MyPopupMenu</item>
+        <!--<item name="android:popupMenuStyle">@style/PopupMenu</item>-->
+        <!--<item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>-->
+        <!--<item name="android:actionBarWidgetTheme">@style/PopupMenuTextView</item>-->
+        <!--<item name="popupMenuStyle">@style/MyPopupMenu</item>-->
         <item name="android:windowLightStatusBar">true</item>
 
         <item name="android:listPreferredItemHeightSmall">45dp</item>
