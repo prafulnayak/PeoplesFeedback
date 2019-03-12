@@ -70,6 +70,8 @@ dependencies {
 
     implementation 'com.xw.repo:bubbleseekbar:3.5-lite'
 
+    implementation 'me.relex:circleindicator:1.2.2@aar'
+
 
 }
 apply plugin: 'com.google.gms.google-services'

@@ -5,195 +5,239 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.User_profile_Activity">
-
+    tools:context=".UI.User_profile_Activity"
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="1000dp">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
         <FrameLayout
             android:id="@+id/fl"
             android:layout_width="match_parent"
-            android:layout_height="170dp"
-            android:background="@color/pink2"
-            android:paddingTop="30dp">
-            <RelativeLayout
+            android:layout_height="wrap_content">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginStart="30dp"
-                android:background="@color/white">
-
-                <TextView
-                    android:id="@+id/current_user_profile_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
-                    android:text="Sai"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:textSize="18sp"/>
-                <TextView
-                    android:id="@+id/current_user_profile_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5dp"
-                    android:text="Visakhapatnam"
-                    android:textSize="14sp"
-                    android:layout_below="@+id/current_user_profile_name"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@color/black"
-                    android:drawableStart="@drawable/ic_location_on_black_24dp"
-                    />
-
-                <ImageView
-                    android:id="@+id/user_profile_chat"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_chat_dis"
-                    android:layout_marginTop="40dp"
-                    android:layout_toRightOf="@+id/current_user_profile_location"
-                    android:layout_marginStart="35dp"/>
-                <TextView
-                    android:id="@+id/user_profile_chat_heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/user_profile_chat"
-                    android:layout_marginStart="30dp"
-                    android:text="Chat"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="4dp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_toRightOf="@+id/current_user_profile_location"/>
+                android:layout_height="220dp"
+                android:background="@color/pink2">
+            </LinearLayout>
 
 
-            </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp">
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="@dimen/dimen_15"
+                        app:cardCornerRadius="4dp"
+                        app:cardElevation="1dp"
+                        app:cardBackgroundColor="@color/white">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/current_user_profile_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="40dp"
+                                android:text="Sai"
+                                android:layout_centerHorizontal="true"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:textStyle="bold"/>
+                            <TextView
+                                android:id="@+id/current_user_profile_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="5dp"
+                                android:text="Visakhapatnam"
+                                android:textSize="14sp"
+                                android:layout_below="@+id/current_user_profile_name"
+                                android:layout_centerHorizontal="true"
+                                android:textColor="@color/gray"
+                                android:drawableStart="@drawable/ic_location_on_black_24dp"
+                                />
+
+                            <ImageView
+                                android:id="@+id/user_profile_chat"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_chat_dis"
+                                android:layout_marginTop="40dp"
+                                android:layout_toRightOf="@+id/current_user_profile_location"
+                                android:layout_marginStart="35dp"/>
+                            <TextView
+                                android:id="@+id/user_profile_chat_heading"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/user_profile_chat"
+                                android:layout_marginStart="30dp"
+                                android:text="Chat"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="4dp"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:layout_toRightOf="@+id/current_user_profile_location"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_below="@+id/current_user_profile_location">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:weightSum="3"
+                                    android:layout_marginTop="25dp"
+                                    android:layout_marginBottom="@dimen/dimen_15"
+                                    >
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+                                        <TextView
+                                            android:id="@+id/current_user_profile_followers"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="followers"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_margin="2dp"
+                                            android:textStyle="bold"
+                                            android:textColor="@color/gray"
+                                            android:textSize="14sp"/>
+                                        <TextView
+                                            android:id="@+id/current_user_profile_num_of_followers"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_horizontal"
+                                            android:text="0"
+                                            android:layout_margin="2dp"
+                                            android:textSize="18dp"
+                                            android:textStyle="bold"
+                                            android:textColor="@color/black"/>
+
+                                    </LinearLayout>
+
+                                    <TableRow
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#DFDCDC">
+                                    </TableRow>
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+                                        <TextView
+                                            android:id="@+id/current_user_profile_following"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="following"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_margin="2dp"
+                                            android:textColor="@color/gray"
+                                            android:textSize="14sp"/>
+                                        <TextView
+                                            android:id="@+id/current_user_profile_num_of_following"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_margin="2dp"
+                                            android:text="0"
+                                            android:textStyle="bold"
+                                            android:textSize="18dp"
+                                            android:textColor="@color/black"/>
+
+                                    </LinearLayout>
+
+                                    <TableRow
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#DFDCDC">
+                                    </TableRow>
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+                                        <TextView
+                                            android:id="@+id/current_user_profile_photos"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="photos"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_margin="2dp"
+                                            android:textColor="@color/gray"
+                                            android:textSize="14sp"/>
+                                        <TextView
+                                            android:id="@+id/current_user_profile_num_of_photos"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_margin="2dp"
+                                            android:text="0"
+                                            android:textSize="18dp"
+                                            android:textStyle="bold"
+                                            android:textColor="@color/black"/>
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                                <Button
+                                    android:id="@+id/current_user_profile_follow_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="30dp"
+                                    android:background="@drawable/round_background"
+                                    android:textColor="@color/white"
+                                    android:layout_gravity="center"
+                                    android:text="follow"
+                                    android:visibility="visible"
+                                    android:textAllCaps="false"
+                                    android:paddingStart="10dp"
+                                    android:paddingEnd="10dp"
+                                    android:layout_marginBottom="5dp"/>
+
+                            </LinearLayout>
+
+
+
+                        </RelativeLayout>
+
+
+                    </android.support.v7.widget.CardView>
+
+
+                </RelativeLayout>
+
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_userImage"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:src="@drawable/profile"
+                android:layout_marginTop="50dp"
                 android:layout_gravity="center_horizontal"/>
 
-
-
         </FrameLayout>
-
-      <LinearLayout
-          android:id="@+id/ll"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:weightSum="3"
-          android:layout_below="@+id/fl"
-          android:layout_marginTop="25dp"
-          android:layout_marginBottom="@dimen/dimen_15"
-          android:layout_marginStart="32dp"
-          android:layout_marginEnd="32dp">
-
-          <LinearLayout
-              android:layout_width="0dp"
-              android:layout_height="wrap_content"
-              android:layout_weight="1"
-              android:orientation="vertical">
-              <TextView
-                  android:id="@+id/current_user_profile_followers"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="followers"
-                 android:layout_gravity="center_horizontal"
-                  android:layout_margin="2dp"
-                  android:textStyle="bold"
-                  android:textColor="@color/black"
-                  android:textSize="18sp"/>
-              <TextView
-                  android:id="@+id/current_user_profile_num_of_followers"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_horizontal"
-                  android:text="0"
-                  android:layout_margin="2dp"
-                  android:textColor="@color/black"/>
-
-          </LinearLayout>
-          <LinearLayout
-              android:layout_width="0dp"
-              android:layout_height="wrap_content"
-              android:layout_weight="1"
-              android:orientation="vertical">
-              <TextView
-                  android:id="@+id/current_user_profile_following"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="following"
-                  android:layout_gravity="center_horizontal"
-                  android:layout_margin="2dp"
-                  android:textStyle="bold"
-                  android:textColor="@color/black"
-                  android:textSize="18sp"/>
-              <TextView
-                  android:id="@+id/current_user_profile_num_of_following"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_horizontal"
-                  android:layout_margin="2dp"
-                  android:text="0"
-                  android:textColor="@color/black"/>
-
-          </LinearLayout>
-
-          <LinearLayout
-              android:layout_width="0dp"
-              android:layout_height="wrap_content"
-              android:layout_weight="1"
-              android:orientation="vertical">
-              <TextView
-                  android:id="@+id/current_user_profile_photos"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="photos"
-                  android:layout_gravity="center_horizontal"
-                  android:layout_margin="2dp"
-                  android:textStyle="bold"
-                  android:textColor="@color/black"
-                  android:textSize="18sp"/>
-              <TextView
-                  android:id="@+id/current_user_profile_num_of_photos"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_horizontal"
-                  android:layout_margin="2dp"
-                  android:text="0"
-                  android:textColor="@color/black"/>
-
-          </LinearLayout>
-
-      </LinearLayout>
-
-        <Button
-            android:id="@+id/current_user_profile_follow_button"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_below="@+id/ll"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="@dimen/dimen_15"
-            android:background="@drawable/round_background"
-            android:textColor="@color/white"
-            android:text="follow"
-            android:visibility="visible"
-            android:textAllCaps="false"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"/>
-
 
         <TableRow
             android:id="@+id/line1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@id/current_user_profile_follow_button"
-            android:background="#95989A"/>
+            android:layout_below="@id/fl"
+            android:background="#95989A" />
 
         <TextView
             android:id="@+id/textview123"
@@ -205,37 +249,6 @@
             android:textSize="18dp"
             android:layout_below="@+id/line1"
             android:layout_margin="10dp"/>
-        <!--<LinearLayout-->
-            <!--android:id="@+id/linearLayout"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:weightSum="2"-->
-            <!--android:layout_below="@+id/line1">-->
-
-            <!--<ImageButton-->
-                <!--android:id="@+id/user_grid_image"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="50dp"-->
-                <!--android:layout_weight="1"-->
-                <!--android:background="@color/white"-->
-                <!--android:src="@drawable/ic_view_quilt_primary_24dp" />-->
-            <!--<View-->
-                <!--android:id="@+id/viewll"-->
-                <!--android:layout_width="1dp"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:background="#9b9a9a"/>-->
-
-            <!--<ImageButton-->
-                <!--android:id="@+id/listViewImagesUser"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="50dp"-->
-                <!--android:layout_weight="1"-->
-                <!--android:background="@color/white"-->
-                <!--android:src="@drawable/ic_view_list_gray_24dp" />-->
-        <!--</LinearLayout>-->
 
         <TableRow
             android:id="@+id/line2"

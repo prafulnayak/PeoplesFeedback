@@ -1,6 +1,7 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +59,7 @@ public class Profile_TagActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private String district,tag,tagRating,state;
     private SharedPreferenceConfig sharedPreferenceConfig;
+    private RatingBar profiletagRating;
 
 
     private TagListViewImagesAdapter tag_profile_images_adapter;
@@ -102,6 +105,7 @@ public class Profile_TagActivity extends AppCompatActivity {
         tagRatingPercentage=(TextView) findViewById(R.id.tagRatingPercentage);
         overallRatingTag=(TextView) findViewById(R.id.overallRatingTag);
         overallVotesTag=(TextView) findViewById(R.id.overallVotesTag);
+        profiletagRating=(RatingBar) findViewById(R.id.tagRating);
 
         //checking user is following or not
         Query postQuery =  FirebaseDatabase.getInstance().getReference().child("District")
@@ -112,8 +116,12 @@ public class Profile_TagActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                    if (dataSnapshot.hasChild("following")){
                        tagFollowButton.setText("unFollow");
+                       tagFollowButton.setTextColor(Color.parseColor("#000000"));
+
                    }else {
                        tagFollowButton.setText("follow");
+                       tagFollowButton.setTextColor(Color.parseColor("#c2185b"));
+
                    }
             }
             @Override
@@ -133,6 +141,7 @@ public class Profile_TagActivity extends AppCompatActivity {
                     String rating=dataSnapshot.child("rating").getValue().toString();
                     String Votes=dataSnapshot.child("votes").getValue().toString();
                     overallRatingTag.setText(rating+"%");
+                    profiletagRating.setRating(Integer.parseInt(rating)*5/100);
                     overallVotesTag.setText("Total votes: "+Votes);
                 }else {
                     Log.e("overall rating","data not exists");
@@ -264,6 +273,8 @@ public class Profile_TagActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()){
                             tagFollowButton.setText("follow");
+                            tagFollowButton.setTextColor(Color.parseColor("#c2185b"));
+
                         }
                         else {
                             Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();
@@ -343,6 +354,8 @@ public class Profile_TagActivity extends AppCompatActivity {
           public void onComplete(@NonNull Task<Void> task) {
               if (task.isSuccessful()){
                     tagFollowButton.setText("unFollow");
+                  tagFollowButton.setTextColor(Color.parseColor("#000000"));
+
               }
               else {
                   Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_SHORT).show();

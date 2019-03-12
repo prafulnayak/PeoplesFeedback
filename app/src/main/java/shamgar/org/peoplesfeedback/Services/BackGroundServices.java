@@ -70,6 +70,7 @@ public class BackGroundServices extends JobService implements NamesC {
                     @Override
                     public void onSuccess(Void aVoid) {
 
+
                         jobFinished(jobParameters,false);
 
                        // Log.e("type post",""+typePost);
@@ -78,7 +79,8 @@ public class BackGroundServices extends JobService implements NamesC {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        jobFinished(jobParameters,true);
+                        jobFinished(jobParameters,false);
+
                     }
                 });
             }else {
@@ -88,7 +90,7 @@ public class BackGroundServices extends JobService implements NamesC {
 //                        mNotifyManager.notify(0, builder.build());
 //                        Toast.makeText(BackGroundServices.this, "liked Success", Toast.LENGTH_SHORT).show();
                         jobFinished(jobParameters,false);
-                       // Log.e("type post",""+typePost);
+                        // Log.e("type post",""+typePost);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

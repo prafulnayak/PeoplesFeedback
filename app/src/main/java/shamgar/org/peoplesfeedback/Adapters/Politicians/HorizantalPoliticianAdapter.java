@@ -3,12 +3,16 @@ package shamgar.org.peoplesfeedback.Adapters.Politicians;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +24,11 @@ public class HorizantalPoliticianAdapter extends RecyclerView.Adapter<Horizantal
 
     private List<String> mDataList;
     private int mRowIndex = -1;
+    private Context context;
     private ArrayList<PartyStateMla> partyStateMlas = new ArrayList<>();
-    public HorizantalPoliticianAdapter(ArrayList<PartyStateMla> partyStateMlas) {
+    public HorizantalPoliticianAdapter(Context mContext, ArrayList<PartyStateMla> partyStateMlas) {
         this.partyStateMlas = partyStateMlas;
+        this.context = mContext;
     }
 
 
@@ -40,7 +46,17 @@ public class HorizantalPoliticianAdapter extends RecyclerView.Adapter<Horizantal
 
         final PartyStateMla partyStateMla = partyStateMlas.get(position);
         holder.name.setText(partyStateMla.getName());
-        holder.pol_rating.setRating(90);
+
+        if (!TextUtils.isEmpty(partyStateMla.getRating())){
+            holder.pol_rating.setRating(Integer.parseInt(partyStateMla.getRating())*5/100);
+        }
+        holder.rating.setText(partyStateMla.getRating());
+        Glide.with(context)
+                .load(partyStateMla.getImageUrl())
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.polImageView);
 
     }
 
@@ -72,6 +88,7 @@ public class HorizantalPoliticianAdapter extends RecyclerView.Adapter<Horizantal
             name = itemView.findViewById(R.id.txt_mla_name_in_hori_rv);
             rating = itemView.findViewById(R.id.txt_mla_rating_in_hori_rv);
             pol_rating = itemView.findViewById(R.id.pol_rating);
+
 
         }
     }

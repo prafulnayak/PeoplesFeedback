@@ -73,44 +73,50 @@
 
                     <ImageView
                         android:id="@+id/imgmale"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:src="@drawable/ic_male"
-                        android:layout_marginRight="100dp" />
-
+                        android:layout_marginStart="50dp"
+                        />
 
                     <ImageView
                         android:id="@+id/imgfemale"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:src="@drawable/ic_female"
-                        android:layout_toRightOf="@+id/imgmale"
-                        android:layout_marginLeft="25dp" />
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="50dp"/>
 
                     <RadioGroup
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/imgmale"
                         android:orientation="horizontal"
-                        android:checkedButton="1">
+                        android:checkedButton="1"
+                      >
 
-                        <CheckBox
-                            android:id="@+id/checkmale"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:buttonTint="@color/pink2"
-                            android:layout_below="@id/imgmale"
-                            android:layout_marginLeft="10dp"
-                            android:onClick="checkedButton"/>
-                        <CheckBox
-                            android:id="@+id/checkfemale"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:buttonTint="@color/pink2"
-                            android:layout_toRightOf="@id/imgmale"
-                            android:layout_below="@id/imgfemale"
-                            android:layout_marginLeft="140dp"
-                            android:onClick="checkedButton"/>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <CheckBox
+                                android:id="@+id/checkmale"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:buttonTint="@color/pink2"
+                                android:onClick="checkedButton"
+                                android:layout_marginStart="70dp"/>
+                            <CheckBox
+                                android:id="@+id/checkfemale"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:buttonTint="@color/pink2"
+                                android:onClick="checkedButton"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="70dp"/>
+
+                        </RelativeLayout>
+
 
                     </RadioGroup>
 
@@ -125,8 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:visibility="gone"
-                    >
+                    android:visibility="gone">
 
 
                     <Spinner
@@ -180,16 +185,16 @@
                         android:id="@+id/e_phone_no_verification"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:layout_marginStart="40dp"
+                        android:layout_marginStart="50dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="60dp"
+                        android:layout_marginEnd="50dp"
                         android:layout_marginBottom="5dp"
                         android:hint="Enter your mobile number"
                         android:paddingLeft="5dp"
                         android:gravity="center"
                         android:ems="10"
                         android:inputType="phone"
-                        android:background="@drawable/stroke_background"/>
+                       />
 
                 </RelativeLayout>
 

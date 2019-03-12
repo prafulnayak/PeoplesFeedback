@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -97,6 +98,7 @@ public class Home extends Fragment {
     private static String lastKey = "";
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
+    private RelativeLayout localitylayout;
 
     private JobScheduler jobScheduler;
 
@@ -147,6 +149,7 @@ public class Home extends Fragment {
         set_DisTance_Range = view.findViewById(R.id.set_DisTance_Range);
         displayLocationRange = view.findViewById(R.id.displayLocationRange);
         locRanTxt = view.findViewById(R.id.locRanTxt);
+        localitylayout = view.findViewById(R.id.localitylayout);
 
      //   Log.i("Home", " onViewCreated");
 //        Toast.makeText(getActivity(), "onViewCreated", Toast.LENGTH_LONG).show();
@@ -188,6 +191,8 @@ public class Home extends Fragment {
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                list5.clear();
+                list.clear();
                 if(!list.contains(dataSnapshot.getKey())){
                     list5.add(dataSnapshot.getKey());
                     lastKey = dataSnapshot.getKey();
@@ -659,6 +664,20 @@ public class Home extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setNestedScrollingEnabled(false);
 
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+//                @Override
+//                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                    if (scrollY>scrollX){
+//                        localitylayout.setVisibility(View.GONE);
+//                    }
+//                    if (scrollY<scrollX){
+//                        localitylayout.setVisibility(View.GONE);
+//
+//                    }
+//                }
+//            });
+//        }
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -678,13 +697,15 @@ public class Home extends Fragment {
                         {
                             loading = false;
                            // Log.v("...", "Last Item Wow !");
-                            //Toast.makeText(getActivity(),"Loging More..",Toast.LENGTH_SHORT).show();
+
+                            Toast.makeText(getActivity(),"Loading More..",Toast.LENGTH_SHORT).show();
 //                            Do pagination.. i.e. fetch new data
                             getMorePosts();
 //                            loading = true;
                         }
                     }
                 }
+
 
             }
         });

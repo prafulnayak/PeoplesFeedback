@@ -29,6 +29,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.Tag_Profile_Images_Adapter;
@@ -348,6 +350,7 @@ public class User_profile_Activity extends AppCompatActivity {
                         // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                     }
+                   // Collections.reverse(images);
                     adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
                     profile_tag_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
                     profile_tag_gridImages_rv.setAdapter(adapter);

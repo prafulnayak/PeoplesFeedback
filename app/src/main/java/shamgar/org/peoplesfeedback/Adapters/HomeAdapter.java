@@ -75,7 +75,7 @@ import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHolder> implements NamesC {
-    static int jobId = 0;
+
     private Context ctx;
     ArrayList<News> newsListR;
     private boolean  statusLike=false;
@@ -92,6 +92,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
     private Menu menu;
 
     private JobScheduler jobScheduler;
+    private String address;
 
     public HomeAdapter(ArrayList<News> newsList, Context newsFragment)
     {
@@ -172,7 +173,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         holder.userimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              //  Log.e("user num",news.getPostedBy());
+                //  Log.e("user num",news.getPostedBy());
                 Intent profile=new Intent(ctx, User_profile_Activity.class);
                 profile.putExtra("mobile",news.getPostedBy());
                 ctx.startActivity(profile);
@@ -231,10 +232,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.setPackage("com.whatsapp");
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
-                            intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+                            intent.putExtra(Intent.EXTRA_TEXT, "MLA name : "+news.getMla()+"\nAddress : "+holder.postlocation.getText()+"\n"+news.getDescription()+
+                                    "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");                            intent.putExtra(Intent.EXTRA_STREAM, apkURI);
 //                            intent.setType("image/png");
-                          //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                            //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
                             ctx.startActivity(intent);
                             news.setShares(news.getShares()+1);
                             notifyDataSetChanged();
@@ -262,7 +263,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     }else {
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
-                   // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
                     }else {
@@ -301,7 +302,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                             intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra(Intent.EXTRA_TEXT, news.getDescription()+news.getAddress()+news.getMla());
+                            intent.putExtra(Intent.EXTRA_TEXT, "MLA name : "+news.getMla()+"\nAddress : "+holder.postlocation.getText()+"\n"+news.getDescription()+
+                                    "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");
                             intent.putExtra(Intent.EXTRA_STREAM, apkURI);
 //                            intent.setType("image/png");
                             //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
@@ -334,7 +336,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                     }else {
                         Toast.makeText(ctx, "Unable to share", Toast.LENGTH_SHORT).show();
                     }
-                   // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(ctx, "shared", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         scheduleJob(news.getPostId(),sharedPreference.readPhoneNo(),Share);
                     }else {
@@ -351,8 +353,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         geocoder = new Geocoder(ctx, Locale.getDefault());
 
         try {
-            addresses = geocoder.getFromLocation(news.getLatitude(), news.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            addresses = geocoder.getFromLocation(news.getLatitude(), news.getLongitude(), 1);
+            // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
             String city = addresses.get(0).getLocality();
             String state = addresses.get(0).getAdminArea();
             String country = addresses.get(0).getCountryName();
@@ -361,12 +364,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 
             holder.postlocation.setText(address);
         } catch (IOException e) {
+
             e.printStackTrace();
+
         }catch (NullPointerException e){
+
             e.printStackTrace();
+
         }
-
-
 
 
     }
@@ -437,8 +442,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         bundle.putString("postId",postId);
         bundle.putString("phoneNo", phoneNo);
         bundle.putString("typePost",typePost);
-        jobId++;
-        JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceName)
+
+        JobInfo.Builder builder = new JobInfo.Builder(1, serviceName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setExtras(bundle);
 //                .setRequiresDeviceIdle(false)
@@ -450,15 +455,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
 //                .show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void cancelJob(){
-        if (jobScheduler!=null){
-            jobScheduler.cancelAll();
-            jobScheduler = null;
-            Toast.makeText(ctx, "Jobs cancelled", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));
     }
@@ -467,8 +463,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
         pm.getMenu().findItem(R.id.spam).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-              //  Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
-               // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
+                //  Toast.makeText(ctx,"spam",Toast.LENGTH_SHORT).show();
+                // SpamModel model=new SpamModel(state,constituancy,sharedPreference.readPhoneNo(),tag);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     scheduleJob(postId,sharedPreference.readPhoneNo().substring(3),"Spam");
                 }else {
@@ -557,7 +553,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.hasChild(receiverUserId))
                                                 current_state="friends";
-                                           // pm.getMenu().findItem(R.id.invite).setVisible(false);
+                                            // pm.getMenu().findItem(R.id.invite).setVisible(false);
                                         }
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
@@ -571,16 +567,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 });
         if (!senderUserId.equals(receiverUserId)) {
             pm.getMenu().findItem(R.id.invite).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if (current_state.equals("new")) {
-                                sendchatREquest(senderUserId,pm);
-                            }
-                            if (current_state.equals("request sent")) {
-                                cancelChatRequest(pm);
-                            }
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (current_state.equals("new")) {
+                        sendchatREquest(senderUserId,pm);
+                    }
+                    if (current_state.equals("request sent")) {
+                        cancelChatRequest(pm);
+                    }
 
-                            return true;
+                    return true;
                 }
             });
         }

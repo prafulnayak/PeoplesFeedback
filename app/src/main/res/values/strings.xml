@@ -23,5 +23,6 @@
     <string name="photo_url_preference">shamgar.org.peoplesfeedback.Utils.photo_url_preference</string>
     <string name="job_scheduled">Job getting sechduled</string>
     <string name="latitude_preference">com.shamghar.peoplesfeedback.latitude_location_preference</string>
+
     <string name="longitude_preference">com.shamghar.peopleseedback.longitude_preference</string>
 </resources>

@@ -83,12 +83,14 @@ public class ConstituencyListActivity extends AppCompatActivity {
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                         PartyStateMla singleSnapParty = new PartyStateMla();
                         singleSnapParty.setName(snapshot.getKey());
+                       // singleSnapParty.setRating("");
                         singleSnapParty.setHeading("State Party");
                         stateMajorParty.add(singleSnapParty);
 
                         PartyStateMla singleSnapPartyHead = new PartyStateMla();
                        // Log.e("child",snapshot.getValue().toString());
                         singleSnapPartyHead.setName(snapshot.getValue().toString());
+                       // singleSnapPartyHead.setRating("");
                         singleSnapParty.setHeading("State Party Head");
                         stateMajorPartyHead.add(singleSnapPartyHead);
                     }
@@ -125,6 +127,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
 
                         singleSnapPoliticians.setHeading(sharedPreferenceConfig.readDistrict());
                         singleSnapPoliticians.setName(dataSnapshot.child("mla_name").getValue(String.class));
+                        singleSnapPoliticians.setRating(String.valueOf(dataSnapshot.child("rating").getValue(Integer.class)));
 
                        // Log.e("pol child",singleSnapPoliticians.getHeading());
                       //  Log.e("pol child",dataSnapshot.child("mla_name").getValue(String.class));

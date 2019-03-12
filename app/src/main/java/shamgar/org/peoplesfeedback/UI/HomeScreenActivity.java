@@ -99,10 +99,10 @@ public class HomeScreenActivity extends AppCompatActivity implements GoogleApiCl
 
 
     final int[] ICONS = new int[]{
-                    R.drawable.ic_notifications_white_24dp,
-                    R.drawable.ic_people_black_24dp,
-                    R.drawable.ic_home_white_24dp
-            };
+            R.drawable.ic_notifications_white_24dp,
+            R.drawable.ic_people_black_24dp,
+            R.drawable.ic_home_white_24dp
+    };
     private String strhome,pol,chat,notifications;
 
     public HomeScreenActivity() {
@@ -158,11 +158,11 @@ public class HomeScreenActivity extends AppCompatActivity implements GoogleApiCl
 
 
 
-       // tabLayout.setupWithViewPager(viewPager);
+        // tabLayout.setupWithViewPager(viewPager);
 
 
-       TabsAccessorAdaptor adaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
-       tabLayout.setTabsFromPagerAdapter(adaptor);
+        TabsAccessorAdaptor adaptor=new TabsAccessorAdaptor(getSupportFragmentManager());
+        tabLayout.setTabsFromPagerAdapter(adaptor);
         setupTabIcons();
         TabLayout.Tab tab=tabLayout.getTabAt(0);
         tab.select();
@@ -354,14 +354,14 @@ public class HomeScreenActivity extends AppCompatActivity implements GoogleApiCl
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-         super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.home_screen_menu_options,menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-         super.onOptionsItemSelected(item);
+        super.onOptionsItemSelected(item);
         if (item.getItemId()==R.id.contacts) {
             Intent contacts=new Intent(HomeScreenActivity.this,ContactsActivity.class);
             startActivity(contacts);
@@ -372,13 +372,12 @@ public class HomeScreenActivity extends AppCompatActivity implements GoogleApiCl
             startActivity(user_profile);
 
         }
-//        if (item.getItemId()==R.id.sign_out){
-//            mAuth.signOut();
-//            Intent signOut=new Intent(HomeScreenActivity.this,MainActivity.class);
-//            startActivity(signOut);
-//            finish();
-//
-//        }
+        if (item.getItemId()==R.id.sign_out){
+            mAuth.signOut();
+            Intent signOut=new Intent(HomeScreenActivity.this,MainActivity.class);
+            startActivity(signOut);
+            finish();
+        }
 
         return true;
     }
@@ -526,7 +525,7 @@ public class HomeScreenActivity extends AppCompatActivity implements GoogleApiCl
                             .getLocationSettingsStates();
                     switch (status.getStatusCode()) {
                         case LocationSettingsStatusCodes.SUCCESS:
-                            Toast.makeText(HomeScreenActivity.this, "success on", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(HomeScreenActivity.this, "success on", Toast.LENGTH_SHORT).show();
                             // All location settings are satisfied.
                             //Schedule the job
                             startLocationUpdates();

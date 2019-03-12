@@ -38,7 +38,7 @@
                 android:textSize="18dp"
                 android:textStyle="bold"
                 android:layout_marginStart="8dp"
-                android:text="Peoples Feedback"/>
+                android:text="People Feedback"/>
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -59,7 +59,8 @@
     app:tabTextAppearance="@style/MineCustomTabText"
     android:background="@color/white"
     android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
-    android:layout_alignParentBottom="true"/>
+    android:layout_alignParentBottom="true"
+        app:tabIndicatorColor="@color/white"/>
 
 
 </RelativeLayout>

@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
 import java.util.ArrayList;
 
 import shamgar.org.peoplesfeedback.Model.News;
@@ -56,6 +59,12 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
                 context.startActivity(intent);
             }
         });
+        Glide.with(context)
+                .load(details.getCm_url())
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.politicianImage);
 
     }
 
