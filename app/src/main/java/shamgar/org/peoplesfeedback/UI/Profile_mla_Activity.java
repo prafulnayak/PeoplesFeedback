@@ -1,10 +1,15 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +21,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
@@ -34,6 +40,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.xw.repo.BubbleSeekBar;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +64,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private TextView mlanametxt,txtmlaConstituency,followersForMlaCount,mlaRatingPercentage,overallVotesMla,overallRatingMla,mlaPartyName;
     private Button mlaFollowButton;
+    private ImageButton mlaimageButton;
     private BubbleSeekBar mlaRatingSeekbar;
     private ImageView mla_gridViewImage;
     private RecyclerView profile_mla_gridImages_rv;
@@ -72,6 +84,8 @@ public class Profile_mla_Activity extends AppCompatActivity {
       private ArrayList<String> keys;
     private Tag_Profile_Images_Adapter adapter;
     private ProfileImagesInListviewAdapter imagesInListviewAdapter;
+
+    private View convertView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +112,72 @@ public class Profile_mla_Activity extends AppCompatActivity {
         mlaPartyName=findViewById(R.id.mlaPartyName);
       //  listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
         scrollViewMLa=findViewById(R.id.scrollViewMLa);
+        convertView=findViewById(R.id.mlaFramelayout);
+        mlaimageButton=findViewById(R.id.mlaimageButton);
+
+        //converting view into image
+        convertView.setDrawingCacheEnabled(true);
+        convertView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        convertView.layout(0,0,convertView.getWidth(),convertView.getHeight());
+        convertView.buildDrawingCache(true);
+
+        mlaimageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bitmap=Bitmap.createBitmap(convertView.getDrawingCache());
+                convertView.setDrawingCacheEnabled(false);
+//                ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG,100,bytes);
+
+                if(bitmap!=null)
+                {
+                    Log.e("img","converted image");
+                    try {
+                        File file = new File(getApplicationContext().getExternalCacheDir(),"logicchip.png");
+                        FileOutputStream fOut = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                        fOut.flush();
+                        fOut.close();
+
+                        final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                        Uri apkURI = FileProvider.getUriForFile(
+                                getApplicationContext(), getApplicationContext()
+                                        .getPackageName() + ".provider", file);
+                        intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(Intent.EXTRA_TEXT, "MLA name : "+mlaName+"\nConstituency : "+mlaConstituency+
+                                "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");
+                        intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+//                            intent.setType("image/png");
+                        //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                        startActivity(intent);
+
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Toast.makeText(getApplicationContext(),"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.e("img","failed");
+
+                }
+//                File f=new File(Environment.getExternalStorageDirectory()+File.separator+"v2i.jpg");
+//                try
+//                {
+//                   f.createNewFile();
+//                    FileOutputStream fo=new FileOutputStream(f);
+//                    fo.write(bytes.toByteArray());
+//                    fo.close();
+//                }catch (Exception e){
+//
+//                }
+//                finish();
+            }
+        });
 
         getSupportActionBar().setTitle("MLA profile");
 

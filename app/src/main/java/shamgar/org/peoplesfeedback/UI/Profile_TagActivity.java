@@ -1,8 +1,12 @@
 package shamgar.org.peoplesfeedback.UI;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +35,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.xw.repo.BubbleSeekBar;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,6 +73,9 @@ public class Profile_TagActivity extends AppCompatActivity {
     private TagListViewImagesAdapter tag_profile_images_adapter;
     private ArrayList<String> images;
     private ArrayList<String> keys;
+
+    private View tagConvertView;
+    private ImageButton tagimageButton;
 
 
     @Override
@@ -106,7 +117,73 @@ public class Profile_TagActivity extends AppCompatActivity {
         overallRatingTag=(TextView) findViewById(R.id.overallRatingTag);
         overallVotesTag=(TextView) findViewById(R.id.overallVotesTag);
         profiletagRating=(RatingBar) findViewById(R.id.tagRating);
+        tagConvertView= findViewById(R.id.framelayout);
+        tagimageButton= findViewById(R.id.tagimageButton);
 
+
+        //converting view into image
+        tagConvertView.setDrawingCacheEnabled(true);
+        tagConvertView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        tagConvertView.layout(0,0,tagConvertView.getWidth(),tagConvertView.getHeight());
+        tagConvertView.buildDrawingCache(true);
+
+        tagimageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bitmap=Bitmap.createBitmap(tagConvertView.getDrawingCache());
+                tagConvertView.setDrawingCacheEnabled(false);
+//                ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG,100,bytes);
+
+                if(bitmap!=null)
+                {
+                    Log.e("img","converted image");
+                    try {
+                        File file = new File(getApplicationContext().getExternalCacheDir(),"logicchip.png");
+                        FileOutputStream fOut = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                        fOut.flush();
+                        fOut.close();
+
+                        final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                        Uri apkURI = FileProvider.getUriForFile(
+                                getApplicationContext(), getApplicationContext()
+                                        .getPackageName() + ".provider", file);
+                        intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(Intent.EXTRA_TEXT, "State : "+state+"\nDistrict : "+district+"\nGOVT agency : "+tag+
+                                "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");
+                        intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+//                            intent.setType("image/png");
+                        //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                        startActivity(intent);
+
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Toast.makeText(getApplicationContext(),"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Log.e("img","failed");
+
+                }
+//                File f=new File(Environment.getExternalStorageDirectory()+File.separator+"v2i.jpg");
+//                try
+//                {
+//                   f.createNewFile();
+//                    FileOutputStream fo=new FileOutputStream(f);
+//                    fo.write(bytes.toByteArray());
+//                    fo.close();
+//                }catch (Exception e){
+//
+//                }
+//                finish();
+            }
+        });
         //checking user is following or not
         Query postQuery =  FirebaseDatabase.getInstance().getReference().child("District")
                 .child(district).child(tag).child("Followers")

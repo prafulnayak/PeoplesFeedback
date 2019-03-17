@@ -24,7 +24,7 @@ public class SplashScreen extends AppCompatActivity {
 
     private static ViewPager mPager;
     private static int currentPage = 0;
-    private static final Integer[] slideImages= {R.drawable.follow,R.drawable.live_photo,R.drawable.politi};
+    private static final Integer[] slideImages= {R.drawable.follow_and_chat,R.drawable.live_pic,R.drawable.politics};
     private ArrayList<Integer> slidImagesArray = new ArrayList<Integer>();
     private Button btnGetStarted;
     FirebaseAuth mAuth;
