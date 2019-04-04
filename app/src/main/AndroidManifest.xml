@@ -26,7 +26,27 @@
         android:roundIcon="@drawable/ic__pfb_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SplashScreen"
+        <activity android:name=".UI.GovtAgencyFollower"
+            android:parentActivityName=".UI.Profile_TagActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2"></activity>
+        <activity
+            android:name=".UI.MLAFollowers"
+            android:parentActivityName=".UI.Profile_mla_Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
+        <activity
+            android:name=".UI.Followers"
+            android:parentActivityName=".UI.HomeScreenActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
+        <activity
+            android:name=".UI.following"
+            android:parentActivityName=".UI.HomeScreenActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
+        <activity
+            android:name=".SplashScreen"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme1">
             <intent-filter>
@@ -38,9 +58,7 @@
         <activity
             android:name=".UI.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme1">
-
-        </activity>
+            android:theme="@style/AppTheme1" />
 
         <meta-data
             android:name="com.google.android.gms.version"

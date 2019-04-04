@@ -3,6 +3,7 @@ package shamgar.org.peoplesfeedback.UI;
 import android.content.Context;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -94,6 +95,8 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void init() {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.gradient_background));
+        getSupportActionBar().setElevation(0);
         getSupportActionBar().setCustomView(R.layout.custom_chat_bar);
         userEmail=(TextView)findViewById(R.id.emailChatActivity);
         userLastSeen=(TextView)findViewById(R.id.lastSeenChatActivity);

@@ -25,7 +25,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@color/pink2">
+                android:background="@drawable/gradient_background">
 
                 <TextView
                     android:id="@+id/tagDistrictName"
@@ -68,7 +68,7 @@
                     android:textAllCaps="false"
                     android:layout_below="@id/tagName"/>
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/tagimageButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -77,8 +77,7 @@
                     android:layout_marginLeft="30dp"
                     android:layout_toRightOf="@+id/tagFollowButton"
                     app:srcCompat="@drawable/share_white"
-                    tools:ignore="VectorDrawableCompat"
-                    android:background="@color/pink2"/>
+                    tools:ignore="VectorDrawableCompat" />
 
                 <TextView
                     android:id="@+id/followersForTags"

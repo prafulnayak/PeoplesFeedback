@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,12 +62,16 @@ public class User_profile_Activity extends AppCompatActivity {
     private ArrayList<String> images;
     private ArrayList<String> keys;
 
+    private LinearLayout userFollowers,userFollowing;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile_);
 
         getSupportActionBar().setTitle("Profile");
+        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.gradient_background));
+        getSupportActionBar().setElevation(0);
 
         images=new ArrayList<>();
         keys=new ArrayList<>();
@@ -89,6 +95,8 @@ public class User_profile_Activity extends AppCompatActivity {
         current_user_profile_num_of_following=findViewById(R.id.current_user_profile_num_of_following);
         user_profile_chat=findViewById(R.id.user_profile_chat);
         user_profile_chat_heading=findViewById(R.id.user_profile_chat_heading);
+        userFollowers=findViewById(R.id.userFollowers);
+        userFollowing=findViewById(R.id.userFollowing);
 //        user_grid_image=findViewById(R.id.user_grid_image);
 //        listViewImagesUser=findViewById(R.id.listViewImagesUser);
 
@@ -114,6 +122,25 @@ public class User_profile_Activity extends AppCompatActivity {
             public void onClick(View view) {
 
                 checkingContactIsSavedOrNot();
+            }
+        });
+
+        userFollowers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent following=new Intent(User_profile_Activity.this, Followers.class);
+                following.putExtra("number",mobile);
+                startActivity(following);
+            }
+        });
+
+        userFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent following=new Intent(User_profile_Activity.this, shamgar.org.peoplesfeedback.UI.following.class);
+               following.putExtra("number",mobile);
+               startActivity(following);
+
             }
         });
 

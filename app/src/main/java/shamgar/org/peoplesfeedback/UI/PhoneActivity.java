@@ -349,6 +349,10 @@ public class PhoneActivity extends AppCompatActivity implements View.OnClickList
 
     private void signInWithPhoneAuthCredential(final PhoneAuthCredential credential)
     {
+        loadingbar.setTitle("Verifying code");
+        loadingbar.setMessage("please wait....");
+        loadingbar.setCanceledOnTouchOutside(false);
+        loadingbar.show();
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
                 {

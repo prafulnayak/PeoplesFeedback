@@ -25,7 +25,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
-                android:background="@color/pink2">
+                android:background="@drawable/gradient_background">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="90dp"
@@ -120,12 +120,11 @@
                     android:textAllCaps="false"
                     android:layout_below="@id/layoutMLaParty"/>
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/mlaimageButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/share_white"
-                    android:background="@color/pink2"
                     tools:ignore="VectorDrawableCompat"
                     android:layout_toRightOf="@+id/mlaFollowButton"
                     android:layout_below="@id/layoutMLaParty"

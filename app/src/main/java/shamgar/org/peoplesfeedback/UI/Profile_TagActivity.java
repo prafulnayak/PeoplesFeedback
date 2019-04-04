@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +21,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -75,7 +76,7 @@ public class Profile_TagActivity extends AppCompatActivity {
     private ArrayList<String> keys;
 
     private View tagConvertView;
-    private ImageButton tagimageButton;
+    private ImageView tagimageButton;
 
 
     @Override
@@ -103,6 +104,8 @@ public class Profile_TagActivity extends AppCompatActivity {
         tag=getIntent().getExtras().getString("tag");
         state=getIntent().getExtras().getString("state");
         getSupportActionBar().setTitle(tag);
+        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.gradient_background));
+        getSupportActionBar().setElevation(0);
 
 //        tag_grid_image=(ImageButton)findViewById(R.id.tag_grid_image);
 //        listViewImagesTag=(ImageButton)findViewById(R.id.listViewImagesTag);
@@ -119,6 +122,16 @@ public class Profile_TagActivity extends AppCompatActivity {
         profiletagRating=(RatingBar) findViewById(R.id.tagRating);
         tagConvertView= findViewById(R.id.framelayout);
         tagimageButton= findViewById(R.id.tagimageButton);
+
+        followersForTags.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent tagFollowers=new Intent(Profile_TagActivity.this,GovtAgencyFollower.class);
+                tagFollowers.putExtra("district",district);
+                tagFollowers.putExtra("tag",tag);
+                startActivity(tagFollowers);
+            }
+        });
 
 
         //converting view into image
@@ -532,5 +545,11 @@ public class Profile_TagActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }

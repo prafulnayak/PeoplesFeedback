@@ -64,12 +64,14 @@ public class ConstituencyListDetailsAdapter extends RecyclerView.Adapter<Constit
                 mlaProfile.putExtra("district",district);
                 mlaProfile.putExtra("rating",mlaModel.getRating());
                 mlaProfile.putExtra("votes",mlaModel.getVotes());
+                mlaProfile.putExtra("status","1");
+                mlaProfile.putExtra("mla_image",mlaModel.getMla_image());
                // Toast.makeText(context,"rating "+mlaModel.getVotes(),Toast.LENGTH_SHORT).show();
                 context.startActivity(mlaProfile);
             }
         });
 
-        Glide.with(context).load("https://upload.wikimedia.org/wikipedia/commons/e/e1/Nuernberg-fronfeste-und-kettensteg-v-O.jpg").into(holder.constituency_mla_image);
+        Glide.with(context).load(mlaModel.getMla_image()).into(holder.constituency_mla_image);
 
     }
 

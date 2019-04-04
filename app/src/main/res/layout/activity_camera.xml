@@ -265,7 +265,7 @@
         android:textAllCaps="false"
         android:textSize="16sp"
         android:layout_alignParentBottom="true"
-        android:background="@color/pink2"/>
+        android:background="@drawable/gradient_background"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/camera"
         android:layout_width="wrap_content"
@@ -274,8 +274,9 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:backgroundTint="@color/pink2"
+        app:backgroundTint="#EF5857"
         android:clickable="true"
+        android:elevation="0dp"
         android:src="@drawable/ic_camera_alt_white_24dp"
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/submit"/>

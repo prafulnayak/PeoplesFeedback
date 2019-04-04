@@ -131,7 +131,8 @@
         android:layout_marginBottom="30dp"
        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:backgroundTint="@color/pink2"
+       app:backgroundTint="#EF5857"
+        android:elevation="0dp"
         android:src="@drawable/ic_camera_alt_white_24dp"
         />
 

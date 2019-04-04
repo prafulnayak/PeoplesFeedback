@@ -128,6 +128,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
                         singleSnapPoliticians.setHeading(sharedPreferenceConfig.readDistrict());
                         singleSnapPoliticians.setName(dataSnapshot.child("mla_name").getValue(String.class));
                         singleSnapPoliticians.setRating(String.valueOf(dataSnapshot.child("rating").getValue(Integer.class)));
+                        singleSnapPoliticians.setImageUrl(dataSnapshot.child("mla_image").getValue().toString());
 
                        // Log.e("pol child",singleSnapPoliticians.getHeading());
                       //  Log.e("pol child",dataSnapshot.child("mla_name").getValue(String.class));
