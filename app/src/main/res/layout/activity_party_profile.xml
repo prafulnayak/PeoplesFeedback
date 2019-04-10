@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scrollViewParty"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#F9FAFC">
+
+    <RelativeLayout
+        android:id="@+id/convertView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_marginBottom="5dp"
+        android:background="@color/white">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/partyFramelayout"
+            android:background="@color/white">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:background="@drawable/gradient_background">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:id="@+id/partyProfileImage"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"/>
+
+                <TextView
+                    android:id="@+id/partyName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Party name"
+                    android:layout_below="@+id/partyProfileImage"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:id="@+id/layoutPartyName"
+                    android:layout_below="@+id/partyName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp">
+                    <TextView
+                        android:id="@+id/partyEstablishedhint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Established By : "
+                        android:textColor="@color/white"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/partyEstablishedBY"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutMLaParty"
+                    android:layout_below="@+id/layoutPartyName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerHorizontal="true">
+
+                    <TextView
+                        android:id="@+id/Partyhint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Established on : "
+                        android:textColor="@color/white"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/PartyEstablishedOn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/PartyFollowButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:text="follow"
+                    android:textColor="@color/pink"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/white_round_background"
+                    android:textAllCaps="false"
+                    android:layout_below="@id/layoutMLaParty"/>
+
+                <ImageView
+                    android:id="@+id/partyimageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/share_white"
+                    tools:ignore="VectorDrawableCompat"
+                    android:layout_toRightOf="@+id/PartyFollowButton"
+                    android:layout_below="@id/layoutMLaParty"
+                    android:layout_marginTop="@dimen/dimen_15"
+                    android:layout_marginLeft="30dp"/>
+
+                <TextView
+                    android:id="@+id/followersForParty"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="followers"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="3dp"
+                    android:layout_toLeftOf="@+id/PartyFollowButton"
+                    android:layout_below="@id/followersForPartyCount"/>
+                <TextView
+                    android:id="@+id/followersForPartyCount"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@+id/layoutMLaParty"
+                    android:layout_toLeftOf="@+id/PartyFollowButton" />
+
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardViewMla"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="280dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp">
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="People rating"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.117"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.16" />
+
+                    <TextView
+                        android:id="@+id/overallVotesParty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Votes:123456"
+                        android:textColor="#727272"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.136"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.836" />
+
+                    <TextView
+                        android:id="@+id/overallRatingParty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="75%"
+                        android:textColor="@color/black"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.898"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <RatingBar
+                        android:id="@+id/partyProfile_rating"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="15dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="5dp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:progressTint="@color/pink"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.859"
+                        app:layout_constraintStart_toEndOf="@+id/overallVotesParty"
+                        app:layout_constraintTop_toBottomOf="@+id/overallRatingMla"
+                        app:layout_constraintVertical_bias="0.0" />
+                </android.support.constraint.ConstraintLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp"
+            android:text="Your Rating"
+            android:layout_below="@+id/partyFramelayout"
+            android:textColor="@color/pink"
+            android:textSize="16sp"/>
+        <com.xw.repo.BubbleSeekBar
+            android:id="@+id/partyRatingSeekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView8"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:bsb_bubble_color="@color/pink"
+            app:bsb_bubble_text_color="@color/white"
+            app:bsb_track_color="#A7A2A2"
+            app:bsb_second_track_color="@color/pink"
+            app:bsb_max="100"
+            app:bsb_min="0"
+            app:bsb_progress="0"
+            app:bsb_section_count="5"
+            app:bsb_section_text_position="bottom_sides"
+            app:bsb_show_progress_in_float="false"
+            app:bsb_show_section_mark="true"
+            app:bsb_show_section_text="true"
+            app:bsb_show_thumb_text="true"/>
+
+        <TextView
+            android:id="@+id/partyRatingPercentage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="rating percentage"
+            android:textColor="#A7A2A2"
+            android:textSize="16sp"
+            android:layout_below="@id/partyRatingSeekbar" />
+
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

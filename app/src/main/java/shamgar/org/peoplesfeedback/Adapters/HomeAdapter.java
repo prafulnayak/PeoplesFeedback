@@ -142,6 +142,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 mlaProfile.putExtra("mlaConstituency",news.getConstituancy());
                 mlaProfile.putExtra("state",news.getState());
                 mlaProfile.putExtra("district",news.getDistrict());
+                mlaProfile.putExtra("status","1");
+                mlaProfile.putExtra("mla_image",news.getMlaImageUrl());
+
                 ctx.startActivity(mlaProfile);
 
             }
@@ -154,6 +157,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 mlaProfile.putExtra("mlaConstituency",news.getConstituancy());
                 mlaProfile.putExtra("state",news.getState());
                 mlaProfile.putExtra("district",news.getDistrict());
+                mlaProfile.putExtra("status","1");
+                mlaProfile.putExtra("mla_image",news.getMlaImageUrl());
+
                 ctx.startActivity(mlaProfile);
             }
         });
@@ -179,9 +185,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.RecyclerViewHo
                 ctx.startActivity(profile);
             }
         });
+
+        CircularProgressDrawable circularProgressDrawable = new CircularProgressDrawable(ctx);
+        circularProgressDrawable.setStrokeWidth(5f);
+        circularProgressDrawable.setCenterRadius(30f);
+        circularProgressDrawable.start();
         Glide.with(ctx)
                 .load(news.getImageUrl())
-                .error(R.drawable.ic_image_black)
+                .placeholder(circularProgressDrawable)
+                .error(R.drawable.ic_image_black_24dp)
                 // read original from cache (if present) otherwise download it and decode it
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.userpostimage);

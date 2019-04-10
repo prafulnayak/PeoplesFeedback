@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -84,6 +85,7 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -202,6 +204,7 @@ public class CameraActivity extends AppCompatActivity implements
     // boolean flag to toggle the ui
     private Boolean mRequestingLocationUpdates;
     private Bitmap bitmap;
+    private File image;
 
 
     @Override
@@ -237,6 +240,8 @@ public class CameraActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setTitle("Take Live photo");
+        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.gradient_background));
+        getSupportActionBar().setElevation(0);
 
 
         sharedPreference = new SharedPreferenceConfig(this);
@@ -930,6 +935,7 @@ public class CameraActivity extends AppCompatActivity implements
             File photoFile = null;
             try {
                 photoFile = createImageFile();
+                //saveBitmapToFile(photoFile);
             } catch (IOException ex) {
                 // Error occurred while creating the File
 
@@ -945,9 +951,54 @@ public class CameraActivity extends AppCompatActivity implements
                                 .getPackageName() + ".provider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                // Log.e("uri", photoURI.toString());
+                 Log.e("uri", photoURI.toString());
 
             }
+        }
+    }
+
+    private File saveBitmapToFile(File photoFile) {
+
+        try{
+            BitmapFactory.Options o=new BitmapFactory.Options();
+            o.inJustDecodeBounds=true;
+            o.inSampleSize=6;
+
+            FileInputStream inputStream=new FileInputStream(photoFile);
+            BitmapFactory.decodeStream(inputStream,null,o);
+            inputStream.close();
+
+            final int REQUIRED_SIZE=75;
+
+            int scale=1;
+
+            while (o.outWidth/scale/2>=REQUIRED_SIZE &&
+                    o.outHeight/scale/2 >= REQUIRED_SIZE){
+                scale *=2;
+            }
+            BitmapFactory.Options o2=new BitmapFactory.Options();
+            o2.inSampleSize=scale;
+            inputStream=new FileInputStream(photoFile);
+
+            bitmap=BitmapFactory.decodeStream(inputStream,null,o2);
+
+            inputStream.close();
+
+            photoFile.createNewFile();
+
+            FileOutputStream outputStream=new FileOutputStream(photoFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+
+            if (bitmap!=null){
+                Log.e("bitmap",bitmap.toString());
+                cameraImage.setImageBitmap(bitmap);
+            }
+
+           // mCurrentPhotoPath = photoFile.getAbsolutePath();
+            return photoFile;
+
+        }catch (Exception e){
+            return null;
         }
     }
 //    private Location getcurrentLocation()
@@ -1100,12 +1151,14 @@ public class CameraActivity extends AppCompatActivity implements
                 case REQUEST_IMAGE_CAPTURE:
 
                     if (resultCode == RESULT_OK) {
-                        File file = new File(mCurrentPhotoPath);
-                        bitmap = MediaStore.Images.Media
-                                .getBitmap(this.getContentResolver(), Uri.fromFile(file));
-                        if (bitmap != null) {
-                            cameraImage.setImageBitmap(bitmap);
-                        }
+                        //File file = new File(mCurrentPhotoPath);
+                       saveBitmapToFile(image);
+
+//                       bitmap = MediaStore.Images.Media
+//                               .getBitmap(this.getContentResolver(), Uri.fromFile(file));
+//                        if (bitmap != null) {
+//                            cameraImage.setImageBitmap(bitmap);
+//                        }
                     }
                     break;
 
@@ -1135,14 +1188,15 @@ public class CameraActivity extends AppCompatActivity implements
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+         image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
+
+        //mCurrentPhotoPath=image.getAbsolutePath();
         //Log.e("camera", image.toString());
         return image;
     }

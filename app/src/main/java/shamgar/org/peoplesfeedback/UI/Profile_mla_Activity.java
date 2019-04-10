@@ -1,10 +1,18 @@
 package shamgar.org.peoplesfeedback.UI;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +21,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
@@ -34,6 +44,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.xw.repo.BubbleSeekBar;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,10 +64,11 @@ import shamgar.org.peoplesfeedback.R;
 import shamgar.org.peoplesfeedback.Utils.SharedPreferenceConfig;
 
 public class Profile_mla_Activity extends AppCompatActivity {
-    private String mlaName,mlaConstituency,tagRating,state,district;
+    private String mlaName,mlaConstituency,tagRating,state,district,status,mla_image;
 
     private TextView mlanametxt,txtmlaConstituency,followersForMlaCount,mlaRatingPercentage,overallVotesMla,overallRatingMla,mlaPartyName;
     private Button mlaFollowButton;
+    private ImageView mlaimageButton;
     private BubbleSeekBar mlaRatingSeekbar;
     private ImageView mla_gridViewImage;
     private RecyclerView profile_mla_gridImages_rv;
@@ -63,15 +79,18 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
     private SharedPreferenceConfig sharedPreferenceConfig;
     private ArrayList<String> images;
-//    private ArrayList<String> postedOn;
+    //    private ArrayList<String> postedOn;
 //    private ArrayList<String> lat;
 //    private ArrayList<String> lon;
 //    private ArrayList<String> tagId;
 //    private ArrayList<String> desc;
 //    private ArrayList<String> user;
-      private ArrayList<String> keys;
+    private ArrayList<String> keys;
     private Tag_Profile_Images_Adapter adapter;
     private ProfileImagesInListviewAdapter imagesInListviewAdapter;
+    private TextView followersForMla;
+
+    private View convertView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,28 +115,106 @@ public class Profile_mla_Activity extends AppCompatActivity {
         mlaProfile_rating=findViewById(R.id.mlaProfile_rating);
         mlaProfileImage=findViewById(R.id.mlaProfileImage);
         mlaPartyName=findViewById(R.id.mlaPartyName);
-      //  listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
+        //  listViewImagesMLa=findViewById(R.id.listViewImagesMLa);
         scrollViewMLa=findViewById(R.id.scrollViewMLa);
+        convertView=findViewById(R.id.mlaFramelayout);
+        mlaimageButton=findViewById(R.id.mlaimageButton);
+        followersForMla=findViewById(R.id.followersForMla);
+
+        //converting view into image
+        convertView.setDrawingCacheEnabled(true);
+        convertView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        convertView.layout(0,0,convertView.getWidth(),convertView.getHeight());
+        convertView.buildDrawingCache(true);
+
+        mlaimageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bitmap=Bitmap.createBitmap(convertView.getDrawingCache());
+                convertView.setDrawingCacheEnabled(false);
+//                ByteArrayOutputStream bytes=new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.JPEG,100,bytes);
+
+                if(bitmap!=null)
+                {
+                    Log.e("img","converted image");
+                    try {
+                        File file = new File(getApplicationContext().getExternalCacheDir(),"logicchip.png");
+                        FileOutputStream fOut = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                        fOut.flush();
+                        fOut.close();
+
+                        final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                        Uri apkURI = FileProvider.getUriForFile(
+                                getApplicationContext(), getApplicationContext()
+                                        .getPackageName() + ".provider", file);
+                        intent.setDataAndType(apkURI, Intent.normalizeMimeType("image/png"));
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(Intent.EXTRA_TEXT, "MLA name : "+mlaName+"\nConstituency : "+mlaConstituency+
+                                "\nPlayStore Link : https://play.google.com/store/apps/details?id=shamgar.org.peoplesfeedback");
+                        intent.putExtra(Intent.EXTRA_STREAM, apkURI);
+//                            intent.setType("image/png");
+                        //  ctx.startActivity(Intent.createChooser(intent, "Share image via"));
+                        startActivity(intent);
+
+
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        Toast.makeText(getApplicationContext(),"Whatsapp have not been installed.",Toast.LENGTH_LONG).show();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                else {
+                    Log.e("img","failed");
+
+                }
+
+            }
+        });
 
         getSupportActionBar().setTitle("MLA profile");
+//         final int sdk= Build.VERSION.SDK_INT;
+//         if (sdk< Build.VERSION_CODES.JELLY_BEAN){
+//             getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.gradient_background));
+//         }
+
+        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.gradient_background));
+        getSupportActionBar().setElevation(0);
+
+        followersForMla.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mlaFollowers=new Intent(Profile_mla_Activity.this,MLAFollowers.class);
+                mlaFollowers.putExtra("follower",mlaName);
+                mlaFollowers.putExtra("status","1");
+                startActivity(mlaFollowers);
+            }
+        });
+
 
 
         mlaName=getIntent().getExtras().getString("mlaName");
         mlaConstituency=getIntent().getExtras().getString("mlaConstituency");
         state=getIntent().getExtras().getString("state");
         district=getIntent().getExtras().getString("district");
+        status=getIntent().getExtras().getString("status");
+        mla_image=getIntent().getExtras().getString("mla_image");
+
+        Glide.with(getApplicationContext())
+                .load(mla_image)
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(mlaProfileImage);
+
 
         txtmlaConstituency.setText(mlaConstituency);
         mlanametxt.setText(mlaName);
-
-        scrollViewMLa.setNestedScrollingEnabled(false);
-        scrollViewMLa.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                mlaRatingSeekbar.correctOffsetWhenContainerOnScrolling();
-            }
-        });
-
 
         gettingMLAImage();
         gettingMlaTagedImagesKeys();
@@ -146,19 +243,25 @@ public class Profile_mla_Activity extends AppCompatActivity {
         postQuery.addValueEventListener(valueEventListener);
 
         //getting overall rating and votes
-        final Query postQuery1 =  FirebaseDatabase.getInstance().getReference().child("States")
-                .child(state).child("MLA").child("district").child(district).child("Constituancy").child(mlaConstituency);
+        final Query postQuery1 =  FirebaseDatabase.getInstance().getReference().child("Politicians")
+                .child(mlaName);
         ValueEventListener valueEventListener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                  String rating=dataSnapshot.child("rating").getValue().toString();
-                  String Votes=dataSnapshot.child("votes").getValue().toString();
-                    mlaProfile_rating.setRating(Integer.parseInt(rating)*5/100);
-                  overallRatingMla.setText(rating+"%");
-                  overallVotesMla.setText("Total Votes: "+Votes);
+                    if (dataSnapshot.hasChild("rating")){
+                        String rating=dataSnapshot.child("rating").getValue().toString();
+                        String Votes=dataSnapshot.child("votes").getValue().toString();
+                        mlaProfile_rating.setRating(Integer.parseInt(rating)*5/100);
+                        overallRatingMla.setText(rating+"%");
+                        overallVotesMla.setText("Total Votes: "+Votes);
+                    }else {
+                        mlaProfile_rating.setRating(0);
+                        overallRatingMla.setText("0%");
+                        overallVotesMla.setText("Total Votes: 0");
+                    }
                 }else {
-                  Log.e("overall rating","data not exists");
+                    Log.e("overall rating","data not exists");
                 }
 
             }
@@ -168,6 +271,39 @@ public class Profile_mla_Activity extends AppCompatActivity {
             }
         };
         postQuery1.addValueEventListener(valueEventListener2);
+
+        //getting num of followers
+        Query numofFol =  FirebaseDatabase.getInstance().getReference().child("Politicians")
+                .child(mlaName).child("Followers");
+        ValueEventListener valueEventListener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    String numOfFollowers= String.valueOf(dataSnapshot.getChildrenCount());
+                    // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
+                    followersForMlaCount.setText(numOfFollowers);
+                }else {
+                    // Toast.makeText(getApplicationContext()," no followers for "+mlaName,Toast.LENGTH_SHORT).show();
+                    followersForMlaCount.setText("0");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        numofFol.addValueEventListener(valueEventListener1);
+
+
+        scrollViewMLa.setNestedScrollingEnabled(false);
+        scrollViewMLa.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                mlaRatingSeekbar.correctOffsetWhenContainerOnScrolling();
+            }
+        });
+
+
+
 
         //implementing follow functionality for mla
         mlaFollowButton.setOnClickListener(new View.OnClickListener() {
@@ -183,26 +319,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
             }
         });
 
-        //getting num of followers
-        Query numofFol =  FirebaseDatabase.getInstance().getReference().child("Politicians")
-                .child(mlaName).child("Followers");
-        ValueEventListener valueEventListener1 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    String numOfFollowers= String.valueOf(dataSnapshot.getChildrenCount());
-                    // Toast.makeText(getApplicationContext(),numOfFollowers+" are following "+tag,Toast.LENGTH_SHORT).show();
-                    followersForMlaCount.setText(numOfFollowers);
-                }else {
-                   // Toast.makeText(getApplicationContext()," no followers for "+mlaName,Toast.LENGTH_SHORT).show();
-                    followersForMlaCount.setText("0");
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        numofFol.addValueEventListener(valueEventListener1);
+
 
         //implementing voting functionality
         mlaRatingSeekbar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
@@ -214,7 +331,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-               // Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(),"stop touch ",Toast.LENGTH_SHORT).show();
                 final AlertDialog.Builder builder = new AlertDialog.Builder(Profile_mla_Activity.this);
                 builder.setCancelable(false);
                 builder.setTitle("Your Rating is "+tagRating+"%")
@@ -245,33 +362,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
         });
 
 
-        //getting images from fire base
-//        mla_gridViewImage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_gray_24dp));
-//                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_primary_24dp));
-//                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
-//                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
-//                profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
-//                profile_mla_gridImages_rv.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
-//            }
-//        });
-//        listViewImagesMLa.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                listViewImagesMLa.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_list_black_24dp));
-//                mla_gridViewImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_view_quilt_gray_24dp));
-//
-//                imagesInListviewAdapter=new ProfileImagesInListviewAdapter(getApplicationContext(),images,postedOn,lat,lon,tagId,user,desc,mlaName,mlaConstituency,keys);
-//                profile_mla_gridImages_rv.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-//                profile_mla_gridImages_rv.setAdapter(imagesInListviewAdapter);
-//                imagesInListviewAdapter.notifyDataSetChanged();
-//                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
-//            }
-//        });
+
 
 
     }
@@ -293,6 +384,18 @@ public class Profile_mla_Activity extends AppCompatActivity {
                         }
                     }
                 });
+
+        FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE)
+                .child(sharedPreferenceConfig.readPhoneNo().substring(3)).child("pFollow")
+                .child(mlaName).removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Log.d("pFollow","unFollow success");
+                        }
+                    }
+                });
     }
 
     private void gettingMlaTagedImagesKeys()
@@ -304,12 +407,12 @@ public class Profile_mla_Activity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                   // images.add(dataSnapshot.getKey());
+                    // images.add(dataSnapshot.getKey());
                     keys.clear();
                     for (DataSnapshot innersnap:dataSnapshot.getChildren()){
                         keys.add(innersnap.getKey());
                     }
-                  //  Log.e("keys",keys.toString());
+                    //  Log.e("keys",keys.toString());
                     gettingImageUrls(keys);
                 }else {
                     Toast.makeText(getApplicationContext(),"  Images not found ",Toast.LENGTH_SHORT).show();
@@ -333,15 +436,15 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     images.clear();
                     for (int i=0;i<keys.size();i++){
-                       // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
+                        // Log.e("urls",dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                         images.add(dataSnapshot.child(keys.get(i)).child("imageUrl").getValue().toString());
                     }
-                adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
-                // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
-                profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
-                profile_mla_gridImages_rv.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
+                    adapter=new Tag_Profile_Images_Adapter(getApplicationContext(),images);
+                    // staggeredGridLayoutManager=new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
+                    profile_mla_gridImages_rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+                    profile_mla_gridImages_rv.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    profile_mla_gridImages_rv.setNestedScrollingEnabled(false);
                 }
 
             }
@@ -373,6 +476,18 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     }
                 });
 
+        FirebaseDatabase.getInstance().getReference().child(NamesC.PEOPLE)
+                .child(sharedPreferenceConfig.readPhoneNo().substring(3)).child("pFollow")
+                .child(mlaName).setValue("1")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Log.d("pFollow","success");
+                        }
+                    }
+                });
+
     }
 
     private  void gettingMLAImage(){
@@ -387,12 +502,7 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     String mlaParty= dataSnapshot.child("party").getValue().toString();
                     mlaPartyName.setText(mlaParty);
                     // Toast.makeText(getApplicationContext(),mlaUrl,Toast.LENGTH_SHORT).show();
-                    Glide.with(getApplicationContext())
-                            .load(mlaUrl)
-                            .error(R.drawable.ic_account_circle_black)
-                            // read original from cache (if present) otherwise download it and decode it
-                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                            .into(mlaProfileImage);
+
 
                 }else {
                     Toast.makeText(getApplicationContext(),mlaName+"  mla Image not found ",Toast.LENGTH_SHORT).show();
@@ -442,16 +552,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
                     int total = 0;
                     ArrayList<String> keysLists = new ArrayList<>();
                     for (DataSnapshot keys:dataSnapshot.getChildren()){
-                       // Log.e("keys",keys.getKey());
+                        // Log.e("keys",keys.getKey());
                         for (DataSnapshot innerChildren: keys.getChildren()){
-                          //  Log.e("keys",innerChildren.getValue().toString());
+                            //  Log.e("keys",innerChildren.getValue().toString());
                             keysLists.add(innerChildren.getValue().toString());
                             total = total+Integer.parseInt(innerChildren.getValue().toString());
-                          //  Log.e("total", String.valueOf(total));
+                            //  Log.e("total", String.valueOf(total));
                         }
                     }
                     float average= (float) (total/keysLists.size());
-                   // Log.e("average", String.valueOf(average));
+                    // Log.e("average", String.valueOf(average));
                     //posting average to respective tag
                     tagAverage(average,keysLists.size());
                 }else {
@@ -474,7 +584,16 @@ public class Profile_mla_Activity extends AppCompatActivity {
                 .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-              //  Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
+                //  Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference().child("Politicians")
+                .child(mlaName)
+                .updateChildren(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                //  Toast.makeText(getApplicationContext(), "Updated ", Toast.LENGTH_LONG).show();
             }
         });
 //                .child("rating")
@@ -506,4 +625,9 @@ public class Profile_mla_Activity extends AppCompatActivity {
 //        });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
 }

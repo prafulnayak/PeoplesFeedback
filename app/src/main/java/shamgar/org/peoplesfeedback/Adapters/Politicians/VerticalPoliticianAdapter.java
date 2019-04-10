@@ -64,7 +64,7 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
         });
 
         horizontalList.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-        horizontalAdapter = new HorizantalPoliticianAdapter(mContext,partyStateMlas);
+        horizontalAdapter = new HorizantalPoliticianAdapter(partyStateMlas,mContext,position);
         horizontalList.setAdapter(horizontalAdapter);
 
     }
@@ -76,7 +76,7 @@ public class VerticalPoliticianAdapter extends RecyclerView.Adapter<VerticalPoli
 
     public class VerticalViewHolder extends RecyclerView.ViewHolder
     {
-//        private HorizantalPoliticianAdapter horizontalAdapter;
+        //        private HorizantalPoliticianAdapter horizontalAdapter;
         private Button politicians_view_all;
         private TextView headingRV;
 

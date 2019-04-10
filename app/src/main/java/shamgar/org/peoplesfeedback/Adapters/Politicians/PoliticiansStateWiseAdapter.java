@@ -13,9 +13,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Model.News;
 import shamgar.org.peoplesfeedback.Model.StateCm;
 import shamgar.org.peoplesfeedback.R;
@@ -47,9 +53,11 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
         final StateCm details = stateList.get(position);
         holder.stateName.setText(details.getStateName());
         holder.cmName.setText(details.getCM());
-        holder.rating.setText(String.valueOf(details.getRating())+"%");
-        holder.votes.setText(String.valueOf("Votes : "+details.getVotes()));
-        holder.ratingBar.setRating(details.getRating()*5/100);
+//        holder.rating.setText(String.valueOf(details.getRating())+"%");
+//        holder.votes.setText(String.valueOf("Votes : "+details.getVotes()));
+//        holder.ratingBar.setRating(details.getRating()*5/100);
+
+        getOverallRatingAndVotes(details.getCM(),holder);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +74,47 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.politicianImage);
 
+        Glide.with(context)
+                .load("http://sairaa.org/peopleFeedback/images/"+details.getStateName()+".png")
+                .error(R.drawable.ic_account_circle_black)
+                // read original from cache (if present) otherwise download it and decode it
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.politicianIcon);
+
+    }
+
+    private void getOverallRatingAndVotes(final String cm, final PoliticiansViewHolder holder) {
+        Query query= FirebaseDatabase.getInstance().getReference().child("Politicians");
+
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    if (dataSnapshot.hasChild(cm)) {
+                        if (dataSnapshot.child(cm).hasChild("rating")){
+                            holder.rating.setText(dataSnapshot.child(cm).child("rating").getValue().toString()+"%");
+                            holder.votes.setText(String.valueOf("Votes : "+dataSnapshot.child(cm).child("votes").getValue().toString()));
+                            holder.ratingBar.setRating(Integer.parseInt(dataSnapshot.child(cm).child("rating").getValue().toString())*5/100);
+                        }
+                        else {
+                            holder.rating.setText("0%");
+                            holder.votes.setText("Votes : 0");
+                            holder.ratingBar.setRating(0);
+                        }
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        query.addValueEventListener(valueEventListener);
+
     }
 
     @Override
@@ -75,7 +124,8 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
 
     public class PoliticiansViewHolder extends RecyclerView.ViewHolder
     {
-        private ImageView politicianImage, stateImage;
+        private ImageView politicianImage;
+        private CircleImageView politicianIcon;
         private TextView stateName,cmName,rating,votes;
         private RatingBar ratingBar;
 
@@ -83,7 +133,7 @@ public class PoliticiansStateWiseAdapter extends RecyclerView.Adapter<Politician
             super(itemView);
 
             politicianImage = itemView.findViewById(R.id.politiciansRecyclerViewImage);
-            stateImage = itemView.findViewById(R.id.politicianFamousIcon);
+            politicianIcon = itemView.findViewById(R.id.politicianIcon);
 
             stateName = itemView.findViewById(R.id.txtStateName);
             cmName = itemView.findViewById(R.id.txtmlaName);

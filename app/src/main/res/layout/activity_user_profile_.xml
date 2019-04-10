@@ -20,7 +20,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:background="@color/pink2">
+                android:background="@drawable/gradient_background">
             </LinearLayout>
 
 
@@ -101,6 +101,7 @@
                                     >
 
                                     <LinearLayout
+                                        android:id="@+id/userFollowers"
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
@@ -134,6 +135,7 @@
                                         android:background="#DFDCDC">
                                     </TableRow>
                                     <LinearLayout
+                                        android:id="@+id/userFollowing"
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"

@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import shamgar.org.peoplesfeedback.Adapters.Politicians.PoliticiansStateWiseAdapter;
 
 import shamgar.org.peoplesfeedback.Model.StateCm;
@@ -37,6 +40,8 @@ import shamgar.org.peoplesfeedback.UI.HomeScreenActivity;
 public class Politicians extends Fragment  {
 
     private RecyclerView politiciansRecyclerView;
+    private ImageView politicianImage;
+    private CircleImageView politicianFamousIcon;
     private PoliticiansStateWiseAdapter politiciansStateWiseAdapter;
 
     private CardView politianCadrview;
@@ -58,6 +63,11 @@ public class Politicians extends Fragment  {
         politiciansRecyclerView.setAdapter(politiciansStateWiseAdapter);
 
         politianCadrview=view.findViewById(R.id.politianCadrview);
+        politicianImage=view.findViewById(R.id.politicianImage);
+        politicianFamousIcon=view.findViewById(R.id.politicianFamousIcon);
+
+        Glide.with(this).load("http://sairaa.org/peopleFeedback/images/Narendra Modi.jpg").into(politicianImage);
+
 
         politianCadrview.setOnClickListener(new View.OnClickListener()
         {

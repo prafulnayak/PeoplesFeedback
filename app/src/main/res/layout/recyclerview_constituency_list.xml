@@ -20,7 +20,7 @@
         android:layout_height="30dp"
         android:layout_margin="@dimen/dimen_15"
         android:textSize="12dp"
-        android:textColor="@color/pink2"
+        android:textColor="#e91e63"
         android:text="View All"
         android:background="@drawable/white_round_background"
         android:textAllCaps="false"/>

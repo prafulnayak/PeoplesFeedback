@@ -25,4 +25,8 @@
     <string name="latitude_preference">com.shamghar.peoplesfeedback.latitude_location_preference</string>
 
     <string name="longitude_preference">com.shamghar.peopleseedback.longitude_preference</string>
+
+    <string name="app_update_default_title">App Update</string>
+    <string name="app_update_default_description">Looks like you have an older\nversion of the app.\nPlease update to get latest\nfeatures and best experience.</string>
+    <string name="app_update_positive_text">UPDATE NOW</string>
 </resources>

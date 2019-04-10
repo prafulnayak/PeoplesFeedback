@@ -28,12 +28,11 @@
         </View>
         <ImageView
             android:id="@+id/politicianImage"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/five_dp"
-            android:layout_marginBottom="2dp"
-            android:src="@drawable/profile"/>
+            android:layout_marginBottom="2dp" />
 
         <LinearLayout
             android:id="@+id/politicianLL"
@@ -47,17 +46,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="INDIA"
-                android:layout_marginStart="@dimen/dimen_15"
+                android:layout_marginStart="@dimen/five_dp"
                 android:textColor="#000"
                 android:textStyle="bold"
                 android:textSize="15sp"
-                android:layout_marginBottom="2dp"
                 android:layout_marginTop="8dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Prime Minister"
-                android:layout_marginStart="@dimen/dimen_15"
+                android:layout_marginStart="@dimen/five_dp"
                 android:textSize="8sp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="2dp"/>
@@ -65,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Narendra Modi"
-                android:layout_marginStart="@dimen/dimen_15"
+                android:layout_marginStart="@dimen/five_dp"
                 android:textColor="#000"
                 android:textSize="12sp"
                 android:layout_marginBottom="2dp"/>
@@ -73,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rating"
-                android:layout_marginStart="@dimen/dimen_15"
+                android:layout_marginStart="@dimen/five_dp"
                 android:textColor="#000"
                 android:textSize="12sp"
                 android:layout_marginBottom="2dp"/>
@@ -87,7 +85,6 @@
                     android:layout_height="50dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/profile"
                    android:layout_centerVertical="true"/>
             <TextView
                 android:layout_width="wrap_content"

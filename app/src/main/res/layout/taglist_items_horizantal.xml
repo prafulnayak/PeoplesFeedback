@@ -75,7 +75,7 @@
             android:layout_height="25dp"
             android:textSize="12sp"
             android:text="Votes"
-            android:background="@color/pink2"
+            android:background="@drawable/gradient_background"
            android:layout_marginTop="10dp"
             android:textColor="@color/white"
             android:gravity="center"/>

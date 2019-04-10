@@ -75,7 +75,6 @@ public class ConstituencyListActivity extends AppCompatActivity {
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("Party");
 
-
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -85,11 +84,14 @@ public class ConstituencyListActivity extends AppCompatActivity {
                         singleSnapParty.setName(snapshot.getKey());
                        // singleSnapParty.setRating("");
                         singleSnapParty.setHeading("State Party");
+                        singleSnapParty.setImageUrl("http://sairaa.org/peopleFeedback/images/");
                         stateMajorParty.add(singleSnapParty);
 
                         PartyStateMla singleSnapPartyHead = new PartyStateMla();
                        // Log.e("child",snapshot.getValue().toString());
                         singleSnapPartyHead.setName(snapshot.getValue().toString());
+                        singleSnapPartyHead.setImageUrl("http://sairaa.org/peopleFeedback/images/");
+                        singleSnapPartyHead.setHeading(snapshot.getKey());
                        // singleSnapPartyHead.setRating("");
                         singleSnapParty.setHeading("State Party Head");
                         stateMajorPartyHead.add(singleSnapPartyHead);
@@ -116,7 +118,6 @@ public class ConstituencyListActivity extends AppCompatActivity {
         Query postQuery = FirebaseDatabase.getInstance().getReference().child("States")
                 .child(state).child("MLA").child("district").child(sharedPreferenceConfig.readDistrict()).child("Constituancy");
 
-
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -128,6 +129,7 @@ public class ConstituencyListActivity extends AppCompatActivity {
                         singleSnapPoliticians.setHeading(sharedPreferenceConfig.readDistrict());
                         singleSnapPoliticians.setName(dataSnapshot.child("mla_name").getValue(String.class));
                         singleSnapPoliticians.setRating(String.valueOf(dataSnapshot.child("rating").getValue(Integer.class)));
+                        singleSnapPoliticians.setImageUrl(dataSnapshot.child("mla_image").getValue().toString());
 
                        // Log.e("pol child",singleSnapPoliticians.getHeading());
                       //  Log.e("pol child",dataSnapshot.child("mla_name").getValue(String.class));
